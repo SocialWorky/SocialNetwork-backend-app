@@ -57,9 +57,7 @@ export class UsersService {
       'name',
       'lastName',
       'email',
-      'isAdmin',
       'isVerified',
-      'token',
       'avatar',
     ]);
   }
