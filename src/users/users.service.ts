@@ -66,7 +66,7 @@ export class UsersService {
     return this.usersRepository.findOneBy({ id: id });
   }
 
-  async update(_id: string, updateUser: UpdateUser): Promise<User> {
+  async update(_id: string, updateUser: UpdateUser): Promise<string> {
     const user = await this.usersRepository.findOne({
       where: { _id: _id },
     });
@@ -84,10 +84,12 @@ export class UsersService {
       user.password = await bcrypt.hash(updateUser.password, 10);
     }
 
-    return this.usersRepository.save(user);
+    this.usersRepository.save(user);
+
+    return 'User ' + user.username + ' updated';
   }
 
-  async remove(id: number, _id: string): Promise<string> {
+  async remove(idUserDelet: string, _id: string): Promise<string> {
     const requestingUser = await this.usersRepository.findOne({
       where: { _id: _id },
     });
@@ -96,7 +98,7 @@ export class UsersService {
     }
 
     const userToDelete = await this.usersRepository.findOne({
-      where: { id: id },
+      where: { _id: idUserDelet },
     });
     if (!userToDelete) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
