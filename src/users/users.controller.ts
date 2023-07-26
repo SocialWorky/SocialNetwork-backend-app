@@ -70,18 +70,18 @@ export class UsersController {
   update(
     @Param('_id') _id: string,
     @Body() updateUser: UpdateUser,
-  ): Promise<User> {
+  ): Promise<string> {
     return this.usersService.update(_id, updateUser);
   }
 
   @UseGuards(AuthGuard)
-  @Delete('delete/:id/:_id')
+  @Delete('delete/:_idUserDelet/:_id')
   @ApiBearerAuth()
   async remove(
-    @Param('id') id: number,
-    @Param('_id') _id: string,
+    @Param('_idUserDelet') _idUserDelet: string,
+    @Param('_idUser') _idUser: string,
   ): Promise<string> {
-    return this.usersService.remove(id, _id);
+    return this.usersService.remove(_idUserDelet, _idUser);
   }
 
   @UseGuards(AuthGuard)

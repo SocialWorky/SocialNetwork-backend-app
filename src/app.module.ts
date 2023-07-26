@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
 import { JwtExpiredFilter } from './filters/jwt-expired.filter';
+import { JwtExceptionFilter } from './filters/jwt-exception.filter';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 
@@ -24,6 +25,10 @@ import { AuthModule } from './auth/auth.module';
     {
       provide: APP_FILTER,
       useClass: JwtExpiredFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: JwtExceptionFilter,
     },
   ],
 })
