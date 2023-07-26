@@ -13,10 +13,10 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { CreateUser, UpdateUser, LoginDto } from './dto/user.dto';
-import { User } from '../entities/user.entity';
+import { User } from '../../entities/user.entity';
 import { UsersService } from './users.service';
-import { AuthService } from '../auth/authService';
-import { AuthGuard } from '../auth/auth.guard';
+import { AuthService } from '../../auth/authService';
+import { AuthGuard } from '../../auth/auth.guard';
 
 @ApiTags('user')
 @Controller('api/user')
