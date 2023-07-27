@@ -5,9 +5,14 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
+  ManyToMany,
+  JoinTable,
+  OneToMany,
 } from 'typeorm';
 import { Publication } from './publications.entity';
 import { User } from './user.entity';
+import { Media } from './media.entity';
+import { Reaction } from './reaction.entity';
 
 @Entity()
 export class Comment {
@@ -20,17 +25,18 @@ export class Comment {
   @Column()
   content: string;
 
-  @Column('text', { array: true, nullable: true })
-  mediaUrls: string[];
-
-  @Column('text', { array: true, nullable: true })
-  reactions: string[];
-
   @ManyToOne(() => User, (user) => user._id)
   author: User;
 
   @ManyToOne(() => Publication, (publication) => publication._id)
   parentPublication: Publication;
+
+  @ManyToMany(() => Media)
+  @JoinTable()
+  media: Media[];
+
+  @OneToMany(() => Reaction, (reaction) => reaction.comment)
+  reactions: Reaction[];
 
   @CreateDateColumn()
   createdAt: Date;

@@ -6,7 +6,7 @@ import * as crypto from 'crypto';
 export class AuthController {
   @Get('random')
   @ApiExcludeEndpoint()
-  findAll() {
+  randomKey() {
     const secretKey = crypto.randomBytes(32).toString('hex');
     return secretKey;
   }
@@ -14,6 +14,13 @@ export class AuthController {
     const hash = crypto.createHash('sha256');
     hash.update(email);
     hash.update(password);
+    return '_' + hash.digest('hex');
+  }
+
+  cryptoIdKey() {
+    const hash = crypto.createHash('sha256');
+    hash.update(Date.now().toString());
+    hash.update(this.randomKey());
     return '_' + hash.digest('hex');
   }
 }
