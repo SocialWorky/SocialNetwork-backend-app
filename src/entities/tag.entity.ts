@@ -4,6 +4,7 @@ import {
   Column,
   ManyToMany,
   JoinTable,
+  CreateDateColumn,
 } from 'typeorm';
 import { User } from './user.entity';
 
@@ -21,4 +22,7 @@ export class TagUsers {
   @ManyToMany(() => User, { eager: true }) // Relación ManyToMany con la entidad User para etiquetar usuarios
   @JoinTable()
   taggedUsers: User[];
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

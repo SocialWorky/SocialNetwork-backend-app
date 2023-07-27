@@ -4,10 +4,11 @@ import {
   Post,
   Put,
   Delete,
-  Param,
   Body,
+  Param,
 } from '@nestjs/common';
 import { Publication } from '../../entities/publications.entity';
+import { CreatePublicationDto } from './dto/publication.dto';
 import { PublicationService } from './publication.service';
 
 @Controller('api/publications')
@@ -16,14 +17,9 @@ export class PublicationController {
 
   @Post()
   async createPublication(
-    @Body() publication: Publication,
+    @Body() createPublicationDto: CreatePublicationDto,
   ): Promise<Publication> {
-    return this.publicationService.createPublication(publication);
-  }
-
-  @Get(':_id')
-  async getPublicationById(@Param('_id') _id: string): Promise<Publication> {
-    return this.publicationService.getPublicationById(_id);
+    return this.publicationService.createPublication(createPublicationDto);
   }
 
   @Get()
@@ -31,16 +27,21 @@ export class PublicationController {
     return this.publicationService.getAllPublications();
   }
 
-  @Put(':_id')
-  async updatePublication(
-    @Param('_id') _id: string,
-    @Body() publicationData: Partial<Publication>,
-  ): Promise<Publication> {
-    return this.publicationService.updatePublication(_id, publicationData);
+  @Get(':id')
+  async getPublicationById(@Param('id') id: string): Promise<Publication> {
+    return this.publicationService.getPublicationById(id);
   }
 
-  @Delete(':_id')
-  async deletePublication(@Param('_id') _id: string): Promise<void> {
-    return this.publicationService.deletePublication(_id);
+  @Put(':id')
+  async updatePublication(
+    @Param('id') id: string,
+    @Body() updatePublicationDto: CreatePublicationDto,
+  ): Promise<Publication> {
+    return this.publicationService.updatePublication(id, updatePublicationDto);
+  }
+
+  @Delete(':id')
+  async deletePublication(@Param('id') id: string): Promise<void> {
+    return this.publicationService.deletePublication(id);
   }
 }

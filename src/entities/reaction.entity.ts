@@ -1,6 +1,14 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  JoinColumn,
+} from 'typeorm';
 import { Publication } from './publications.entity';
 import { Comment } from './comment.entity';
+import { CustomReaction } from './customReaction.entity';
 
 @Entity()
 export class Reaction {
@@ -11,11 +19,18 @@ export class Reaction {
   _id: string;
 
   @Column()
-  type: string; // Tipo de reacción, por ejemplo: "me gusta", "me divierte", etc.
+  user: string; // Usuario que reaccionó
 
   @ManyToOne(() => Publication, (publication) => publication.reactions)
   publication: Publication;
 
   @ManyToOne(() => Comment, (comment) => comment.reactions)
   comment: Comment;
+
+  @ManyToOne(() => CustomReaction)
+  @JoinColumn({ name: 'customReactionId' })
+  customReaction: CustomReaction; // Reacción personalizada seleccionada por el usuario
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

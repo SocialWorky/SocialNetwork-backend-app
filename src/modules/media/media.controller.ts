@@ -1,27 +1,15 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Param,
-  Body,
-} from '@nestjs/common';
+import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
 import { Media } from '../../entities/media.entity';
+import { CreateMediaDto } from './dto/media.dto';
 import { MediaService } from './media.service';
 
-@Controller('media')
+@Controller('api/media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 
   @Post()
-  async createMedia(@Body() media: Media): Promise<Media> {
-    return this.mediaService.createMedia(media);
-  }
-
-  @Get(':_id')
-  async getMediaById(@Param('_id') _id: string): Promise<Media> {
-    return this.mediaService.getMediaById(_id);
+  async createMedia(@Body() createMediaDto: CreateMediaDto): Promise<Media> {
+    return this.mediaService.createMedia(createMediaDto);
   }
 
   @Get()
@@ -29,16 +17,13 @@ export class MediaController {
     return this.mediaService.getAllMedia();
   }
 
-  @Put(':_id')
-  async updateMedia(
-    @Param('_id') _id: string,
-    @Body() mediaData: Partial<Media>,
-  ): Promise<Media> {
-    return this.mediaService.updateMedia(_id, mediaData);
+  @Get(':_id')
+  async getMediaById(@Param('_id') _id: string): Promise<Media> {
+    return this.mediaService.getMediaById(_id);
   }
 
-  @Delete(':id')
-  async deleteMedia(@Param('id') id: number): Promise<void> {
-    return this.mediaService.deleteMedia(id);
+  @Delete(':_id')
+  async deleteMedia(@Param('_id') _id: string): Promise<void> {
+    return this.mediaService.deleteMedia(_id);
   }
 }

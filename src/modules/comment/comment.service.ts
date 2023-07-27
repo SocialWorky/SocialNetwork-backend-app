@@ -2,6 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Comment } from '../../entities/comment.entity';
+import { CreateCommentDto } from './dto/comment.dto';
+import { User } from 'src/entities/user.entity';
+import { Publication } from 'src/entities/publications.entity';
 
 @Injectable()
 export class CommentService {
@@ -10,12 +13,23 @@ export class CommentService {
     private readonly commentRepository: Repository<Comment>,
   ) {}
 
-  async createComment(comment: Comment): Promise<Comment> {
-    return this.commentRepository.save(comment);
-  }
+  async createComment(createCommentDto: CreateCommentDto): Promise<Comment> {
+    const { content, authorId, parentPublicationId } = createCommentDto;
 
-  async getCommentById(_id: string): Promise<Comment> {
-    return this.commentRepository.findOneBy({ _id: _id });
+    const comment = new Comment();
+    comment.content = content;
+
+    // Asignar el autor del comentario utilizando su ID
+    const author = new User();
+    author._id = authorId;
+    comment.author = author;
+
+    // Asignar la publicación padre del comentario utilizando su ID
+    const parentPublication = new Publication();
+    parentPublication._id = parentPublicationId;
+    comment.parentPublication = parentPublication;
+
+    return this.commentRepository.save(comment);
   }
 
   async getAllComments(): Promise<Comment[]> {
@@ -23,20 +37,24 @@ export class CommentService {
   }
 
   async updateComment(
-    _id: string,
-    commentData: Partial<Comment>,
+    _id: string, // ID del comentario a editar
+    updateCommentDto: CreateCommentDto,
   ): Promise<Comment> {
+    const { content } = updateCommentDto;
+
     const comment = await this.commentRepository.findOne({
       where: { _id: _id },
     });
     if (!comment) {
       throw new Error('Comment not found');
     }
-    Object.assign(comment, commentData);
+
+    comment.content = content;
+
     return this.commentRepository.save(comment);
   }
 
-  async deleteComment(id: number): Promise<void> {
-    await this.commentRepository.delete(id);
+  async deleteComment(_id: string): Promise<void> {
+    await this.commentRepository.delete(_id);
   }
 }

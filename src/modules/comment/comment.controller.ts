@@ -8,6 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { Comment } from '../../entities/comment.entity';
+import { CreateCommentDto } from './dto/comment.dto';
 import { CommentService } from './comment.service';
 
 @Controller('api/comments')
@@ -15,13 +16,10 @@ export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
   @Post()
-  async createComment(@Body() comment: Comment): Promise<Comment> {
-    return this.commentService.createComment(comment);
-  }
-
-  @Get(':_id')
-  async getCommentById(@Param('_id') _id: string): Promise<Comment> {
-    return this.commentService.getCommentById(_id);
+  async createComment(
+    @Body() createCommentDto: CreateCommentDto,
+  ): Promise<Comment> {
+    return this.commentService.createComment(createCommentDto);
   }
 
   @Get()
@@ -29,16 +27,16 @@ export class CommentController {
     return this.commentService.getAllComments();
   }
 
-  @Put(':_id')
+  @Put(':id')
   async updateComment(
-    @Param('_id') _id: string,
-    @Body() commentData: Partial<Comment>,
+    @Param('id') id: string,
+    @Body() updateCommentDto: CreateCommentDto,
   ): Promise<Comment> {
-    return this.commentService.updateComment(_id, commentData);
+    return this.commentService.updateComment(id, updateCommentDto);
   }
 
   @Delete(':id')
-  async deleteComment(@Param('id') id: number): Promise<void> {
+  async deleteComment(@Param('id') id: string): Promise<void> {
     return this.commentService.deleteComment(id);
   }
 }

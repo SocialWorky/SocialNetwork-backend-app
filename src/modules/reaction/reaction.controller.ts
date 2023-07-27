@@ -7,21 +7,24 @@ import {
   Param,
   Body,
 } from '@nestjs/common';
+import { CreateReactionDto } from './dto/reaction.dto';
 import { Reaction } from '../../entities/reaction.entity';
 import { ReactionService } from './reaction.service';
 
-@Controller('reactions')
+@Controller('api/reactions')
 export class ReactionController {
   constructor(private readonly reactionService: ReactionService) {}
 
   @Post()
-  async createReaction(@Body() reaction: Reaction): Promise<Reaction> {
-    return this.reactionService.createReaction(reaction);
+  async createReaction(
+    @Body() createReactionDto: CreateReactionDto,
+  ): Promise<Reaction> {
+    return this.reactionService.createReaction(createReactionDto);
   }
 
-  @Get(':_id')
-  async getReactionById(@Param('_id') _id: string): Promise<Reaction> {
-    return this.reactionService.getReactionById(_id);
+  @Get(':id')
+  async getReactionById(@Param('id') id: string): Promise<Reaction> {
+    return this.reactionService.getReactionById(id);
   }
 
   @Get()
@@ -29,16 +32,16 @@ export class ReactionController {
     return this.reactionService.getAllReactions();
   }
 
-  @Put(':_id')
+  @Put(':id')
   async updateReaction(
-    @Param('_id') _id: string,
+    @Param('id') id: string,
     @Body() reactionData: Partial<Reaction>,
   ): Promise<Reaction> {
-    return this.reactionService.updateReaction(_id, reactionData);
+    return this.reactionService.updateReaction(id, reactionData);
   }
 
   @Delete(':id')
-  async deleteReaction(@Param('_id') _id: string): Promise<void> {
-    return this.reactionService.deleteReaction(_id);
+  async deleteReaction(@Param('id') id: string): Promise<void> {
+    return this.reactionService.deleteReaction(id);
   }
 }

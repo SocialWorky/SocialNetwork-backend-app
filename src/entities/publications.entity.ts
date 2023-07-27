@@ -12,7 +12,6 @@ import {
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
 import { Media } from './media.entity';
-import { Tag } from './tag.entity';
 import { Reaction } from './reaction.entity';
 
 @Entity()
