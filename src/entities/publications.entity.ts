@@ -6,9 +6,13 @@ import {
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from 'typeorm';
 import { User } from './user.entity';
 import { Comment } from './comment.entity';
+import { Media } from './media.entity';
+import { Reaction } from './reaction.entity';
 
 @Entity()
 export class Publication {
@@ -21,14 +25,8 @@ export class Publication {
   @Column()
   content: string;
 
-  @Column('text', { array: true, nullable: true })
-  mediaUrls: string[];
-
   @Column()
   privacy: string;
-
-  @Column('text', { array: true, nullable: true })
-  reactions: string[];
 
   @Column()
   isComment: boolean;
@@ -36,8 +34,19 @@ export class Publication {
   @ManyToOne(() => User, (user) => user._id)
   author: User;
 
-  @OneToMany(() => Comment, (comment) => comment._id)
+  @OneToMany(() => Comment, (comment) => comment.parentPublication)
   comments: Comment[];
+
+  @ManyToMany(() => Media)
+  @JoinTable()
+  media: Media[];
+
+  @ManyToMany(() => User, { eager: true })
+  @JoinTable()
+  taggedUsers: User[];
+
+  @OneToMany(() => Reaction, (reaction) => reaction.publication)
+  reactions: Reaction[];
 
   @CreateDateColumn()
   createdAt: Date;

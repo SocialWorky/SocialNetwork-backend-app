@@ -4,6 +4,9 @@ import { APP_FILTER } from '@nestjs/core';
 import { JwtExpiredFilter } from './filters/jwt-expired.filter';
 import { JwtExceptionFilter } from './filters/jwt-exception.filter';
 import { UsersModule } from './modules/users/users.module';
+import { TagsUsersModule } from './modules/tagsUsers/tagsUsers.module';
+import { ReactionModule } from './modules/reaction/reaction.module';
+import { PublicationModule } from './modules/publications/publication.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -19,6 +22,9 @@ import { AuthModule } from './auth/auth.module';
       synchronize: true, //Only use synchronize in development (automatically creates tables), not in production.
     }),
     UsersModule,
+    TagsUsersModule,
+    ReactionModule,
+    PublicationModule,
     AuthModule,
   ],
   providers: [
