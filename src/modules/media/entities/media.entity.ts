@@ -5,8 +5,8 @@ import {
   ManyToMany,
   JoinTable,
 } from 'typeorm';
-import { Publication } from './publications.entity';
-import { Comment } from './comment.entity';
+import { Publication } from '../../publications/entities/publications.entity';
+import { Comment } from '../../comment/entities/comment.entity';
 
 @Entity()
 export class Media {

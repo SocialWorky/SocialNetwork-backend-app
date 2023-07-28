@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { TagUsers } from '../../entities/tag.entity';
+import { TagUsers } from './entities/tag.entity';
 import { UsersModule } from '../users/users.module';
-import { User } from '../../entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { TagsUsersController } from './tagsUsers.controller';
 import { TagsUsersService } from './tagsUsers.service';
 import { AuthModule } from '../../auth/auth.module';

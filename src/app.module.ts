@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
 import { AppController } from './app.controller';
@@ -24,7 +26,11 @@ import { AuthModule } from './auth/auth.module';
       password: 'Losbar191184@',
       database: 'bside',
       autoLoadEntities: true,
-      synchronize: true, //Only use synchronize in development (automatically creates tables), not in production.
+      synchronize: false, //Only use synchronize in development (automatically creates tables), not in production.
+    }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'src/assets'),
+      serveRoot: '/assets',
     }),
     UsersModule,
     TagsUsersModule,

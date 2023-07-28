@@ -1,8 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { PublicationModule } from '../publications/publication.module';
-import { Publication } from '../../entities/publications.entity';
-import { Comment } from '../../entities/comment.entity';
+import { Publication } from '../publications/entities/publications.entity';
+import { Comment } from './entities/comment.entity';
 import { CommentController } from './comment.controller';
 import { CommentService } from './comment.service';
 import { AuthModule } from '../../auth/auth.module';

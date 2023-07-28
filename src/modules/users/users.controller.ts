@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { CreateUser, UpdateUser, LoginDto } from './dto/user.dto';
-import { User } from '../../entities/user.entity';
+import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { AuthService } from '../../auth/auth.service';
 import { AuthGuard } from '../../auth/auth.guard';

@@ -8,7 +8,7 @@ import {
   Body,
 } from '@nestjs/common';
 import { CreateReactionDto } from './dto/reaction.dto';
-import { Reaction } from '../../entities/reaction.entity';
+import { Reaction } from './entities/reaction.entity';
 import { ReactionService } from './reaction.service';
 
 @Controller('api/reactions')

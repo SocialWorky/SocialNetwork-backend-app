@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CustomReaction } from '../../entities/customReaction.entity';
+import { CustomReaction } from './entities/customReaction.entity';
 import { CreateCustomReactionDto } from './dto/customReaction.dto';
 
 @Injectable()

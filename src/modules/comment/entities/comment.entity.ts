@@ -5,17 +5,17 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  OneToMany,
   ManyToMany,
   JoinTable,
+  OneToMany,
 } from 'typeorm';
-import { User } from './user.entity';
-import { Comment } from './comment.entity';
-import { Media } from './media.entity';
-import { Reaction } from './reaction.entity';
+import { Publication } from '../../publications/entities/publications.entity';
+import { User } from '../../users/entities/user.entity';
+import { Media } from '../../media/entities/media.entity';
+import { Reaction } from '../../reaction/entities/reaction.entity';
 
 @Entity()
-export class Publication {
+export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -25,27 +25,17 @@ export class Publication {
   @Column()
   content: string;
 
-  @Column()
-  privacy: string;
-
-  @Column()
-  isComment: boolean;
-
   @ManyToOne(() => User, (user) => user._id)
   author: User;
 
-  @OneToMany(() => Comment, (comment) => comment.parentPublication)
-  comments: Comment[];
+  @ManyToOne(() => Publication, (publication) => publication._id)
+  parentPublication: Publication;
 
   @ManyToMany(() => Media)
   @JoinTable()
   media: Media[];
 
-  @ManyToMany(() => User, { eager: true })
-  @JoinTable()
-  taggedUsers: User[];
-
-  @OneToMany(() => Reaction, (reaction) => reaction.publication)
+  @OneToMany(() => Reaction, (reaction) => reaction.comment)
   reactions: Reaction[];
 
   @CreateDateColumn()

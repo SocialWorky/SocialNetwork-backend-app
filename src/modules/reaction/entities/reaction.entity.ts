@@ -6,9 +6,9 @@ import {
   CreateDateColumn,
   JoinColumn,
 } from 'typeorm';
-import { Publication } from './publications.entity';
-import { Comment } from './comment.entity';
-import { CustomReaction } from './customReaction.entity';
+import { Publication } from '../../publications/entities/publications.entity';
+import { Comment } from '../../comment/entities/comment.entity';
+import { CustomReaction } from '../../customReaction/entities/customReaction.entity';
 
 @Entity()
 export class Reaction {
