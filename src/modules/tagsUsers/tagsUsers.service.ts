@@ -3,21 +3,22 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { CreateTagDto, UpdateTagDto } from './dto/tagsUsers.dto';
 import { TagUsers } from '../../entities/tag.entity';
-import { AuthController } from '../../auth/auth.controller';
 import { User } from '../../entities/user.entity';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
 export class TagsUsersService {
   constructor(
     @InjectRepository(TagUsers)
     private readonly tagRepository: Repository<TagUsers>,
+    @InjectRepository(User)
     private userRepository: Repository<User>,
-    private readonly authController: AuthController,
+    private authService: AuthService,
   ) {}
 
   async createTag(createTagDto: CreateTagDto): Promise<TagUsers> {
     const tag = new TagUsers();
-    tag._id = this.authController.cryptoIdKey();
+    tag._id = this.authService.cryptoIdKey();
 
     tag.name = createTagDto.name;
     const users = await this.userRepository.find({

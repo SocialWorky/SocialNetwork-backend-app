@@ -15,7 +15,7 @@ import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { CreateUser, UpdateUser, LoginDto } from './dto/user.dto';
 import { User } from '../../entities/user.entity';
 import { UsersService } from './users.service';
-import { AuthService } from '../../auth/authService';
+import { AuthService } from '../../auth/auth.service';
 import { AuthGuard } from '../../auth/auth.guard';
 
 @ApiTags('user')
@@ -85,9 +85,9 @@ export class UsersController {
   }
 
   @UseGuards(AuthGuard)
-  @Get(':email')
+  @Get('email/:email')
   @ApiBearerAuth()
-  findOneByEmail(@Param('email') email: string): Promise<User> {
+  async findOneByEmail(@Param('email') email: string): Promise<User> {
     return this.usersService.findOneByEmail(email);
   }
 }
