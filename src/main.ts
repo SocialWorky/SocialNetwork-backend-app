@@ -11,7 +11,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   const config = new DocumentBuilder()
-    .setTitle('social network application')
+    .setTitle('Social Network Application')
     .setDescription(
       "This is a social networking application that adapts to the customer's needs.",
     )
@@ -21,9 +21,20 @@ async function bootstrap() {
   const options: SwaggerDocumentOptions = {
     operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
   };
+
   const document = SwaggerModule.createDocument(app, config, options);
 
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: 'Social Network API',
+    customCssUrl: '../assets/swagger/topbar.css',
+    // customfavIcon: 'assets/swagger/favicon.ico',
+    swaggerOptions: {
+      docExpansion: 'none',
+      filter: true,
+      showRequestDuration: true,
+      layout: 'BaseLayout',
+    },
+  });
 
   await app.listen(3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
