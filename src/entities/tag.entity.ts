@@ -6,6 +6,7 @@ import {
   JoinTable,
   CreateDateColumn,
 } from 'typeorm';
+
 import { User } from './user.entity';
 
 @Entity()

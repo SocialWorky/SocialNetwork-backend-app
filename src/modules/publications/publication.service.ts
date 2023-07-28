@@ -3,15 +3,15 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Publication } from '../../entities/publications.entity';
 import { CreatePublicationDto } from './dto/publication.dto';
-import { User } from 'src/entities/user.entity';
-import { AuthController } from 'src/auth/auth.controller';
+import { User } from '../../entities/user.entity';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
 export class PublicationService {
   constructor(
     @InjectRepository(Publication)
     private readonly publicationRepository: Repository<Publication>,
-    private readonly authController: AuthController,
+    private authService: AuthService,
   ) {}
 
   async createPublication(
@@ -20,7 +20,7 @@ export class PublicationService {
     const { content, privacy, authorId } = createPublicationDto;
 
     const publication = new Publication();
-    publication._id = this.authController.cryptoIdKey();
+    publication._id = this.authService.cryptoIdKey();
     publication.content = content;
     publication.privacy = privacy;
 

@@ -1,12 +1,17 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
 import { JwtExpiredFilter } from './filters/jwt-expired.filter';
 import { JwtExceptionFilter } from './filters/jwt-exception.filter';
 import { UsersModule } from './modules/users/users.module';
 import { TagsUsersModule } from './modules/tagsUsers/tagsUsers.module';
 import { ReactionModule } from './modules/reaction/reaction.module';
 import { PublicationModule } from './modules/publications/publication.module';
+import { MediaModule } from './modules/media/media.module';
+import { CustomReactionModule } from './modules/customReaction/customReaction.module';
+import { CommentModule } from './modules/comment/comment.module';
 import { AuthModule } from './auth/auth.module';
 
 @Module({
@@ -25,9 +30,14 @@ import { AuthModule } from './auth/auth.module';
     TagsUsersModule,
     ReactionModule,
     PublicationModule,
+    MediaModule,
+    CustomReactionModule,
+    CommentModule,
     AuthModule,
   ],
+  controllers: [AppController],
   providers: [
+    AppService,
     {
       provide: APP_FILTER,
       useClass: JwtExpiredFilter,
