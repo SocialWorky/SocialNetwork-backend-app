@@ -7,7 +7,7 @@ import {
   Param,
   Body,
 } from '@nestjs/common';
-import { Comment } from '../../entities/comment.entity';
+import { Comment } from './entities/comment.entity';
 import { CreateCommentDto } from './dto/comment.dto';
 import { CommentService } from './comment.service';
 

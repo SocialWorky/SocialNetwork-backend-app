@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { CreateTagDto, UpdateTagDto } from './dto/tagsUsers.dto';
-import { TagUsers } from '../../entities/tag.entity';
-import { User } from '../../entities/user.entity';
+import { TagUsers } from './entities/tag.entity';
+import { User } from '../users/entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
 
 @Injectable()

@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { CreateTagDto, UpdateTagDto } from './dto/tagsUsers.dto';
-import { TagUsers } from '../../entities/tag.entity';
+import { TagUsers } from './entities/tag.entity';
 import { TagsUsersService } from './tagsUsers.service';
 import { AuthGuard } from '../../auth/auth.guard';
 

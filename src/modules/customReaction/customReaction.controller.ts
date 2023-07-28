@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Body } from '@nestjs/common';
-import { CustomReaction } from '../../entities/customReaction.entity';
+import { CustomReaction } from './entities/customReaction.entity';
 import { CreateCustomReactionDto } from './dto/customReaction.dto';
 import { CustomReactionService } from './customReaction.service';
 

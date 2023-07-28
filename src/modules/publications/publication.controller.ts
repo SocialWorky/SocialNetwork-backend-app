@@ -7,7 +7,7 @@ import {
   Body,
   Param,
 } from '@nestjs/common';
-import { Publication } from '../../entities/publications.entity';
+import { Publication } from './entities/publications.entity';
 import { CreatePublicationDto } from './dto/publication.dto';
 import { PublicationService } from './publication.service';
 

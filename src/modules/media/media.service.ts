@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Media } from '../../entities/media.entity';
+import { Media } from './entities/media.entity';
 import { CreateMediaDto } from './dto/media.dto';
 import { AuthService } from '../../auth/auth.service';
 

@@ -1,5 +1,5 @@
 import { Controller, Get, Post, Delete, Param, Body } from '@nestjs/common';
-import { Media } from '../../entities/media.entity';
+import { Media } from './entities/media.entity';
 import { CreateMediaDto } from './dto/media.dto';
 import { MediaService } from './media.service';
 
