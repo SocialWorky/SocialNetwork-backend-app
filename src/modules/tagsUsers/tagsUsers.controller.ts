@@ -14,8 +14,8 @@ import { TagUsers } from './entities/tag.entity';
 import { TagsUsersService } from './tagsUsers.service';
 import { AuthGuard } from '../../auth/auth.guard';
 
-@ApiTags('Etiquetar Users')
-@Controller('api/tags')
+@ApiTags('User Tagging')
+@Controller('tags')
 export class TagsUsersController {
   constructor(private readonly tagService: TagsUsersService) {}
 

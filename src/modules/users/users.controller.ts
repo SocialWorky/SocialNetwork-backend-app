@@ -18,8 +18,8 @@ import { UsersService } from './users.service';
 import { AuthService } from '../../auth/auth.service';
 import { AuthGuard } from '../../auth/auth.guard';
 
-@ApiTags('user')
-@Controller('api/user')
+@ApiTags('Users')
+@Controller('user')
 export class UsersController {
   constructor(
     private readonly usersService: UsersService,
