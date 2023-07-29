@@ -18,7 +18,7 @@ export class TagUsers {
   _id: string;
 
   @Column()
-  name: string;
+  _idPublication: string;
 
   @ManyToMany(() => User, { eager: true }) // Relación ManyToMany con la entidad User para etiquetar usuarios
   @JoinTable()

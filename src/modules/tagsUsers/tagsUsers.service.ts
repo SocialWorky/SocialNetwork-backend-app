@@ -20,7 +20,7 @@ export class TagsUsersService {
     const tag = new TagUsers();
     tag._id = this.authService.cryptoIdKey();
 
-    tag.name = createTagDto.name;
+    tag._idPublication = createTagDto._idPublication;
     const users = await this.userRepository.find({
       where: { _id: In(createTagDto.taggedUsers) },
     });
@@ -29,12 +29,10 @@ export class TagsUsersService {
     return this.tagRepository.save(tag);
   }
 
-  async getTagById(_id: string): Promise<TagUsers> {
-    return this.tagRepository.findOneBy({ _id: _id });
-  }
-
-  async getAllTags(): Promise<TagUsers[]> {
-    return this.tagRepository.find();
+  async getTagById(_idPublication: string): Promise<TagUsers> {
+    return this.tagRepository.findOne({
+      where: { _idPublication: _idPublication },
+    });
   }
 
   async updateTag(_id: string, updateTagDto: UpdateTagDto): Promise<TagUsers> {
@@ -47,9 +45,7 @@ export class TagsUsersService {
       throw new NotFoundException('Tag not found');
     }
 
-    if (updateTagDto.name) {
-      tag.name = updateTagDto.name;
-    }
+    tag._idPublication = updateTagDto._idPublication;
 
     if (updateTagDto.taggedUsers !== undefined) {
       // Convert _id strings to User objects using findByIds

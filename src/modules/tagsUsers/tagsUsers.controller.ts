@@ -7,8 +7,18 @@ import {
   Param,
   Body,
   UseGuards,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiExcludeEndpoint,
+  ApiNotFoundResponse,
+  ApiOkResponse,
+  ApiOperation,
+  ApiProperty,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateTagDto, UpdateTagDto } from './dto/tagsUsers.dto';
 import { TagUsers } from './entities/tag.entity';
 import { TagsUsersService } from './tagsUsers.service';
@@ -26,14 +36,29 @@ export class TagsUsersController {
     return this.tagService.createTag(createTagDto);
   }
 
-  @Get(':_id')
-  async getTagById(@Param('_id') _id: string): Promise<TagUsers> {
-    return this.tagService.getTagById(_id);
-  }
+  @ApiOperation({
+    summary: 'Get the tagged users by _id of the publication',
+  })
+  @ApiOkResponse({
+    description: 'List of users tagged',
+  })
+  @ApiNotFoundResponse({
+    description: 'There are no users tagged',
+  })
+  @Get(':_idPublication')
+  async getTagById(
+    @Param('_idPublication') _idPublication: string,
+  ): Promise<TagUsers> {
+    const tag = await this.tagService.getTagById(_idPublication);
 
-  @Get('all')
-  async getAllTags(): Promise<TagUsers[]> {
-    return this.tagService.getAllTags();
+    if (!tag) {
+      throw new HttpException(
+        'The _id entered does not correspond to any publication.',
+        HttpStatus.NOT_FOUND,
+      );
+    }
+
+    return tag;
   }
 
   @UseGuards(AuthGuard)

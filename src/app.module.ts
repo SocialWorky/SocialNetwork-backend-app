@@ -24,7 +24,7 @@ import { AuthModule } from './auth/auth.module';
       password: 'Losbar191184@',
       database: 'bside',
       autoLoadEntities: true,
-      synchronize: false, //Only use synchronize in development (automatically creates tables), not in production.
+      synchronize: true, //Only use synchronize in development (automatically creates tables), not in production.
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'src/assets'),
