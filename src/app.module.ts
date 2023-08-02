@@ -18,13 +18,13 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '192.168.100.33',
+      host: '192.168.100.35',
       port: 3306,
       username: 'losbar',
       password: 'Losbar191184@',
-      database: 'bside',
+      database: 'social',
       autoLoadEntities: true,
-      synchronize: true, //Only use synchronize in development (automatically creates tables), not in production.
+      synchronize: false, //Only use synchronize in development (automatically creates tables), not in production.
     }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'src/assets'),

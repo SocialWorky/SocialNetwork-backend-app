@@ -1,11 +1,17 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreateMediaDto {
-  @IsNotEmpty()
-  @IsString()
-  _id: string;
-
-  @IsNotEmpty()
   @IsString()
   url: string;
+
+  @IsBoolean()
+  @IsOptional()
+  isPublications?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  isComment?: boolean;
+
+  @IsString()
+  _idPublication: string;
 }

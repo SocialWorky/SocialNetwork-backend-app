@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Publication } from './entities/publications.entity';
-import { CreatePublicationDto } from './dto/publication.dto';
 import { User } from '../users/entities/user.entity';
+import { Media } from '../media/entities/media.entity';
+import { CreatePublicationDto } from './dto/publication.dto';
 import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
@@ -11,32 +12,58 @@ export class PublicationService {
   constructor(
     @InjectRepository(Publication)
     private readonly publicationRepository: Repository<Publication>,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
+    @InjectRepository(Media)
+    private readonly mediaRepository: Repository<Media>,
     private authService: AuthService,
   ) {}
 
-  async createPublication(
-    createPublicationDto: CreatePublicationDto,
-  ): Promise<Publication> {
-    const { content, privacy, authorId } = createPublicationDto;
-
+  async createPublication(createPublicationDto: CreatePublicationDto) {
     const publication = new Publication();
     publication._id = this.authService.cryptoIdKey();
-    publication.content = content;
-    publication.privacy = privacy;
+    publication.content = createPublicationDto.content;
+    publication.privacy = createPublicationDto.privacy;
 
-    const author = new User();
-    author._id = authorId;
-    publication.author = author;
+    const author = await this.userRepository.findOneBy({
+      _id: createPublicationDto.authorId,
+    });
+    if (!author) {
+      throw new BadRequestException('Author not found');
+    }
 
-    return this.publicationRepository.save(publication);
+    return await this.publicationRepository.save({
+      ...publication,
+      author,
+    });
   }
 
-  async getAllPublications(): Promise<Publication[]> {
-    return this.publicationRepository.find();
+  async getAllPublications() {
+    const publications = await this.publicationRepository
+      .createQueryBuilder('publication')
+      .leftJoinAndSelect('publication.author', 'author')
+      .leftJoinAndSelect('publication.media', 'media')
+      .select([
+        'publication._id',
+        'publication.content',
+        'publication.privacy',
+        'author._id',
+        'author.username',
+        'author.name',
+        'author.lastName',
+        'publication.createdAt',
+        'publication.updatedAt',
+        'media._id',
+        'media.url',
+      ])
+      .getMany();
+    return publications;
   }
 
-  async getPublicationById(_id: string): Promise<Publication> {
-    return this.publicationRepository.findOneBy({ _id: _id });
+  async getPublicationById(_id: string) {
+    return await this.publicationRepository.findOneBy({ _id });
   }
 
   async updatePublication(

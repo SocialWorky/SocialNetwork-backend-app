@@ -11,7 +11,7 @@ import { Publication } from './entities/publications.entity';
 import { CreatePublicationDto } from './dto/publication.dto';
 import { PublicationService } from './publication.service';
 
-@Controller('api/publications')
+@Controller('publications')
 export class PublicationController {
   constructor(private readonly publicationService: PublicationService) {}
 
@@ -27,9 +27,9 @@ export class PublicationController {
     return this.publicationService.getAllPublications();
   }
 
-  @Get(':id')
-  async getPublicationById(@Param('id') id: string): Promise<Publication> {
-    return this.publicationService.getPublicationById(id);
+  @Get(':_id')
+  async getPublicationById(@Param('_id') _id: string): Promise<Publication> {
+    return this.publicationService.getPublicationById(_id);
   }
 
   @Put(':id')

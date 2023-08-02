@@ -5,14 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
-  ManyToMany,
-  JoinTable,
   OneToMany,
 } from 'typeorm';
-import { Publication } from '../../publications/entities/publications.entity';
 import { User } from '../../users/entities/user.entity';
 import { Media } from '../../media/entities/media.entity';
 import { Reaction } from '../../reaction/entities/reaction.entity';
+import { TagUsers } from '../../tagsUsers/entities/tagUsers.entity';
 
 @Entity()
 export class Comment {
@@ -28,14 +26,20 @@ export class Comment {
   @ManyToOne(() => User, (user) => user._id)
   author: User;
 
-  @ManyToOne(() => Publication, (publication) => publication._id)
-  parentPublication: Publication;
+  @Column()
+  _idPublication: string;
 
-  @ManyToMany(() => Media)
-  @JoinTable()
+  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.comment, {
+    eager: true,
+  })
+  taggedUsers: TagUsers[];
+
+  @OneToMany(() => Media, (media) => media.publication)
   media: Media[];
 
-  @OneToMany(() => Reaction, (reaction) => reaction.comment)
+  @OneToMany(() => Reaction, (reaction) => reaction._idPublication, {
+    eager: true,
+  })
   reactions: Reaction[];
 
   @CreateDateColumn()

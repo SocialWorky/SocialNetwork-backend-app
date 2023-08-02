@@ -3,7 +3,7 @@ import { Media } from './entities/media.entity';
 import { CreateMediaDto } from './dto/media.dto';
 import { MediaService } from './media.service';
 
-@Controller('api/media')
+@Controller('media')
 export class MediaController {
   constructor(private readonly mediaService: MediaService) {}
 

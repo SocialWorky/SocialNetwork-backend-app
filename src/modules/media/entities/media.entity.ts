@@ -1,27 +1,28 @@
+import { Publication } from 'src/modules/publications/entities/publications.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
-  ManyToMany,
-  JoinTable,
+  ManyToOne,
+  JoinColumn,
+  PrimaryColumn,
 } from 'typeorm';
-import { Publication } from '../../publications/entities/publications.entity';
-import { Comment } from '../../comment/entities/comment.entity';
 
 @Entity()
 export class Media {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ unique: true })
-  _id: string; // ID de la imagen o video
+  @PrimaryColumn('uuid', { length: 255, generated: 'uuid' })
+  _id: string;
 
   @Column()
-  url: string; // URL de la imagen o video
+  url: string;
 
-  @ManyToMany(() => Publication, (publication) => publication.media)
-  publications: Publication[];
+  @Column({ default: false })
+  isPublications: boolean;
 
-  @ManyToMany(() => Comment, (comment) => comment.media)
-  comments: Comment[];
+  @Column({ default: false })
+  isComment: boolean;
+
+  @ManyToOne(() => Publication, (publication) => publication._id)
+  @JoinColumn({ name: '_idPublication' })
+  publication: Publication;
 }

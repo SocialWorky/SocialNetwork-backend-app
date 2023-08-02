@@ -27,7 +27,7 @@ export class CommentService {
     // Asignar la publicación padre del comentario utilizando su ID
     const parentPublication = new Publication();
     parentPublication._id = parentPublicationId;
-    comment.parentPublication = parentPublication;
+    //comment.parentPublication = parentPublication;
 
     return this.commentRepository.save(comment);
   }

@@ -1,9 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 export class CreateUser {
-  @IsString()
-  _id: string;
-
   @ApiProperty()
   @IsString()
   username: string;
@@ -25,20 +22,25 @@ export class CreateUser {
   password: string;
 
   @IsBoolean()
-  isAdmin: boolean;
+  @IsOptional()
+  isAdmin?: boolean;
 
   @IsBoolean()
-  isVerified: boolean;
+  @IsOptional()
+  isVerified?: boolean;
 
   @IsBoolean()
-  isActive: boolean;
+  @IsOptional()
+  isActive?: boolean;
 
   @IsString()
-  token: string;
+  @IsOptional()
+  token?: string;
 
   @ApiPropertyOptional()
   @IsString()
-  avatar: string;
+  @IsOptional()
+  avatar?: string;
 }
 export class UpdateUser {
   @ApiPropertyOptional()

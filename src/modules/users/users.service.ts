@@ -27,10 +27,7 @@ export class UsersService {
     }
 
     const user = new User();
-    user._id = this.authService.cryptoUserKey(
-      createUserDto.email,
-      createUserDto.password,
-    );
+    user._id = this.authService.cryptoIdKey();
 
     user.username = createUserDto.username;
     user.name = createUserDto.name;
@@ -62,8 +59,8 @@ export class UsersService {
     ]);
   }
 
-  async findOne(id: number): Promise<User> {
-    return this.usersRepository.findOneBy({ id: id });
+  async findOne(_id: string): Promise<User> {
+    return this.usersRepository.findOneBy({ _id: _id });
   }
 
   async update(_id: string, updateUser: UpdateUser): Promise<string> {

@@ -4,11 +4,11 @@ import {
   Column,
   ManyToOne,
   CreateDateColumn,
-  JoinColumn,
 } from 'typeorm';
 import { Publication } from '../../publications/entities/publications.entity';
 import { Comment } from '../../comment/entities/comment.entity';
 import { CustomReaction } from '../../customReaction/entities/customReaction.entity';
+import { User } from '../../users/entities/user.entity';
 
 @Entity()
 export class Reaction {
@@ -18,19 +18,23 @@ export class Reaction {
   @Column({ unique: true })
   _id: string;
 
+  @ManyToOne(() => User, (user) => user.reactions, { eager: true })
+  user: User;
+
   @Column()
-  user: string; // Usuario que reaccionó
+  _idPublication: string;
 
-  @ManyToOne(() => Publication, (publication) => publication.reactions)
-  publication: Publication;
-
-  @ManyToOne(() => Comment, (comment) => comment.reactions)
-  comment: Comment;
-
-  @ManyToOne(() => CustomReaction)
-  @JoinColumn({ name: 'customReactionId' })
-  customReaction: CustomReaction; // Reacción personalizada seleccionada por el usuario
+  @ManyToOne(() => CustomReaction, (customReaction) => customReaction.id, {
+    eager: true,
+  })
+  customReaction: CustomReaction;
 
   @CreateDateColumn()
   createdAt: Date;
+
+  // @ManyToOne(() => Publication, (publication) => publication.reactions)
+  // publications: Publication[];
+
+  @ManyToOne(() => Comment, (comment) => comment.reactions)
+  comment: Comment[];
 }

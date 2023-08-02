@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, IsOptional } from 'class-validator';
+
+enum PrivacyOptions {
+  PUBLIC = 'public',
+  PRIVATE = 'private',
+  FRIENDS = 'friends',
+}
 
 export class CreatePublicationDto {
   @IsNotEmpty()
@@ -6,10 +12,21 @@ export class CreatePublicationDto {
   content: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsEnum(PrivacyOptions)
   privacy: string;
 
-  @IsNotEmpty()
   @IsString()
   authorId: string;
+
+  @IsString()
+  @IsOptional()
+  mediaId?: string;
+
+  @IsString()
+  @IsOptional()
+  taggedUsers?: string;
+
+  @IsString()
+  @IsOptional()
+  reactions?: string;
 }

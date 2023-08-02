@@ -84,8 +84,8 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get(':id')
   @ApiBearerAuth()
-  findOne(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    return this.usersService.findOne(id);
+  findOne(@Param('_id', ParseIntPipe) _id: string): Promise<User> {
+    return this.usersService.findOne(_id);
   }
 
   @UseGuards(AuthGuard)

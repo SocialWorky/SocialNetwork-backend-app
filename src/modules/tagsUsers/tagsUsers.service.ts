@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { In, Repository } from 'typeorm';
 import { CreateTagDto, UpdateTagDto } from './dto/tagsUsers.dto';
-import { TagUsers } from './entities/tag.entity';
+import { TagUsers } from './entities/tagUsers.entity';
 import { User } from '../users/entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
 
@@ -24,7 +24,7 @@ export class TagsUsersService {
     const users = await this.userRepository.find({
       where: { _id: In(createTagDto.taggedUsers) },
     });
-    tag.taggedUsers = users;
+    // tag.taggedUsers = users;
 
     return this.tagRepository.save(tag);
   }
@@ -52,7 +52,7 @@ export class TagsUsersService {
       const users = await this.userRepository.find({
         where: { _id: In(updateTagDto.taggedUsers) },
       });
-      tag.taggedUsers = users;
+      // tag.taggedUsers = users;
     }
 
     return this.tagRepository.save(tag);

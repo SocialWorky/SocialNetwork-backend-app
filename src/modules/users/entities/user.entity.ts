@@ -4,14 +4,17 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
+  PrimaryColumn,
 } from 'typeorm';
+import { Publication } from 'src/modules/publications/entities/publications.entity';
+import { Comment } from 'src/modules/comment/entities/comment.entity';
+import { TagUsers } from 'src/modules/tagsUsers/entities/tagUsers.entity';
+import { Reaction } from 'src/modules/reaction/entities/reaction.entity';
 
 @Entity()
 export class User {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ unique: true })
+  @PrimaryColumn('uuid', { length: 255, generated: 'uuid' })
   _id: string;
 
   @Column()
@@ -49,4 +52,16 @@ export class User {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToMany(() => Publication, (publication) => publication.author)
+  publications: Publication[];
+
+  @OneToMany(() => Comment, (comment) => comment.author)
+  comments: Comment[];
+
+  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.user)
+  taggedUsers: TagUsers[];
+
+  @OneToMany(() => Reaction, (reaction) => reaction.user)
+  reactions: Reaction[];
 }
