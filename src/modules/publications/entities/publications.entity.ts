@@ -10,7 +10,7 @@ import {
   PrimaryColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
-import { Media } from '../../media/entities/media.entity';
+import { Media } from '../../postMediaFiles/entities/postMediaFiles.entity';
 import { Reaction } from '../../reaction/entities/reaction.entity';
 import { TagUsers } from '../../tagsUsers/entities/tagUsers.entity';
 

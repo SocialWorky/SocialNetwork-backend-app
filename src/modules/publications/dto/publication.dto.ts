@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString, IsEnum, IsOptional } from 'class-validator';
 
 enum PrivacyOptions {
@@ -8,14 +9,17 @@ enum PrivacyOptions {
 
 export class CreatePublicationDto {
   @IsNotEmpty()
+  @ApiProperty()
   @IsString()
   content: string;
 
   @IsNotEmpty()
+  @ApiProperty()
   @IsEnum(PrivacyOptions)
   privacy: string;
 
   @IsString()
+  @ApiProperty()
   authorId: string;
 
   @IsString()
@@ -29,4 +33,16 @@ export class CreatePublicationDto {
   @IsString()
   @IsOptional()
   reactions?: string;
+}
+
+export class UpdatePublicationDto {
+  @IsString()
+  @ApiProperty()
+  @IsOptional()
+  content?: string;
+
+  @IsEnum(PrivacyOptions)
+  @ApiProperty()
+  @IsOptional()
+  privacy?: string;
 }

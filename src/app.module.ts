@@ -9,7 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { TagsUsersModule } from './modules/tagsUsers/tagsUsers.module';
 import { ReactionModule } from './modules/reaction/reaction.module';
 import { PublicationModule } from './modules/publications/publication.module';
-import { MediaModule } from './modules/media/media.module';
+import { MediaModule } from './modules/postMediaFiles/postMediaFiles.module';
 import { CustomReactionModule } from './modules/customReaction/customReaction.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { AuthModule } from './auth/auth.module';

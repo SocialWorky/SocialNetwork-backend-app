@@ -1,10 +1,18 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpCode,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Publication } from './entities/publications.entity';
 import { User } from '../users/entities/user.entity';
-import { Media } from '../media/entities/media.entity';
-import { CreatePublicationDto } from './dto/publication.dto';
+import { Media } from '../postMediaFiles/entities/postMediaFiles.entity';
+import {
+  CreatePublicationDto,
+  UpdatePublicationDto,
+} from './dto/publication.dto';
 import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
@@ -21,6 +29,7 @@ export class PublicationService {
     private authService: AuthService,
   ) {}
 
+  @HttpCode(HttpStatus.CREATED)
   async createPublication(createPublicationDto: CreatePublicationDto) {
     const publication = new Publication();
     publication._id = this.authService.cryptoIdKey();
@@ -34,10 +43,12 @@ export class PublicationService {
       throw new BadRequestException('Author not found');
     }
 
-    return await this.publicationRepository.save({
+    await this.publicationRepository.save({
       ...publication,
       author,
     });
+
+    return { message: 'Publication created successfully' };
   }
 
   async getAllPublications() {
@@ -68,8 +79,8 @@ export class PublicationService {
 
   async updatePublication(
     _id: string,
-    updatePublicationDto: CreatePublicationDto,
-  ): Promise<Publication> {
+    updatePublicationDto: UpdatePublicationDto,
+  ) {
     const publication = await this.publicationRepository.findOne({
       where: { _id: _id },
     });
@@ -77,11 +88,16 @@ export class PublicationService {
       throw new Error('Publication not found');
     }
 
-    const { content, privacy } = updatePublicationDto;
-    publication.content = content;
-    publication.privacy = privacy;
+    publication.content = updatePublicationDto.content
+      ? updatePublicationDto.content
+      : publication.content;
+    publication.privacy = updatePublicationDto.privacy
+      ? updatePublicationDto.privacy
+      : publication.privacy;
 
-    return this.publicationRepository.save(publication);
+    await this.publicationRepository.save(publication);
+
+    return { message: 'Publication updated successfully' };
   }
 
   async deletePublication(id: string): Promise<void> {

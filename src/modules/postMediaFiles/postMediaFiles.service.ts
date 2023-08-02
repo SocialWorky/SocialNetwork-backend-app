@@ -1,7 +1,12 @@
-import { Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpCode,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { Media } from './entities/media.entity';
+import { Media } from './entities/postMediaFiles.entity';
 import { Publication } from '../publications/entities/publications.entity';
 import { CreateMediaDto } from './dto/media.dto';
 import { AuthService } from '../../auth/auth.service';
@@ -17,12 +22,17 @@ export class MediaService {
     private authService: AuthService,
   ) {}
 
+  @HttpCode(HttpStatus.CREATED)
   async createMedia(createMediaDto: CreateMediaDto) {
     let publication: Publication = null;
     if (createMediaDto.isPublications) {
       publication = await this.publicationRepository.findOneBy({
         _id: createMediaDto._idPublication,
       });
+    }
+
+    if (publication === null) {
+      throw new BadRequestException('Publication or Comment not found');
     }
 
     const media = new Media();
@@ -32,7 +42,9 @@ export class MediaService {
     media.isPublications = createMediaDto.isPublications;
     media.isComment = createMediaDto.isComment;
 
-    return await this.mediaRepository.save({ ...media });
+    await this.mediaRepository.save({ ...media });
+
+    return { message: 'Publication created successfully' };
   }
 
   async getAllMedia(): Promise<Media[]> {
