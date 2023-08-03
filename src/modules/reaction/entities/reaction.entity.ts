@@ -35,6 +35,6 @@ export class Reaction {
   // @ManyToOne(() => Publication, (publication) => publication.reactions)
   // publications: Publication[];
 
-  @ManyToOne(() => Comment, (comment) => comment.reactions)
-  comment: Comment[];
+  // @ManyToOne(() => Comment, (comment) => comment.reactions)
+  // comment: Comment[];
 }

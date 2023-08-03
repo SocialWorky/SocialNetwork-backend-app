@@ -1,16 +1,15 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
-  JoinColumn,
   PrimaryColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
 import { Media } from '../../postMediaFiles/entities/postMediaFiles.entity';
+import { Comment } from '../../comment/entities/comment.entity';
 import { Reaction } from '../../reaction/entities/reaction.entity';
 import { TagUsers } from '../../tagsUsers/entities/tagUsers.entity';
 
@@ -28,8 +27,11 @@ export class Publication {
   @ManyToOne(() => User, (user) => user._id, { eager: true })
   author: User;
 
-  @OneToMany(() => Media, (media) => media.publication) // Definir la relación con Media
+  @OneToMany(() => Media, (media) => media.publication)
   media: Media[];
+
+  @OneToMany(() => Comment, (comment) => comment.publication)
+  comment: Comment[];
 
   // @OneToMany(() => TagUsers, (tagUsers) => tagUsers._idPublication, {
   //   eager: true,

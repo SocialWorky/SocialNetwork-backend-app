@@ -30,6 +30,6 @@ export class TagUsers {
   // @ManyToOne(() => Publication, (publication) => publication.taggedUsers)
   // publications: Publication[];
 
-  @ManyToOne(() => Comment, (comment) => comment.taggedUsers)
-  comment: Comment[];
+  // @ManyToOne(() => Comment, (comment) => comment.taggedUsers)
+  // comment: Comment[];
 }

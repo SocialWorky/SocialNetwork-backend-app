@@ -31,9 +31,9 @@ export class PublicationController {
     return this.publicationService.createPublication(createPublicationDto);
   }
 
-  @UseGuards(AuthGuard)
+  // @UseGuards(AuthGuard)
   @Get('all')
-  @ApiBearerAuth()
+  // @ApiBearerAuth()
   async getAllPublications(): Promise<Publication[]> {
     return this.publicationService.getAllPublications();
   }

@@ -1,12 +1,6 @@
 import { Publication } from 'src/modules/publications/entities/publications.entity';
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-  PrimaryColumn,
-} from 'typeorm';
+import { Comment } from 'src/modules/comment/entities/comment.entity';
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Media {
@@ -25,4 +19,8 @@ export class Media {
   @ManyToOne(() => Publication, (publication) => publication._id)
   @JoinColumn({ name: '_idPublication' })
   publication: Publication;
+
+  @ManyToOne(() => Comment, (comment) => comment._id)
+  @JoinColumn({ name: '_idComment' })
+  comment: Comment;
 }

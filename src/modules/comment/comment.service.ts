@@ -1,33 +1,47 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { FindOneOptions, Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
 import { CreateCommentDto } from './dto/comment.dto';
 import { User } from 'src/modules/users/entities/user.entity';
+import { Media } from 'src/modules/postMediaFiles/entities/postMediaFiles.entity';
 import { Publication } from '../publications/entities/publications.entity';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
 export class CommentService {
   constructor(
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+
+    @InjectRepository(Publication)
+    private readonly publicationRepository: Repository<Publication>,
+
+    @InjectRepository(Media)
+    private readonly mediaRepository: Repository<Media>,
+    private authService: AuthService,
   ) {}
 
   async createComment(createCommentDto: CreateCommentDto): Promise<Comment> {
-    const { content, authorId, parentPublicationId } = createCommentDto;
+    const { content, authorId, idPublication } = createCommentDto;
 
     const comment = new Comment();
+    comment._id = this.authService.cryptoIdKey();
+
     comment.content = content;
 
-    // Asignar el autor del comentario utilizando su ID
-    const author = new User();
-    author._id = authorId;
-    comment.author = author;
+    const authorOptions: FindOneOptions<User> = { where: { _id: authorId } };
+    comment.author = await this.userRepository.findOne(authorOptions);
 
-    // Asignar la publicación padre del comentario utilizando su ID
-    const parentPublication = new Publication();
-    parentPublication._id = parentPublicationId;
-    //comment.parentPublication = parentPublication;
+    const publicationOptions: FindOneOptions<Publication> = {
+      where: { _id: idPublication },
+    };
+    comment.publication = await this.publicationRepository.findOne(
+      publicationOptions,
+    );
 
     return this.commentRepository.save(comment);
   }

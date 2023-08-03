@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { Publication } from './entities/publications.entity';
 import { User } from '../users/entities/user.entity';
 import { Media } from '../postMediaFiles/entities/postMediaFiles.entity';
+import { Comment } from '../comment/entities/comment.entity';
 import {
   CreatePublicationDto,
   UpdatePublicationDto,
@@ -26,6 +27,9 @@ export class PublicationService {
 
     @InjectRepository(Media)
     private readonly mediaRepository: Repository<Media>,
+
+    @InjectRepository(Comment)
+    private readonly commentRepository: Repository<Comment>,
     private authService: AuthService,
   ) {}
 
@@ -56,6 +60,8 @@ export class PublicationService {
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.media', 'media')
+      .leftJoinAndSelect('publication.comment', 'comment')
+      .leftJoinAndSelect('comment.media', 'commentMedia')
       .select([
         'publication._id',
         'publication.content',
@@ -68,6 +74,12 @@ export class PublicationService {
         'publication.updatedAt',
         'media._id',
         'media.url',
+        'comment._id',
+        'comment.content',
+        'comment.createdAt',
+        'comment.author',
+        'commentMedia._id',
+        'commentMedia.url',
       ])
       .getMany();
     return publications;

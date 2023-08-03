@@ -11,7 +11,7 @@ import { Comment } from './entities/comment.entity';
 import { CreateCommentDto } from './dto/comment.dto';
 import { CommentService } from './comment.service';
 
-@Controller('api/comments')
+@Controller('comments')
 export class CommentController {
   constructor(private readonly commentService: CommentService) {}
 
