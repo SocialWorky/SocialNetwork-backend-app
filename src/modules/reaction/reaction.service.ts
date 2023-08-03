@@ -29,7 +29,7 @@ export class ReactionService {
     }
 
     const reaction = new Reaction();
-    reaction.user = user;
+    //reaction.user = user;
     reaction.customReaction = customReactionRes[0];
 
     return this.reactionRepository.save(reaction);

@@ -1,25 +1,21 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   ManyToOne,
   OneToMany,
-  ManyToMany,
-  JoinTable,
+  PrimaryColumn,
 } from 'typeorm';
 import { User } from '../../users/entities/user.entity';
+import { Media } from '../../postMediaFiles/entities/postMediaFiles.entity';
 import { Comment } from '../../comment/entities/comment.entity';
-import { Media } from '../../media/entities/media.entity';
 import { Reaction } from '../../reaction/entities/reaction.entity';
+import { TagUsers } from '../../tagsUsers/entities/tagUsers.entity';
 
 @Entity()
 export class Publication {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column({ unique: true })
+  @PrimaryColumn('uuid', { length: 255, generated: 'uuid' })
   _id: string;
 
   @Column()
@@ -28,25 +24,26 @@ export class Publication {
   @Column()
   privacy: string;
 
-  @Column()
-  isComment: boolean;
-
-  @ManyToOne(() => User, (user) => user._id)
+  @ManyToOne(() => User, (user) => user._id, { eager: true })
   author: User;
 
-  @OneToMany(() => Comment, (comment) => comment.parentPublication)
-  comments: Comment[];
-
-  @ManyToMany(() => Media)
-  @JoinTable()
+  @OneToMany(() => Media, (media) => media.publication)
   media: Media[];
 
-  @ManyToMany(() => User, { eager: true })
-  @JoinTable()
-  taggedUsers: User[];
+  @OneToMany(() => Comment, (comment) => comment.publication)
+  comment: Comment[];
 
-  @OneToMany(() => Reaction, (reaction) => reaction.publication)
-  reactions: Reaction[];
+  // @OneToMany(() => TagUsers, (tagUsers) => tagUsers._idPublication, {
+  //   eager: true,
+  //   nullable: true,
+  // })
+  // taggedUsers: TagUsers;
+
+  // @OneToMany(() => Reaction, (reaction) => reaction._idPublication, {
+  //   eager: true,
+  //   nullable: true,
+  // })
+  // reactions: Reaction;
 
   @CreateDateColumn()
   createdAt: Date;

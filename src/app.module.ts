@@ -9,7 +9,7 @@ import { UsersModule } from './modules/users/users.module';
 import { TagsUsersModule } from './modules/tagsUsers/tagsUsers.module';
 import { ReactionModule } from './modules/reaction/reaction.module';
 import { PublicationModule } from './modules/publications/publication.module';
-import { MediaModule } from './modules/media/media.module';
+import { MediaModule } from './modules/postMediaFiles/postMediaFiles.module';
 import { CustomReactionModule } from './modules/customReaction/customReaction.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { AuthModule } from './auth/auth.module';
@@ -18,11 +18,11 @@ import { AuthModule } from './auth/auth.module';
   imports: [
     TypeOrmModule.forRoot({
       type: 'mysql',
-      host: '192.168.100.33',
+      host: '192.168.100.35',
       port: 3306,
       username: 'losbar',
       password: 'Losbar191184@',
-      database: 'bside',
+      database: 'social',
       autoLoadEntities: true,
       synchronize: false, //Only use synchronize in development (automatically creates tables), not in production.
     }),
