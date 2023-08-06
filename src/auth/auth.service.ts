@@ -2,26 +2,23 @@ import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
 import * as jwt from 'jsonwebtoken';
 import { User } from '../modules/users/entities/user.entity';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-  private secretKey = this.randomKey();
-
   signIn(user: User) {
     const payload = {
-      _id: user._id,
+      id: user._id,
       email: user.email,
       username: user.username,
-      avatar: user.avatar,
     };
-    const options = {
-      expiresIn: '1h',
-    };
-    return jwt.sign(payload, this.secretKey, options);
+    return this.jwtService.sign(payload);
   }
 
+  constructor(private jwtService: JwtService) {}
+
   validateUser(signedUser): string | object {
-    return jwt.verify(signedUser, this.secretKey);
+    return this.jwtService.verify(signedUser);
   }
 
   randomKey() {

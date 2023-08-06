@@ -1,11 +1,11 @@
 import {
   Entity,
   Column,
-  PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
   PrimaryColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 import { Publication } from 'src/modules/publications/entities/publications.entity';
 import { Comment } from 'src/modules/comment/entities/comment.entity';
@@ -26,14 +26,14 @@ export class User {
   @Column()
   lastName: string;
 
-  @Column({ unique: true })
+  @Column({ unique: true, nullable: false })
   email: string;
 
-  @Column()
+  @Column({ nullable: false })
   password: string;
 
-  @Column({ default: false })
-  isAdmin: boolean;
+  @Column({ default: 'user' })
+  rol: string;
 
   @Column({ default: false })
   isVerified: boolean;
@@ -46,6 +46,9 @@ export class User {
 
   @Column({ nullable: true })
   avatar: string;
+
+  @DeleteDateColumn()
+  deletedAt: Date;
 
   @CreateDateColumn()
   createdAt: Date;

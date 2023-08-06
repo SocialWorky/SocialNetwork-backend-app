@@ -16,13 +16,12 @@ import {
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
-  ApiProperty,
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateTagDto, UpdateTagDto } from './dto/tagsUsers.dto';
 import { TagUsers } from './entities/tagUsers.entity';
 import { TagsUsersService } from './tagsUsers.service';
-import { AuthGuard } from '../../auth/auth.guard';
+import { AuthGuard } from '../../auth/guard/auth.guard';
 
 @ApiTags('User Tagging')
 @Controller('tags')
