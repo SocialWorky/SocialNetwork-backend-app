@@ -34,7 +34,7 @@ export class UsersService {
     user.lastName = createUserDto.lastName;
     user.email = createUserDto.email;
     user.password = await bcrypt.hash(createUserDto.password, 10);
-    user.isAdmin = createUserDto.isAdmin;
+    user.rol = createUserDto.rol;
     user.isVerified = createUserDto.isVerified;
     user.isActive = createUserDto.isActive;
     user.token = createUserDto.token;
@@ -54,6 +54,7 @@ export class UsersService {
       'name',
       'lastName',
       'email',
+      'rol',
       'isVerified',
       'avatar',
     ]);
@@ -70,7 +71,7 @@ export class UsersService {
     user.username = updateUser.username ? updateUser.username : user.username;
     user.name = updateUser.name ? updateUser.name : user.name;
     user.lastName = updateUser.lastName ? updateUser.lastName : user.lastName;
-    user.isAdmin = updateUser.isAdmin ? updateUser.isAdmin : user.isAdmin;
+    user.rol = updateUser.rol ? updateUser.rol : user.rol;
     user.isVerified = updateUser.isVerified
       ? updateUser.isVerified
       : user.isVerified;
@@ -86,26 +87,12 @@ export class UsersService {
     return 'User ' + user.username + ' updated';
   }
 
-  async remove(idUserDelet: string, _id: string): Promise<string> {
-    const requestingUser = await this.usersRepository.findOne({
-      where: { _id: _id },
-    });
-    if (!requestingUser.isAdmin) {
-      throw new HttpException('Unauthorized access', HttpStatus.FORBIDDEN);
-    }
-
+  async remove(idUserDelet: string): Promise<string> {
     const userToDelete = await this.usersRepository.findOne({
       where: { _id: idUserDelet },
     });
     if (!userToDelete) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (userToDelete.isAdmin) {
-      throw new HttpException(
-        'Cannot delete an administrator',
-        HttpStatus.BAD_REQUEST,
-      );
     }
 
     await this.usersRepository.remove(userToDelete);

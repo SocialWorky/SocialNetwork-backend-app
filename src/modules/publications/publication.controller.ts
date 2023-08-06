@@ -15,7 +15,7 @@ import {
 } from './dto/publication.dto';
 import { PublicationService } from './publication.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../../auth/guard/auth.guard';
 
 @ApiTags('Publications')
 @Controller('publications')

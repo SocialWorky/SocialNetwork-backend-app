@@ -10,6 +10,7 @@ import {
   HttpException,
   HttpStatus,
   UseGuards,
+  Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -23,7 +24,7 @@ import { CreateUser, UpdateUser, LoginDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { AuthService } from '../../auth/auth.service';
-import { AuthGuard } from '../../auth/auth.guard';
+import { AuthGuard } from '../../auth/guard/auth.guard';
 
 @ApiTags('Users')
 @Controller('user')
@@ -71,7 +72,16 @@ export class UsersController {
     }
     const token = this.authService.signIn(user);
     this.usersService.update(user._id, { token: token });
-    return { token };
+    return {
+      token,
+    };
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('profile')
+  @ApiBearerAuth()
+  getProfile(@Request() req) {
+    return req.user;
   }
 
   @UseGuards(AuthGuard)
@@ -101,11 +111,8 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Delete('delete/:_idUserDelet/:_id')
   @ApiBearerAuth()
-  async remove(
-    @Param('_idUserDelet') _idUserDelet: string,
-    @Param('_idUser') _idUser: string,
-  ): Promise<string> {
-    return this.usersService.remove(_idUserDelet, _idUser);
+  async remove(@Param('_idUserDelet') _idUserDelet: string): Promise<string> {
+    return this.usersService.remove(_idUserDelet);
   }
 
   @UseGuards(AuthGuard)

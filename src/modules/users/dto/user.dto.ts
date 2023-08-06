@@ -1,29 +1,44 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString } from 'class-validator';
+import { Transform } from 'class-transformer';
+import {
+  IsBoolean,
+  IsEmail,
+  IsOptional,
+  IsString,
+  MinLength,
+} from 'class-validator';
 export class CreateUser {
   @ApiProperty()
+  @Transform(({ value }) => value.trim())
   @IsString()
+  @MinLength(4)
   username: string;
 
   @ApiProperty()
+  @Transform(({ value }) => value.trim())
   @IsString()
+  @MinLength(4)
   name: string;
 
   @ApiProperty()
+  @Transform(({ value }) => value.trim())
   @IsString()
+  @MinLength(4)
   lastName: string;
 
   @ApiProperty()
-  @IsString()
+  @IsEmail()
   email: string;
 
   @ApiProperty()
+  @Transform(({ value }) => value.trim())
   @IsString()
+  @MinLength(6)
   password: string;
 
-  @IsBoolean()
+  @IsString()
   @IsOptional()
-  isAdmin?: boolean;
+  rol?: string;
 
   @IsBoolean()
   @IsOptional()
@@ -44,24 +59,29 @@ export class CreateUser {
 }
 export class UpdateUser {
   @ApiPropertyOptional()
+  @Transform(({ value }) => value.trim())
   @IsString()
   username?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => value.trim())
   @IsString()
   name?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => value.trim())
   @IsString()
   lastName?: string;
 
   @ApiPropertyOptional()
+  @Transform(({ value }) => value.trim())
   @IsString()
+  @MinLength(6)
   password?: string;
 
   @ApiPropertyOptional()
-  @IsBoolean()
-  isAdmin?: boolean;
+  @IsString()
+  rol?: string;
 
   @IsBoolean()
   isVerified?: boolean;
@@ -80,10 +100,12 @@ export class LoginDto {
   @ApiProperty({
     description: 'Email of the user',
   })
-  @IsString()
+  @IsEmail()
   email: string;
 
   @ApiProperty({ description: 'Password of the user' })
+  @Transform(({ value }) => value.trim())
   @IsString()
+  @MinLength(6)
   password: string;
 }

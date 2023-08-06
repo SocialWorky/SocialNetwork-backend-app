@@ -11,7 +11,7 @@ import { Media } from './entities/postMediaFiles.entity';
 import { CreateMediaDto } from './dto/media.dto';
 import { MediaService } from './postMediaFiles.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from 'src/auth/auth.guard';
+import { AuthGuard } from '../../auth/guard/auth.guard';
 
 @ApiTags('MediaFiles')
 @Controller('media')
