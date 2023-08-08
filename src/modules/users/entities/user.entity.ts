@@ -7,10 +7,11 @@ import {
   PrimaryColumn,
   DeleteDateColumn,
 } from 'typeorm';
-import { Publication } from 'src/modules/publications/entities/publications.entity';
-import { Comment } from 'src/modules/comment/entities/comment.entity';
-import { TagUsers } from 'src/modules/tagsUsers/entities/tagUsers.entity';
-import { Reaction } from 'src/modules/reaction/entities/reaction.entity';
+import { Publication } from '../../publications/entities/publications.entity';
+import { Comment } from '../../comment/entities/comment.entity';
+import { TagUsers } from '../../tagsUsers/entities/tagUsers.entity';
+import { Reaction } from '../../reaction/entities/reaction.entity';
+import { Role } from '../../../common/enums/rol.enum';
 
 @Entity()
 export class User {
@@ -32,8 +33,8 @@ export class User {
   @Column({ nullable: false })
   password: string;
 
-  @Column({ default: 'user' })
-  rol: string;
+  @Column({ type: 'enum', default: Role.USER, enum: Role })
+  role: Role;
 
   @Column({ default: false })
   isVerified: boolean;

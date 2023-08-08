@@ -9,8 +9,6 @@ import {
   Put,
   HttpException,
   HttpStatus,
-  UseGuards,
-  Request,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -24,7 +22,10 @@ import { CreateUser, UpdateUser, LoginDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { AuthService } from '../../auth/auth.service';
-import { AuthGuard } from '../../auth/guard/auth.guard';
+import { Role } from '../../common/enums/rol.enum';
+import { Auth } from '../../auth/decorators/auth.decorator';
+import { ActiveUser } from '../../common/decorator/active-user.decorator';
+import { UserActiveInterface } from '../../common/interfaces/user-active.interface';
 
 @ApiTags('Users')
 @Controller('user')
@@ -77,28 +78,28 @@ export class UsersController {
     };
   }
 
-  @UseGuards(AuthGuard)
   @Get('profile')
+  @Auth(Role.USER)
   @ApiBearerAuth()
-  getProfile(@Request() req) {
-    return req.user;
+  getProfile(@ActiveUser() user: UserActiveInterface) {
+    return user;
   }
 
-  @UseGuards(AuthGuard)
+  @Auth(Role.USER)
   @Get()
   @ApiBearerAuth()
   findAll(): Promise<User[]> {
     return this.usersService.findAll();
   }
 
-  @UseGuards(AuthGuard)
+  @Auth(Role.USER)
   @Get(':id')
   @ApiBearerAuth()
   findOne(@Param('_id', ParseIntPipe) _id: string): Promise<User> {
     return this.usersService.findOne(_id);
   }
 
-  @UseGuards(AuthGuard)
+  @Auth(Role.USER)
   @Put('edit/:_id')
   @ApiBearerAuth()
   update(
@@ -108,14 +109,14 @@ export class UsersController {
     return this.usersService.update(_id, updateUser);
   }
 
-  @UseGuards(AuthGuard)
-  @Delete('delete/:_idUserDelet/:_id')
+  @Auth(Role.USER)
+  @Delete('delete/:_idUserDelete/:_id')
   @ApiBearerAuth()
-  async remove(@Param('_idUserDelet') _idUserDelet: string): Promise<string> {
-    return this.usersService.remove(_idUserDelet);
+  async remove(@Param('_idUserDelete') _idUserDelete: string): Promise<string> {
+    return this.usersService.remove(_idUserDelete);
   }
 
-  @UseGuards(AuthGuard)
+  @Auth(Role.USER)
   @Get('email/:email')
   @ApiBearerAuth()
   async findOneByEmail(@Param('email') email: string): Promise<User> {

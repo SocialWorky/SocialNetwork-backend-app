@@ -6,7 +6,6 @@ import {
   Delete,
   Body,
   Param,
-  UseGuards,
 } from '@nestjs/common';
 import { Publication } from './entities/publications.entity';
 import {
@@ -15,14 +14,15 @@ import {
 } from './dto/publication.dto';
 import { PublicationService } from './publication.service';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '../../auth/guard/auth.guard';
+import { Auth } from '../../auth/decorators/auth.decorator';
+import { Role } from '../../common/enums/rol.enum';
 
 @ApiTags('Publications')
+@Auth(Role.USER)
 @Controller('publications')
 export class PublicationController {
   constructor(private readonly publicationService: PublicationService) {}
 
-  @UseGuards(AuthGuard)
   @Post('create')
   @ApiBearerAuth()
   async createPublication(
@@ -31,21 +31,18 @@ export class PublicationController {
     return this.publicationService.createPublication(createPublicationDto);
   }
 
-  // @UseGuards(AuthGuard)
   @Get('all')
-  // @ApiBearerAuth()
+  @ApiBearerAuth()
   async getAllPublications(): Promise<Publication[]> {
     return this.publicationService.getAllPublications();
   }
 
-  @UseGuards(AuthGuard)
   @Get(':_id')
   @ApiBearerAuth()
   async getPublicationById(@Param('_id') _id: string): Promise<Publication> {
     return this.publicationService.getPublicationById(_id);
   }
 
-  @UseGuards(AuthGuard)
   @Put('edit/:_id')
   @ApiBearerAuth()
   async updatePublication(
@@ -55,7 +52,6 @@ export class PublicationController {
     return this.publicationService.updatePublication(_id, updatePublicationDto);
   }
 
-  @UseGuards(AuthGuard)
   @Delete('delete/:id')
   @ApiBearerAuth()
   async deletePublication(@Param('id') id: string): Promise<void> {

@@ -5,6 +5,7 @@ import { CreateUser, UpdateUser } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
 import * as bcrypt from 'bcrypt';
+import { Role } from 'src/common/enums/rol.enum';
 
 @Injectable()
 export class UsersService {
@@ -34,7 +35,7 @@ export class UsersService {
     user.lastName = createUserDto.lastName;
     user.email = createUserDto.email;
     user.password = await bcrypt.hash(createUserDto.password, 10);
-    user.rol = createUserDto.rol;
+    user.role = createUserDto.role;
     user.isVerified = createUserDto.isVerified;
     user.isActive = createUserDto.isActive;
     user.token = createUserDto.token;
@@ -54,7 +55,7 @@ export class UsersService {
       'name',
       'lastName',
       'email',
-      'rol',
+      'role',
       'isVerified',
       'avatar',
     ]);
@@ -71,7 +72,7 @@ export class UsersService {
     user.username = updateUser.username ? updateUser.username : user.username;
     user.name = updateUser.name ? updateUser.name : user.name;
     user.lastName = updateUser.lastName ? updateUser.lastName : user.lastName;
-    user.rol = updateUser.rol ? updateUser.rol : user.rol;
+    user.role = updateUser.role ? updateUser.role : user.role;
     user.isVerified = updateUser.isVerified
       ? updateUser.isVerified
       : user.isVerified;
