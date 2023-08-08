@@ -7,6 +7,7 @@ import {
   IsString,
   MinLength,
 } from 'class-validator';
+import { Role } from '../../../common/enums/rol.enum';
 export class CreateUser {
   @ApiProperty()
   @Transform(({ value }) => value.trim())
@@ -38,7 +39,7 @@ export class CreateUser {
 
   @IsString()
   @IsOptional()
-  rol?: string;
+  role?: Role;
 
   @IsBoolean()
   @IsOptional()
@@ -81,7 +82,7 @@ export class UpdateUser {
 
   @ApiPropertyOptional()
   @IsString()
-  rol?: string;
+  role?: Role;
 
   @IsBoolean()
   isVerified?: boolean;
