@@ -17,11 +17,12 @@ export class ReactionService {
   async createReaction(
     createReactionDto: CreateReactionDto,
   ): Promise<Reaction> {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { user, customReaction } = createReactionDto;
 
     // Obtener la entidad CustomReaction asociada al customReactionId
     const customReactionRes = await this.customReactionRepository.find({
-      where: { id: customReaction },
+      where: { _id: customReaction },
     });
 
     if (!customReactionRes) {

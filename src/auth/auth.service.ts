@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import * as crypto from 'crypto';
-import * as jwt from 'jsonwebtoken';
-import { User } from '../modules/users/entities/user.entity';
 import { JwtService } from '@nestjs/jwt';
+import { v4 as uuidv4 } from 'uuid';
+import { User } from '../modules/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
@@ -35,9 +35,8 @@ export class AuthService {
   }
 
   cryptoIdKey() {
-    const hash = crypto.createHash('sha256');
-    hash.update(Date.now().toString());
-    hash.update(this.randomKey());
-    return '_' + hash.digest('hex');
+    const customUUID = '_' + uuidv4();
+    const trimmedUUID = customUUID.substring(0, 36);
+    return trimmedUUID;
   }
 }

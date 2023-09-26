@@ -16,7 +16,7 @@ import { Publication } from 'src/modules/publications/entities/publications.enti
 
 @Entity()
 export class Comment {
-  @PrimaryColumn('uuid', { length: 255, generated: 'uuid' })
+  @PrimaryColumn({ type: 'varchar', length: 50 })
   _id: string;
 
   @Column()

@@ -15,7 +15,7 @@ import { Role } from '../../../common/enums/rol.enum';
 
 @Entity()
 export class User {
-  @PrimaryColumn('uuid', { length: 255, generated: 'uuid' })
+  @PrimaryColumn({ type: 'varchar', length: 50 })
   _id: string;
 
   @Column()

@@ -1,10 +1,10 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import { Reaction } from '../../reaction/entities/reaction.entity';
 
 @Entity()
 export class CustomReaction {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryColumn({ type: 'varchar', length: 50 })
+  _id: number;
 
   @Column({ unique: true })
   name: string;

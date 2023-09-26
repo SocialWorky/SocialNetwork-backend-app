@@ -4,7 +4,7 @@ import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Media {
-  @PrimaryColumn('uuid', { length: 255, generated: 'uuid' })
+  @PrimaryColumn({ type: 'varchar', length: 50 })
   _id: string;
 
   @Column()

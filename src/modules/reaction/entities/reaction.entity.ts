@@ -24,7 +24,7 @@ export class Reaction {
   @Column()
   _idPublication: string;
 
-  @ManyToOne(() => CustomReaction, (customReaction) => customReaction.id, {
+  @ManyToOne(() => CustomReaction, (customReaction) => customReaction._id, {
     eager: true,
   })
   customReaction: CustomReaction;

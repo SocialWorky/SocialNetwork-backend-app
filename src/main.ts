@@ -10,7 +10,6 @@ import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(
@@ -35,10 +34,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config, options);
 
-  SwaggerModule.setup('api', app, document, {
-    customSiteTitle: 'Social Network API',
-    customCssUrl: '../assets/swagger/topbar.css',
-    // customfavIcon: 'assets/swagger/favicon.ico',
+  SwaggerModule.setup('doc', app, document, {
     swaggerOptions: {
       docExpansion: 'none',
       filter: true,
@@ -47,7 +43,7 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(3000);
+  await app.listen(parseInt(process.env.PORT) || 3000);
   console.log(`Application is running on: ${await app.getUrl()}`);
 }
 bootstrap();
