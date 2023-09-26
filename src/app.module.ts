@@ -1,6 +1,5 @@
-import { Module } from '@nestjs/common';
-import { ServeStaticModule } from '@nestjs/serve-static';
-import { join } from 'path';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
 import { JwtExpiredFilter } from './filters/jwt-expired.filter';
@@ -13,22 +12,29 @@ import { MediaModule } from './modules/postMediaFiles/postMediaFiles.module';
 import { CustomReactionModule } from './modules/customReaction/customReaction.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { AuthModule } from './auth/auth.module';
+import * as cors from 'cors';
 
 @Module({
   imports: [
+    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: '192.168.100.35',
-      port: 3306,
-      username: 'losbar',
-      password: 'Losbar191184@',
-      database: 'social',
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_DATABASE,
       autoLoadEntities: true,
-      synchronize: false, //Only use synchronize in development (automatically creates tables), not in production.
-    }),
-    ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'src/assets'),
-      serveRoot: '/assets',
+      synchronize: true,
+      ssl: process.env.DB_SSL === 'true',
+      extra: {
+        ssl:
+          process.env.DB_SSL === 'true'
+            ? {
+                rejectUnauthorized: false,
+              }
+            : null,
+      },
     }),
     UsersModule,
     TagsUsersModule,
@@ -51,4 +57,8 @@ import { AuthModule } from './auth/auth.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(cors()).forRoutes('*');
+  }
+}

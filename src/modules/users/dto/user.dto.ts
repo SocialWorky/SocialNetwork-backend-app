@@ -9,29 +9,24 @@ import {
 } from 'class-validator';
 import { Role } from '../../../common/enums/rol.enum';
 export class CreateUser {
-  @ApiProperty()
   @Transform(({ value }) => value.trim())
   @IsString()
   @MinLength(4)
   username: string;
 
-  @ApiProperty()
   @Transform(({ value }) => value.trim())
   @IsString()
   @MinLength(4)
   name: string;
 
-  @ApiProperty()
   @Transform(({ value }) => value.trim())
   @IsString()
   @MinLength(4)
   lastName: string;
 
-  @ApiProperty()
   @IsEmail()
   email: string;
 
-  @ApiProperty()
   @Transform(({ value }) => value.trim())
   @IsString()
   @MinLength(6)
@@ -53,34 +48,28 @@ export class CreateUser {
   @IsOptional()
   token?: string;
 
-  @ApiPropertyOptional()
   @IsString()
   @IsOptional()
   avatar?: string;
 }
 export class UpdateUser {
-  @ApiPropertyOptional()
   @Transform(({ value }) => value.trim())
   @IsString()
   username?: string;
 
-  @ApiPropertyOptional()
   @Transform(({ value }) => value.trim())
   @IsString()
   name?: string;
 
-  @ApiPropertyOptional()
   @Transform(({ value }) => value.trim())
   @IsString()
   lastName?: string;
 
-  @ApiPropertyOptional()
   @Transform(({ value }) => value.trim())
   @IsString()
   @MinLength(6)
   password?: string;
 
-  @ApiPropertyOptional()
   @IsString()
   role?: Role;
 
@@ -93,7 +82,6 @@ export class UpdateUser {
   @IsString()
   token?: string;
 
-  @ApiPropertyOptional()
   @IsString()
   avatar?: string;
 }
