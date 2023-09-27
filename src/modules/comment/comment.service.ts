@@ -39,9 +39,8 @@ export class CommentService {
     const publicationOptions: FindOneOptions<Publication> = {
       where: { _id: idPublication },
     };
-    comment.publication = await this.publicationRepository.findOne(
-      publicationOptions,
-    );
+    comment.publication =
+      await this.publicationRepository.findOne(publicationOptions);
 
     return this.commentRepository.save(comment);
   }

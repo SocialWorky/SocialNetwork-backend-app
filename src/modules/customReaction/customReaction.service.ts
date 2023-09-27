@@ -3,12 +3,14 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { CustomReaction } from './entities/customReaction.entity';
 import { CreateCustomReactionDto } from './dto/customReaction.dto';
+import { AuthService } from '../../auth/auth.service';
 
 @Injectable()
 export class CustomReactionService {
   constructor(
     @InjectRepository(CustomReaction)
     private readonly customReactionRepository: Repository<CustomReaction>,
+    private authService: AuthService,
   ) {}
 
   async createCustomReaction(
@@ -17,6 +19,7 @@ export class CustomReactionService {
     const { name, emoji } = createCustomReactionDto;
 
     const customReaction = new CustomReaction();
+    customReaction._id = this.authService.cryptoIdKey();
     customReaction.name = name;
     customReaction.emoji = emoji;
 

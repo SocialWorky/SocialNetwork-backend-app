@@ -1,11 +1,26 @@
-import { IsNotEmpty, IsString, IsInt } from 'class-validator';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreateReactionDto {
-  @IsNotEmpty()
+  @ApiProperty()
   @IsString()
-  user: string;
+  authorId: string; // ID del autor de la reacción
 
-  // @IsNotEmpty()
-  // @IsInt()
-  customReaction: number;
+  @ApiProperty()
+  @IsString()
+  _idCustomReaction: string;
+
+  @IsBoolean()
+  @ApiProperty()
+  @IsOptional()
+  isPublications?: boolean;
+
+  @IsBoolean()
+  @ApiProperty()
+  @IsOptional()
+  isComment?: boolean;
+
+  @IsString()
+  @ApiProperty()
+  _idPublication: string;
 }
