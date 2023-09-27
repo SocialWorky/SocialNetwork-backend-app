@@ -60,7 +60,11 @@ export class PublicationService {
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.media', 'media')
+      .leftJoinAndSelect('publication.reaction', 'reaction')
+      .leftJoinAndSelect('reaction.user', 'reactionUser')
+      .leftJoinAndSelect('reaction.customReaction', 'customReaction')
       .leftJoinAndSelect('publication.comment', 'comment')
+      .leftJoinAndSelect('comment.author', 'commentAuthor')
       .leftJoinAndSelect('comment.media', 'commentMedia')
       .select([
         'publication._id',
@@ -74,10 +78,17 @@ export class PublicationService {
         'publication.updatedAt',
         'media._id',
         'media.url',
+        'reaction._id',
+        'reactionUser._id',
+        'reactionUser.username',
+        'customReaction._id',
+        'customReaction.name',
+        'customReaction.emoji',
         'comment._id',
         'comment.content',
         'comment.createdAt',
-        'comment.author',
+        'commentAuthor._id',
+        'commentAuthor.username',
         'commentMedia._id',
         'commentMedia.url',
       ])

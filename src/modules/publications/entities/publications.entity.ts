@@ -33,6 +33,9 @@ export class Publication {
   @OneToMany(() => Comment, (comment) => comment.publication)
   comment: Comment[];
 
+  @OneToMany(() => Reaction, (reaction) => reaction.publication)
+  reaction: Reaction[];
+
   // @OneToMany(() => TagUsers, (tagUsers) => tagUsers._idPublication, {
   //   eager: true,
   //   nullable: true,

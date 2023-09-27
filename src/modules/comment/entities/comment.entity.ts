@@ -32,6 +32,9 @@ export class Comment {
   @JoinColumn({ name: '_idPublication' })
   publication: Publication;
 
+  @OneToMany(() => Reaction, (reaction) => reaction.comment)
+  reaction: Reaction[];
+
   // @OneToMany(() => TagUsers, (tagUsers) => tagUsers.comment, {
   //   eager: true,
   // })

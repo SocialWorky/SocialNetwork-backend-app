@@ -12,6 +12,7 @@ import {
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   ApiExcludeEndpoint,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -23,14 +24,15 @@ import { TagUsers } from './entities/tagUsers.entity';
 import { TagsUsersService } from './tagsUsers.service';
 import { AuthGuard } from '../../auth/guard/auth.guard';
 
-@ApiTags('User Tagging')
+@ApiTags('Tagging')
 @Controller('tags')
 export class TagsUsersController {
   constructor(private readonly tagService: TagsUsersService) {}
 
   @UseGuards(AuthGuard)
   @Post('create')
-  @ApiExcludeEndpoint()
+  @ApiBearerAuth()
+  // @ApiExcludeEndpoint() // Hide endpoint in Swagger
   async createTag(@Body() createTagDto: CreateTagDto): Promise<TagUsers> {
     return this.tagService.createTag(createTagDto);
   }
@@ -45,6 +47,7 @@ export class TagsUsersController {
     description: 'There are no users tagged',
   })
   @Get(':_idPublication')
+  @ApiBearerAuth()
   async getTagById(
     @Param('_idPublication') _idPublication: string,
   ): Promise<TagUsers> {
