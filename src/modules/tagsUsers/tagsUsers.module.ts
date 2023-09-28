@@ -6,10 +6,12 @@ import { User } from '../users/entities/user.entity';
 import { TagsUsersController } from './tagsUsers.controller';
 import { TagsUsersService } from './tagsUsers.service';
 import { AuthModule } from '../../auth/auth.module';
+import { Publication } from '../publications/entities/publications.entity';
+import { Comment } from '../comment/entities/comment.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([TagUsers, User]),
+    TypeOrmModule.forFeature([TagUsers, User, Publication, Comment]),
     AuthModule,
     UsersModule,
   ],

@@ -36,17 +36,8 @@ export class Publication {
   @OneToMany(() => Reaction, (reaction) => reaction.publication)
   reaction: Reaction[];
 
-  // @OneToMany(() => TagUsers, (tagUsers) => tagUsers._idPublication, {
-  //   eager: true,
-  //   nullable: true,
-  // })
-  // taggedUsers: TagUsers;
-
-  // @OneToMany(() => Reaction, (reaction) => reaction._idPublication, {
-  //   eager: true,
-  //   nullable: true,
-  // })
-  // reactions: Reaction;
+  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.publication)
+  taggedUsers: TagUsers[];
 
   @CreateDateColumn()
   createdAt: Date;

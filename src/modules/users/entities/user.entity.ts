@@ -63,8 +63,8 @@ export class User {
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[];
 
-  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.user)
-  taggedUsers: TagUsers[];
+  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.userTagged)
+  userTagged: TagUsers[];
 
   @OneToMany(() => Reaction, (reaction) => reaction.user)
   reactions: Reaction[];

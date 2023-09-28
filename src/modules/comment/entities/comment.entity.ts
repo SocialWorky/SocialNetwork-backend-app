@@ -35,15 +35,8 @@ export class Comment {
   @OneToMany(() => Reaction, (reaction) => reaction.comment)
   reaction: Reaction[];
 
-  // @OneToMany(() => TagUsers, (tagUsers) => tagUsers.comment, {
-  //   eager: true,
-  // })
-  // taggedUsers: TagUsers[];
-
-  // @OneToMany(() => Reaction, (reaction) => reaction._idPublication, {
-  //   eager: true,
-  // })
-  // reactions: Reaction[];
+  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.comment)
+  taggedUsers: TagUsers[];
 
   @CreateDateColumn()
   createdAt: Date;

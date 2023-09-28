@@ -39,12 +39,12 @@ export class ReactionService {
   async createReaction(createReactionDto: CreateReactionDto) {
     const { authorId, _idCustomReaction } = createReactionDto;
 
-    const customReactionRes = await this.customReactionRepository.find({
-      where: { _id: _idCustomReaction },
+    const customReactionRes = await this.customReactionRepository.findOneBy({
+      _id: _idCustomReaction,
     });
 
     if (!customReactionRes) {
-      throw new Error('Custom reaction not found');
+      throw new BadRequestException('Custom reaction not found');
     }
 
     const reaction = new Reaction();
