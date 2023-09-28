@@ -34,7 +34,7 @@ export class TagsUsersController {
   async getTagById(
     @Param('_idPublication') _idPublication: string,
   ): Promise<TagUsers> {
-    const tag = await this.tagService.getTagById(_idPublication);
+    const tag = await this.tagService.getTagByIdPublication(_idPublication);
 
     if (!tag) {
       throw new HttpException(
