@@ -43,18 +43,39 @@ export class TagsUsersService {
       throw new BadRequestException('User not found');
     }
 
+    const authorPublicationInTag = await this.publicationRepository.findOneBy({
+      _id: _idPublication,
+    });
+
+    if (authorPublicationInTag) {
+      if (authorPublicationInTag.author._id === userTagged) {
+        throw new BadRequestException(
+          'You cannot tag yourself in your own publication',
+        );
+      }
+    }
+
+    const userTaggedInTag = await this.tagRepository.find({
+      where: { _idPublication: _idPublication },
+    });
+    for (let i = 0; i < userTaggedInTag.length; i++) {
+      if (userTaggedInTag[i].userTagged?._id === userTagged) {
+        throw new BadRequestException('User already tagged');
+      }
+    }
+
     const tag = new TagUsers();
     tag._id = this.authService.cryptoIdKey();
 
     tag._idPublication = _idPublication;
 
-    tag.userTagged = users[0];
+    tag.userTagged = users;
 
     await this.tagRepository.save(tag);
     return { message: 'User as Tagged' };
   }
 
-  async getTagById(_idPublication: string): Promise<TagUsers> {
+  async getTagByIdPublication(_idPublication: string): Promise<TagUsers> {
     return this.tagRepository.findOne({
       where: { _idPublication: _idPublication },
     });
