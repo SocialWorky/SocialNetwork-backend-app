@@ -36,7 +36,7 @@ export class AuthService {
 
   cryptoIdKey() {
     const customUUID = '_' + uuidv4();
-    const trimmedUUID = customUUID.substring(0, 36);
+    const trimmedUUID = customUUID.substring(0, 50);
     return trimmedUUID;
   }
 }

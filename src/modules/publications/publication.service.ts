@@ -63,6 +63,8 @@ export class PublicationService {
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
       .leftJoinAndSelect('reaction.customReaction', 'customReaction')
+      .leftJoinAndSelect('publication.taggedUsers', 'taggedUsers')
+      .leftJoinAndSelect('taggedUsers.userTagged', 'taggedUser')
       .leftJoinAndSelect('publication.comment', 'comment')
       .leftJoinAndSelect('comment.author', 'commentAuthor')
       .leftJoinAndSelect('comment.media', 'commentMedia')
@@ -81,6 +83,10 @@ export class PublicationService {
         'reaction._id',
         'reactionUser._id',
         'reactionUser.username',
+        'taggedUsers._id',
+        'taggedUser._id',
+        'taggedUser.username',
+        'taggedUser.name',
         'customReaction._id',
         'customReaction.name',
         'customReaction.emoji',

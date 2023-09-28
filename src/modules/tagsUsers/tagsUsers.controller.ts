@@ -2,50 +2,33 @@ import {
   Controller,
   Get,
   Post,
-  Put,
   Delete,
   Param,
   Body,
-  UseGuards,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  ApiExcludeEndpoint,
-  ApiNotFoundResponse,
-  ApiOkResponse,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
-import { CreateTagDto, UpdateTagDto } from './dto/tagsUsers.dto';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { CreateTagDto } from './dto/tagsUsers.dto';
 import { TagUsers } from './entities/tagUsers.entity';
 import { TagsUsersService } from './tagsUsers.service';
-import { AuthGuard } from '../../auth/guard/auth.guard';
+import { Auth } from 'src/auth/decorators/auth.decorator';
+import { Role } from 'src/common/enums/rol.enum';
 
 @ApiTags('Tagging')
+@Auth(Role.USER)
 @Controller('tags')
 export class TagsUsersController {
   constructor(private readonly tagService: TagsUsersService) {}
 
-  @UseGuards(AuthGuard)
   @Post('create')
   @ApiBearerAuth()
-  // @ApiExcludeEndpoint() // Hide endpoint in Swagger
-  async createTag(@Body() createTagDto: CreateTagDto): Promise<TagUsers> {
+  async createTag(
+    @Body() createTagDto: CreateTagDto,
+  ): Promise<{ message: string }> {
     return this.tagService.createTag(createTagDto);
   }
 
-  @ApiOperation({
-    summary: 'Get the tagged users by _id of the publication',
-  })
-  @ApiOkResponse({
-    description: 'List of users tagged',
-  })
-  @ApiNotFoundResponse({
-    description: 'There are no users tagged',
-  })
   @Get(':_idPublication')
   @ApiBearerAuth()
   async getTagById(
@@ -63,18 +46,7 @@ export class TagsUsersController {
     return tag;
   }
 
-  @UseGuards(AuthGuard)
-  @Put('update/:_id')
-  @ApiBearerAuth()
-  async updateTag(
-    @Param('_id') _id: string,
-    @Body() updateTagDto: UpdateTagDto,
-  ): Promise<TagUsers> {
-    return this.tagService.updateTag(_id, updateTagDto);
-  }
-
-  @UseGuards(AuthGuard)
-  @Delete('delet/:_id')
+  @Delete(':_id')
   @ApiBearerAuth()
   async deleteTag(@Param('_id') _id: string): Promise<void> {
     return this.tagService.deleteTag(_id);
