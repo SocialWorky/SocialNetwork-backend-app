@@ -18,7 +18,7 @@ export class User {
   @PrimaryColumn({ type: 'varchar', length: 50 })
   _id: string;
 
-  @Column()
+  @Column({ unique: true, nullable: false })
   username: string;
 
   @Column()

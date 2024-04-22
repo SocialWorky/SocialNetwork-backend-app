@@ -110,7 +110,7 @@ export class UsersController {
   }
 
   @Auth(Role.USER)
-  @Delete('delete/:_idUserDelete/:_id')
+  @Delete('delete/:_idUserDelete')
   @ApiBearerAuth()
   async remove(@Param('_idUserDelete') _idUserDelete: string): Promise<string> {
     return this.usersService.remove(_idUserDelete);

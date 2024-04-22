@@ -15,8 +15,14 @@ export class UsersService {
   ) {}
 
   async create(createUserDto: CreateUser): Promise<User> {
+    const usernameLowercase = createUserDto.username.toLowerCase();
+
     const userExistsByEmail = await this.usersRepository.findOne({
       where: { email: createUserDto.email },
+    });
+
+    const userNameExist = await this.usersRepository.findOne({
+      where: { username: usernameLowercase },
     });
 
     if (userExistsByEmail) {
@@ -26,10 +32,17 @@ export class UsersService {
       );
     }
 
+    if (userNameExist) {
+      throw new HttpException(
+        'Username is already in use',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+
     const user = new User();
     user._id = this.authService.cryptoIdKey();
 
-    user.username = createUserDto.username;
+    user.username = usernameLowercase;
     user.name = createUserDto.name;
     user.lastName = createUserDto.lastName;
     user.email = createUserDto.email;
