@@ -26,6 +26,8 @@ import * as cors from 'cors';
       database: process.env.DB_DATABASE,
       entities: ['dist/**/*.entity{.ts,.js}'],
       migrations: ['dist/migrations/*{.ts,.js}'],
+      migrationsRun: true,
+      keepConnectionAlive: true,
       autoLoadEntities: true,
       synchronize: true,
       ssl: process.env.DB_SSL === 'true',
