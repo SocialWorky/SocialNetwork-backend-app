@@ -26,6 +26,7 @@ import { Role } from '../../common/enums/rol.enum';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { ActiveUser } from '../../common/decorator/active-user.decorator';
 import { UserActiveInterface } from '../../common/interfaces/user-active.interface';
+import { MailsService } from '../mails/mails.service';
 
 @ApiTags('Users')
 @Controller('user')
@@ -33,12 +34,16 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private authService: AuthService,
+    private readonly _mailsService: MailsService,
   ) {}
 
   @Post('create')
   @ApiExcludeEndpoint()
   create(@Body() createUser: CreateUser): Promise<User> {
-    return this.usersService.create(createUser);
+    return this.usersService.create(createUser).then((user) => {
+      this._mailsService.sendEmailValidate(user._id);
+      return user;
+    });
   }
 
   //Section Login
@@ -55,6 +60,10 @@ export class UsersController {
   @Post('login')
   async login(@Body() loginData: LoginDto) {
     const user = await this.usersService.findOneByEmail(loginData.email);
+    const userVerified = user.isVerified;
+    if (!userVerified) {
+      throw new HttpException('User is not verified', HttpStatus.UNAUTHORIZED);
+    }
     if (!user) {
       throw new HttpException(
         'Unauthorized access. Please provide valid credentials to access this resource',

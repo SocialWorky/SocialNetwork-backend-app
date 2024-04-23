@@ -1,10 +1,10 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 import { CreateUser, UpdateUser } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
-import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -81,21 +81,48 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { _id: _id },
     });
-    user.username = updateUser.username ? updateUser.username : user.username;
-    user.name = updateUser.name ? updateUser.name : user.name;
-    user.lastName = updateUser.lastName ? updateUser.lastName : user.lastName;
-    user.role = updateUser.role ? updateUser.role : user.role;
-    user.isVerified = updateUser.isVerified
-      ? updateUser.isVerified
-      : user.isVerified;
-    user.isActive = updateUser.isActive ? updateUser.isActive : user.isActive;
-    user.avatar = updateUser.avatar ? updateUser.avatar : user.avatar;
-    user.token = updateUser.token ? updateUser.token : user.token;
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (updateUser.username) {
+      user.username = updateUser.username;
+    }
+
+    if (updateUser.name) {
+      user.name = updateUser.name;
+    }
+
+    if (updateUser.lastName) {
+      user.lastName = updateUser.lastName;
+    }
+
+    if (updateUser.role) {
+      user.role = updateUser.role;
+    }
+
+    if (updateUser.isVerified !== undefined) {
+      user.isVerified = updateUser.isVerified;
+    }
+
+    if (updateUser.isActive !== undefined) {
+      user.isActive = updateUser.isActive;
+    }
+
+    if (updateUser.avatar) {
+      user.avatar = updateUser.avatar;
+    }
+
+    if (updateUser.token) {
+      user.token = updateUser.token;
+    }
+
     if (updateUser.password) {
       user.password = await bcrypt.hash(updateUser.password, 10);
     }
 
-    this.usersRepository.save(user);
+    await this.usersRepository.save(user);
 
     return 'User ' + user.username + ' updated';
   }

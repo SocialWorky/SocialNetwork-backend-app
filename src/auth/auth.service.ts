@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import * as crypto from 'crypto';
 import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
@@ -6,6 +6,7 @@ import { User } from '../modules/users/entities/user.entity';
 
 @Injectable()
 export class AuthService {
+  constructor(private jwtService: JwtService) {}
   signIn(user: User) {
     const payload = {
       id: user._id,
@@ -16,7 +17,13 @@ export class AuthService {
     return this.jwtService.sign(payload);
   }
 
-  constructor(private jwtService: JwtService) {}
+  tokenEmail(user: User) {
+    const payload = {
+      id: user._id,
+      email: user.email,
+    };
+    return this.jwtService.sign(payload);
+  }
 
   validateUser(signedUser): string | object {
     return this.jwtService.verify(signedUser);
@@ -38,5 +45,14 @@ export class AuthService {
     const customUUID = '_' + uuidv4();
     const trimmedUUID = customUUID.substring(0, 50);
     return trimmedUUID;
+  }
+
+  validateToken(token: string): any {
+    try {
+      const decoded = this.jwtService.verify(token);
+      return decoded;
+    } catch (error) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

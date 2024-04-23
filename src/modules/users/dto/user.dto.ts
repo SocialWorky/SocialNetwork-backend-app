@@ -55,34 +55,43 @@ export class CreateUser {
 export class UpdateUser {
   @Transform(({ value }) => value.trim())
   @IsString()
+  @IsOptional()
   username?: string;
 
   @Transform(({ value }) => value.trim())
   @IsString()
+  @IsOptional()
   name?: string;
 
   @Transform(({ value }) => value.trim())
   @IsString()
+  @IsOptional()
   lastName?: string;
 
   @Transform(({ value }) => value.trim())
   @IsString()
   @MinLength(6)
+  @IsOptional()
   password?: string;
 
   @IsString()
+  @IsOptional()
   role?: Role;
 
   @IsBoolean()
+  @IsOptional()
   isVerified?: boolean;
 
   @IsBoolean()
+  @IsOptional()
   isActive?: boolean;
 
   @IsString()
+  @IsOptional()
   token?: string;
 
   @IsString()
+  @IsOptional()
   avatar?: string;
 }
 export class LoginDto {
