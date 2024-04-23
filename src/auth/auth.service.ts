@@ -22,7 +22,11 @@ export class AuthService {
       id: user._id,
       email: user.email,
     };
-    return this.jwtService.sign(payload);
+
+    // Expiration time: 3 hours
+    const expirationTime = 3 * 60 * 60;
+
+    return this.jwtService.sign(payload, { expiresIn: expirationTime });
   }
 
   validateUser(signedUser): string | object {

@@ -39,11 +39,18 @@ export class UsersController {
 
   @Post('create')
   @ApiExcludeEndpoint()
-  create(@Body() createUser: CreateUser): Promise<User> {
-    return this.usersService.create(createUser).then((user) => {
-      this._mailsService.sendEmailValidate(user._id);
+  async create(@Body() createUser: CreateUser): Promise<User> {
+    try {
+      const user = await this.usersService.create(createUser);
+      await this._mailsService.sendEmailWithRetry(
+        user._id,
+        createUser.mailDataValidate,
+      );
       return user;
-    });
+    } catch (error) {
+      console.error('Failed to create user and send email:', error);
+      throw error;
+    }
   }
 
   //Section Login
