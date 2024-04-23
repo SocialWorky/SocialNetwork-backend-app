@@ -1,9 +1,11 @@
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+require('dotenv').config();
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { APP_FILTER } from '@nestjs/core';
 import { JwtExpiredFilter } from './filters/jwt-expired.filter';
 import { JwtExceptionFilter } from './filters/jwt-exception.filter';
+import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { TagsUsersModule } from './modules/tagsUsers/tagsUsers.module';
 import { ReactionModule } from './modules/reaction/reaction.module';
@@ -11,12 +13,11 @@ import { PublicationModule } from './modules/publications/publication.module';
 import { MediaModule } from './modules/postMediaFiles/postMediaFiles.module';
 import { CustomReactionModule } from './modules/customReaction/customReaction.module';
 import { CommentModule } from './modules/comment/comment.module';
-import { AuthModule } from './auth/auth.module';
+import { MailsModule } from './modules/mails/mails.module';
 import * as cors from 'cors';
 
 @Module({
   imports: [
-    ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -40,6 +41,7 @@ import * as cors from 'cors';
             : null,
       },
     }),
+    AuthModule,
     UsersModule,
     TagsUsersModule,
     ReactionModule,
@@ -47,7 +49,7 @@ import * as cors from 'cors';
     MediaModule,
     CustomReactionModule,
     CommentModule,
-    AuthModule,
+    MailsModule,
   ],
   controllers: [],
   providers: [
