@@ -20,7 +20,7 @@ export class MailsService {
       _id: id,
     });
     const tokenEmail = this._authService.tokenEmail(user);
-    const host = process.env.HOT_FRONTEND;
+    const host = process.env.HOST_FRONTEND;
 
     const url = `${host}auth/validate/${tokenEmail}`;
     this._mailerService.sendMail({

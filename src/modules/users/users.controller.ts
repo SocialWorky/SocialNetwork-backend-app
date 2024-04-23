@@ -60,15 +60,15 @@ export class UsersController {
   @Post('login')
   async login(@Body() loginData: LoginDto) {
     const user = await this.usersService.findOneByEmail(loginData.email);
-    const userVerified = user.isVerified;
-    if (!userVerified) {
-      throw new HttpException('User is not verified', HttpStatus.UNAUTHORIZED);
-    }
     if (!user) {
       throw new HttpException(
         'Unauthorized access. Please provide valid credentials to access this resource',
         HttpStatus.UNAUTHORIZED,
       );
+    }
+    const userVerified = user.isVerified;
+    if (!userVerified) {
+      throw new HttpException('User is not verified', HttpStatus.UNAUTHORIZED);
     }
     const match = await this.usersService.compareHash(
       loginData.password,
