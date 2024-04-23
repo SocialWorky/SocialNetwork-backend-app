@@ -37,18 +37,6 @@ export class UsersController {
     private readonly _mailsService: MailsService,
   ) {}
 
-  // @Post('create')
-  // @ApiExcludeEndpoint()
-  // create(@Body() createUser: CreateUser): Promise<User> {
-  //   return this.usersService.create(createUser).then((user) => {
-  //     this._mailsService.sendEmailValidate(
-  //       user._id,
-  //       createUser.mailDataValidate,
-  //     );
-  //     return user;
-  //   });
-  // }
-
   @Post('create')
   @ApiExcludeEndpoint()
   async create(@Body() createUser: CreateUser): Promise<User> {
