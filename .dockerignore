@@ -1,4 +1,10 @@
-postgres
-dist
-node_modules
+postgres-db/
+pgadmin-data/
+dist/
+node_modules/
+Dockerfile
+.git
+.gitignore
+.dockerignore
+README.md
 .env*
