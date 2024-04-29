@@ -22,7 +22,7 @@ export class MailsService {
     id: string,
     mailData: MailDataValidate,
     retries: number = 3,
-    delayMs: number = 5000,
+    delayMs: number = 4000,
   ) {
     try {
       await this.sendEmailValidate(id, mailData);
@@ -35,6 +35,7 @@ export class MailsService {
         this.logger.error(
           `Failed to send email after ${retries} retries: ${error.message}`,
         );
+        throw new Error('Failed to send email');
         // here you can save the emails that were not sent in the database
       }
     }

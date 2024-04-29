@@ -24,7 +24,7 @@ import { UsersModule } from '../users/users.module';
           },
         },
         defaults: {
-          from: `"No Reply" <${process.env.MAIL_FROM}>`,
+          from: `"Worky-No Reply" <${process.env.MAIL_FROM}>`,
         },
         template: {
           dir: join(__dirname, 'templates'),

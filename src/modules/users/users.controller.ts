@@ -49,7 +49,7 @@ export class UsersController {
       return user;
     } catch (error) {
       console.error('Failed to create user and send email:', error);
-      throw error;
+      throw new HttpException('Failed send email', HttpStatus.BAD_REQUEST);
     }
   }
 
