@@ -93,6 +93,50 @@ export class UsersController {
       token,
     };
   }
+  @Post('loginGoogle')
+  async loginGoogle(@Body() data: any) {
+    const validateToken = await this.authService.validateTokenGoogle(
+      data.token,
+    );
+    if (!validateToken) {
+      throw new HttpException('Unauthorized access', HttpStatus.UNAUTHORIZED);
+    }
+    const emailUser = await this.usersService.findOneByEmail(data.email);
+    if (!emailUser) {
+      const createUser: CreateUser = {
+        username: data.username,
+        name: data.name,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+        role: Role.USER,
+        isVerified: true,
+      };
+      const user = await this.usersService.create(createUser);
+      const token = this.authService.signIn(user);
+      this.usersService.update(user._id, { token: token });
+      return {
+        token,
+      };
+    }
+    if (emailUser) {
+      const user = await this.usersService.findOneByEmail(data.email);
+      const token = this.authService.signIn(user);
+      this.usersService.update(emailUser._id, { token: token });
+      return {
+        token,
+      };
+    }
+  }
+
+  @Get('checkUsername/:username')
+  async checkUsername(@Param('username') username: string) {
+    const user = await this.usersService.findOneByUsername(username);
+    if (user) {
+      return true;
+    }
+    return false;
+  }
 
   @Get('profile')
   @Auth(Role.USER)

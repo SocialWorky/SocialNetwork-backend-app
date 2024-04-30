@@ -54,7 +54,7 @@ export class CreateUser {
   avatar?: string;
 
   @IsOptional()
-  mailDataValidate: MailDataValidate;
+  mailDataValidate?: MailDataValidate;
 }
 export class UpdateUser {
   @Transform(({ value }) => value.trim())

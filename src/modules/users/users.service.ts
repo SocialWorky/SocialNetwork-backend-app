@@ -77,6 +77,12 @@ export class UsersService {
     return this.usersRepository.findOneBy({ _id: _id });
   }
 
+  async findOneByUsername(username: string): Promise<User> {
+    return this.usersRepository.findOne({
+      where: { username: username },
+    });
+  }
+
   async update(_id: string, updateUser: UpdateUser): Promise<string> {
     const user = await this.usersRepository.findOne({
       where: { _id: _id },
