@@ -5,6 +5,7 @@ import { MailDataValidate } from './entities/mail.entity';
 import { AuthService } from '../../auth/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class MailsService {
@@ -93,6 +94,91 @@ export class MailsService {
       };
     } catch (error) {
       throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  async sendEmailForgotPassword(mailData: MailDataValidate) {
+    const user = await this.userRepository.findOneBy({ email: mailData.email });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const tokenEmail = this._authService.tokenEmail(user);
+    const url = `${mailData.url}${tokenEmail}`;
+    const title = mailData.title;
+    const greet = mailData.greet;
+    const message = mailData.message;
+    const subMessage = mailData.subMessage;
+    const buttonMessage = mailData.buttonMessage;
+
+    try {
+      await this._mailerService.sendMail({
+        to: user.email,
+        subject: mailData.subject,
+        template: './forgot-password',
+        context: {
+          name: user.name + ' ' + user.lastName,
+          url,
+          title,
+          greet,
+          message,
+          subMessage,
+          buttonMessage,
+        },
+      });
+      this.logger.log(`Email sent to ${user.email}`);
+      return {
+        message: 'Email sent successfully',
+        email: user.email,
+      };
+    } catch (error) {
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+  }
+
+  async sendEmailResetPassword(mailData: MailDataValidate) {
+    const user = await this.userRepository.findOneBy({ email: mailData.email });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    const validToken = await this._authService.validateToken(mailData.token);
+    if (!validToken) {
+      throw new UnauthorizedException('Invalid token');
+    }
+
+    const newPassword = await bcrypt.hash(mailData.password, 10);
+
+    await this.userRepository.update(user._id, { password: newPassword });
+
+    const url = `${mailData.url}`;
+    const title = mailData.title;
+    const greet = mailData.greet;
+    const message = mailData.message;
+    const subMessage = mailData.subMessage;
+    const buttonMessage = mailData.buttonMessage;
+
+    try {
+      await this._mailerService.sendMail({
+        to: user.email,
+        subject: mailData.subject,
+        template: './forgot-password',
+        context: {
+          name: user.name + ' ' + user.lastName,
+          url,
+          title,
+          greet,
+          message,
+          subMessage,
+          buttonMessage,
+        },
+      });
+      this.logger.log(`Email sent to ${user.email}`);
+      return {
+        message: 'Password reset successfully',
+        email: user.email,
+      };
+    } catch (error) {
+      throw new Error(`Failed to send email: ${error.message}`);
     }
   }
 }
