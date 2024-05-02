@@ -6,9 +6,11 @@ import {
   SwaggerDocumentOptions,
 } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
+  const logger = new Logger('Main');
+
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('api/v1');
 
@@ -21,7 +23,7 @@ async function bootstrap() {
   );
 
   const config = new DocumentBuilder()
-    .setTitle('Social Network Application')
+    .setTitle('Worky Social Network Application')
     .setDescription(
       "This is a social networking application that adapts to the customer's needs.",
     )
@@ -43,7 +45,7 @@ async function bootstrap() {
     },
   });
 
-  await app.listen(parseInt(process.env.PORT) || 3000);
-  console.log(`Application is running on: ${await app.getUrl()}`);
+  await app.listen(parseInt(process.env.APP_PORT) || 3000);
+  logger.log(`Application is running on port: ${process.env.APP_PORT}`);
 }
 bootstrap();
