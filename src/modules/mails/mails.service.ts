@@ -1,7 +1,7 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { MailerService } from '@nestjs-modules/mailer';
 import { User } from '../users/entities/user.entity';
-import { MailDataValidate } from './entities/mail.entity';
+import { CreateMailDto } from './dto/create-mail.dto';
 import { AuthService } from '../../auth/auth.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -21,7 +21,7 @@ export class MailsService {
 
   async sendEmailWithRetry(
     id: string,
-    mailData: MailDataValidate,
+    mailData: CreateMailDto,
     retries: number = 3,
     delayMs: number = 4000,
   ) {
@@ -42,7 +42,7 @@ export class MailsService {
     }
   }
 
-  async sendEmailValidate(id: string, mailData: MailDataValidate) {
+  async sendEmailValidate(id: string, mailData: CreateMailDto) {
     if (!mailData) {
       throw new UnauthorizedException('Invalid mail data');
     }
@@ -97,7 +97,7 @@ export class MailsService {
     }
   }
 
-  async sendEmailForgotPassword(mailData: MailDataValidate) {
+  async sendEmailForgotPassword(mailData: CreateMailDto) {
     const user = await this.userRepository.findOneBy({ email: mailData.email });
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -136,7 +136,7 @@ export class MailsService {
     }
   }
 
-  async sendEmailResetPassword(mailData: MailDataValidate) {
+  async sendEmailResetPassword(mailData: CreateMailDto) {
     const user = await this.userRepository.findOneBy({ email: mailData.email });
     if (!user) {
       throw new UnauthorizedException('User not found');

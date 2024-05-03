@@ -9,7 +9,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { MailsService } from './mails.service';
 import { UsersService } from '../users/users.service';
-import { MailerDataValidate } from './entities/mail.entity';
+import { CreateMailDto } from './dto/create-mail.dto';
 
 @ApiTags('Email')
 @Controller('email')
@@ -25,7 +25,7 @@ export class MailsController {
   }
 
   @Post('forgotPassword')
-  async forgotPasswordSend(@Body() data: MailerDataValidate) {
+  async forgotPasswordSend(@Body() data: CreateMailDto) {
     const user = await this._usersService.findOneByEmail(data.email);
     if (!user) {
       throw new HttpException(
@@ -37,7 +37,7 @@ export class MailsController {
   }
 
   @Post('resetPassword')
-  async resetPassword(@Body() data: MailerDataValidate) {
+  async resetPassword(@Body() data: CreateMailDto) {
     return this._mailsService.sendEmailResetPassword(data);
   }
 }

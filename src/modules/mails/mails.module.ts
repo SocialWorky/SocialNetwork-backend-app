@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
@@ -8,9 +9,11 @@ import { MailsService } from './mails.service';
 import { join } from 'path';
 import { AuthModule } from '../../auth/auth.module';
 import { UsersModule } from '../users/users.module';
+import { Email } from './entities/mail.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([Email]),
     AuthModule,
     UsersModule,
     MailerModule.forRootAsync({
@@ -37,7 +40,7 @@ import { UsersModule } from '../users/users.module';
     }),
   ],
   providers: [MailsService],
-  exports: [MailsService],
+  exports: [MailsService, TypeOrmModule],
   controllers: [MailsController],
 })
 export class MailsModule {}

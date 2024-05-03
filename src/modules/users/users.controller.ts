@@ -40,17 +40,16 @@ export class UsersController {
   @Post('create')
   @ApiExcludeEndpoint()
   async create(@Body() createUser: CreateUser): Promise<User> {
-    try {
-      const user = await this.usersService.create(createUser);
-      await this._mailsService.sendEmailWithRetry(
-        user._id,
-        createUser.mailDataValidate,
-      );
-      return user;
-    } catch (error) {
-      console.error('Failed to create user and send email:', error);
-      throw new HttpException('Failed send email', HttpStatus.BAD_REQUEST);
-    }
+    const user = await this.usersService.create(createUser);
+    await this._mailsService
+      .sendEmailWithRetry(user._id, createUser.mailDataValidate)
+      .catch(() => {
+        throw new HttpException(
+          'Failed send email',
+          HttpStatus.INTERNAL_SERVER_ERROR,
+        );
+      });
+    return user;
   }
 
   //Section Login

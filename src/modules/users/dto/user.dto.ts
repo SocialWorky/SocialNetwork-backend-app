@@ -8,7 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 import { Role } from '../../../common/enums/rol.enum';
-import { MailDataValidate } from '../../mails/entities/mail.entity';
+import { CreateMailDto } from '../../mails/dto/create-mail.dto';
 export class CreateUser {
   @Transform(({ value }) => value.trim())
   @IsString()
@@ -54,7 +54,7 @@ export class CreateUser {
   avatar?: string;
 
   @IsOptional()
-  mailDataValidate?: MailDataValidate;
+  mailDataValidate?: CreateMailDto;
 }
 export class UpdateUser {
   @Transform(({ value }) => value.trim())
