@@ -39,8 +39,8 @@ import { Email } from './entities/mail.entity';
       }),
     }),
   ],
+  controllers: [MailsController],
   providers: [MailsService],
   exports: [MailsService, TypeOrmModule],
-  controllers: [MailsController],
 })
 export class MailsModule {}

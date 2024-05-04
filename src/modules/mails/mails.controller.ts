@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpException,
   HttpStatus,
   Param,
@@ -33,11 +34,41 @@ export class MailsController {
         HttpStatus.UNAUTHORIZED,
       );
     }
-    return this._mailsService.sendEmailForgotPassword(data);
+    return this._mailsService
+      .sendEmailWithRetry(user._id, data)
+      .then(() => {
+        return {
+          message: 'Email sent successfully',
+          email: user.email,
+        };
+      })
+      .catch(() => {
+        return {
+          message: 'Failed to send email',
+          email: user.email,
+        };
+      });
   }
 
   @Post('resetPassword')
   async resetPassword(@Body() data: CreateMailDto) {
-    return this._mailsService.sendEmailResetPassword(data);
+    const user = await this._usersService.findOneByEmail(data.email);
+    if (!user) {
+      throw new HttpException(
+        'Email not exist in the database or is invalid',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    return this._mailsService.sendEmailWithRetry(user._id, data).then(() => {
+      return {
+        message: 'Password reset successfully',
+        email: user.email,
+      };
+    });
+  }
+
+  @Get('sendEmailPending')
+  async sendEmailPending() {
+    return this._mailsService.sendEmailPending();
   }
 }

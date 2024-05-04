@@ -1,5 +1,6 @@
-import { Column, PrimaryColumn } from 'typeorm';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
+@Entity()
 export class Email {
   @PrimaryColumn({ type: 'varchar', length: 50 })
   _id: string;
