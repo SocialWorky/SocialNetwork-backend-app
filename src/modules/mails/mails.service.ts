@@ -1,11 +1,13 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
-import { MailerService } from '@nestjs-modules/mailer';
-import { User } from '../users/entities/user.entity';
-import { MailDataValidate } from './entities/mail.entity';
-import { AuthService } from '../../auth/auth.service';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { MailerService } from '@nestjs-modules/mailer';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from '../users/entities/user.entity';
+import { CreateMailDto } from './dto/create-mail.dto';
+import { AuthService } from '../../auth/auth.service';
+import { Email } from './entities/mail.entity';
 import * as bcrypt from 'bcrypt';
+import { UsersService } from '../users/users.service';
 
 @Injectable()
 export class MailsService {
@@ -14,19 +16,71 @@ export class MailsService {
   constructor(
     private readonly _authService: AuthService,
     private _mailerService: MailerService,
+    private _usersService: UsersService,
+
+    @InjectRepository(Email)
+    private readonly emailRepository: Repository<Email>,
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
   ) {}
 
+  async saveEmailNotSent(mailData: CreateMailDto) {
+    const email = new Email();
+    email._id = this._authService.cryptoIdKey();
+    email.token = mailData.token ? mailData.token : '';
+    email.email = mailData.email;
+    email.password = mailData.password ? mailData.password : '';
+    email.url = mailData.url ? mailData.url : '';
+    email.subject = mailData.subject;
+    email.title = mailData.title;
+    email.greet = mailData.greet;
+    email.message = mailData.message;
+    email.subMessage = mailData.subMessage;
+    email.buttonMessage = mailData.buttonMessage;
+    email.template = mailData.template ? mailData.template : '';
+
+    return await this.emailRepository.save(email);
+  }
+
+  async sendEmailPending() {
+    const emails = await this.emailRepository.find();
+    for (const email of emails) {
+      const user = await this._usersService.findOneByEmail(email.email);
+      await this.sendEmailWithRetry(user._id, email);
+      await this.delay(2000);
+      await this.deleteEmailSent(email._id);
+    }
+  }
+
+  async delay(ms: number) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async deleteEmailSent(id: string) {
+    const email = await this.emailRepository.findOne({ where: { _id: id } });
+    if (!email) {
+      throw new UnauthorizedException('Email not found');
+    }
+    return await this.emailRepository.remove(email);
+  }
+
   async sendEmailWithRetry(
     id: string,
-    mailData: MailDataValidate,
+    mailData: CreateMailDto,
     retries: number = 3,
-    delayMs: number = 4000,
+    delayMs: number = 2000,
   ) {
     try {
-      await this.sendEmailValidate(id, mailData);
+      if (mailData.template === 'welcome') {
+        await this.sendEmailValidate(id, mailData);
+      }
+      if (mailData.template === 'forgot-password') {
+        await this.sendEmailForgotPassword(mailData);
+      }
+      if (mailData.template === 'reset-password') {
+        await this.sendEmailResetPassword(mailData);
+      }
     } catch (error) {
       if (retries > 0) {
         this.logger.error(`Error sending email: ${error.message}. Retrying...`);
@@ -36,13 +90,14 @@ export class MailsService {
         this.logger.error(
           `Failed to send email after ${retries} retries: ${error.message}`,
         );
+        await this.saveEmailNotSent(mailData);
         throw new Error('Failed to send email');
         // here you can save the emails that were not sent in the database
       }
     }
   }
 
-  async sendEmailValidate(id: string, mailData: MailDataValidate) {
+  async sendEmailValidate(id: string, mailData: CreateMailDto) {
     if (!mailData) {
       throw new UnauthorizedException('Invalid mail data');
     }
@@ -97,7 +152,7 @@ export class MailsService {
     }
   }
 
-  async sendEmailForgotPassword(mailData: MailDataValidate) {
+  async sendEmailForgotPassword(mailData: CreateMailDto) {
     const user = await this.userRepository.findOneBy({ email: mailData.email });
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -127,16 +182,12 @@ export class MailsService {
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
-      return {
-        message: 'Email sent successfully',
-        email: user.email,
-      };
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
     }
   }
 
-  async sendEmailResetPassword(mailData: MailDataValidate) {
+  async sendEmailResetPassword(mailData: CreateMailDto) {
     const user = await this.userRepository.findOneBy({ email: mailData.email });
     if (!user) {
       throw new UnauthorizedException('User not found');
@@ -173,10 +224,6 @@ export class MailsService {
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
-      return {
-        message: 'Password reset successfully',
-        email: user.email,
-      };
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
     }

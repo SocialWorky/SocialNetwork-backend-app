@@ -5,12 +5,17 @@ import * as bcrypt from 'bcrypt';
 import { CreateUser, UpdateUser } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
+import { Email } from '../mails/entities/mail.entity';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+
+    @InjectRepository(Email)
+    private readonly emailRepository: Repository<Email>,
+
     private readonly authService: AuthService,
   ) {}
 
