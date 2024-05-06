@@ -28,7 +28,7 @@ services:
     dns:
       - 1.1.1.1
   db:
-    container_name: postgresDB
+    container_name: postgres-db
     image: postgres:15.1
     restart: always
     environment:
@@ -37,8 +37,6 @@ services:
       - POSTGRES_DB=${DB_DATABASE}
     volumes:
       - postgres-db:/var/lib/postgresql/data
-    ports:
-      - ${DB_PORT}:5432
   
   pgAdmin:
     depends_on:
