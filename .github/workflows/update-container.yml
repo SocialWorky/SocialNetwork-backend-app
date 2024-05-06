@@ -45,15 +45,15 @@ jobs:
          DB_SSL: ${{ secrets.WORKY_DB_SSL_DEV }}
          JWT_SECRET: ${{ secrets.WORKY_JWT_SECRET_DEV }}
          # MAIL
-         #MAIL_HOST: ${{ secrets.WORKY_MAIL_HOST_DEV }}
-         #MAIL_USER: ${{ secrets.WORKY_MAIL_USER_DEV }}
-         #MAIL_PASSWORD: ${{ secrets.WORKY_MAIL_PASSWORD_DEV }}
-         #MAIL_FROM: ${{ secrets.WORKY_MAIL_FROM_DEV }}
+         MAIL_HOST: ${{ secrets.WORKY_MAIL_HOST_DEV }}
+         MAIL_USER: ${{ secrets.WORKY_MAIL_USER_DEV }}
+         MAIL_PASSWORD: ${{ secrets.WORKY_MAIL_PASSWORD_DEV }}
+         MAIL_FROM: ${{ secrets.WORKY_MAIL_FROM_DEV }}
          # DB
-         #POSTGRES_USER: ${{ secrets.WORKY_DB_USERNAME_DEV }}
-         #POSTGRES_PASSWORD: ${{ secrets.WORKY_DB_PASSWORD_DEV }}
-         #POSTGRES_DB: ${{ secrets.WORKY_DB_DATABASE_DEV }}
+         POSTGRES_USER: ${{ secrets.WORKY_DB_USERNAME_DEV }}
+         POSTGRES_PASSWORD: ${{ secrets.WORKY_DB_PASSWORD_DEV }}
+         POSTGRES_DB: ${{ secrets.WORKY_DB_DATABASE_DEV }}
          # PGADMIN
-         #PGADMIN_PORT: 82
-         #PGADMIN_DEFAULT_PASSWORD: losbar191184
-         #PGADMIN_DEFAULT_EMAIL: soporte@worky.cl
+         PGADMIN_PORT: 82
+         PGADMIN_DEFAULT_PASSWORD: losbar191184
+         PGADMIN_DEFAULT_EMAIL: soporte@worky.cl
