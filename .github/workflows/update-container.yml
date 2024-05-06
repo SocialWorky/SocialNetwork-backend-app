@@ -18,9 +18,11 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
        run: |
+        echo "Iniciando la construcción y el empuje de la imagen Docker..."
         docker build -t socialworky/worky-backend:dev .
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push socialworky/worky-backend:dev
+        echo "Construcción y empuje de la imagen Docker completados."
 
      - name: Deploy stack to Portainer
        uses: carlrygart/portainer-stack-deploy@v1
@@ -54,4 +56,8 @@ jobs:
         # PGADMIN
         PGADMIN_DEFAULT_PASSWORD: losbar191184
         PGADMIN_DEFAULT_EMAIL: soporte@worky.cl
-        
+       run: |
+        echo "Desplegando el stack en Portainer... ${{ env.WORKY_SERVER_HOST_DEV }}"
+        echo "prueba 2 ${{ vars.WORKY_SERVER_HOST_DEV }}"
+
+
