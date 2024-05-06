@@ -24,6 +24,10 @@ jobs:
         docker push socialworky/worky-backend:dev
         echo "Construcción y empuje de la imagen Docker completados."
 
+     - name: Sleep for 10 seconds
+       run: sleep 10s
+       shell: bash
+
      - name: Deploy stack to Portainer
        uses: carlrygart/portainer-stack-deploy@v1
        with:
