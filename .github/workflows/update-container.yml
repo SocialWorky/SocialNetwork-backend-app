@@ -36,7 +36,7 @@ jobs:
         APP_VERSION: ${{ vars.WORKY_APP_VERSION_DEV }}
         APP_PORT: ${{ vars.WORKY_APP_PORT_DEV }}
         DB_HOST: ${{ vars.WORKY_DB_HOST_DEV }}
-        DB_PORT: ${{ vars.WORKY_DEB_PORT_DEV }}
+        DB_PORT: ${{ vars.WORKY_DB_PORT_DEV }}
         DB_USERNAME: ${{ vars.WORKY_DB_USERNAME_DEV }}
         DB_PASSWORD: ${{ vars.WORKY_DB_PASSWORD_DEV }}
         DB_DATABASE: ${{ vars.WORKY_DB_DATABASE_DEV }}
@@ -47,3 +47,11 @@ jobs:
         MAIL_USER: ${{ vars.WORKY_MAIL_USER_DEV }}
         MAIL_PASSWORD: ${{ vars.WORKY_MAIL_PASSWORD_DEV }}
         MAIL_FROM: ${{ vars.WORKY_MAIL_FROM_DEV }}
+        # DB
+        POSTGRES_USER: ${{ vars.WORKY_DB_USERNAME_DEV }}
+        POSTGRES_PASSWORD: ${{ vars.WORKY_DB_PASSWORD_DEV }}
+        POSTGRES_DB: ${{ vars.WORKY_DB_DATABASE_DEV }}
+        # PGADMIN
+        PGADMIN_DEFAULT_PASSWORD: losbar191184
+        PGADMIN_DEFAULT_EMAIL: soporte@worky.cl
+        
