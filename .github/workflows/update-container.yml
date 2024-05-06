@@ -10,33 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-     - name: Checkout repository
-       uses: actions/checkout@v2
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-     - name: Build and push Docker image
-       env:
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
-       run: |
-        echo "Iniciando la construcción y el empuje de la imagen Docker..."
-        docker build -t socialworky/worky-backend:dev .
-        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
-        docker push socialworky/worky-backend:dev
-        echo "Construcción y empuje de la imagen Docker completados."
+      - name: Build and push Docker image
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "Iniciando la construcción y el empuje de la imagen Docker..."
+          docker build -t socialworky/worky-backend:dev-${{ github.sha }} .
+          docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+          docker push socialworky/worky-backend:dev-${{ github.sha }}
+          echo "Construcción y empuje de la imagen Docker completados."
 
-     - name: Sleep for 10 seconds
-       run: sleep 10s
-       shell: bash
+      - name: Deploy stack to Portainer
+        uses: carlrygart/portainer-stack-deploy@v1
+        with:
+          portainer-host: https://nas-docker.compuelec.cl
+          username: ${{ secrets.PORTAINER_USERNAME }}
+          password: ${{ secrets.PORTAINER_PASSWORD }}
+          stack-name: 'worky-backend-dev'
+          stack-definition: 'docker-compose-worky.dev.yml'
+          image: socialworky/worky-backend:dev-${{ github.sha }}
+        env:
+          GIT_SHA: ${{ github.sha }}
 
-     - name: Deploy stack to Portainer
-       uses: carlrygart/portainer-stack-deploy@v1
-       with:
-         portainer-host: https://nas-docker.compuelec.cl
-         username: ${{ secrets.PORTAINER_USERNAME }}
-         password: ${{ secrets.PORTAINER_PASSWORD }}
-         stack-name: 'worky-backend-dev'
-         stack-definition: 'docker-compose-worky.dev.yml'
-         image: socialworky/worky-backend:dev-${{ github.sha }}
-       env:
-        GIT_SHA: ${{ github.sha }}
 
