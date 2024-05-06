@@ -36,5 +36,7 @@ jobs:
          password: ${{ secrets.PORTAINER_PASSWORD }}
          stack-name: 'worky-backend-dev'
          stack-definition: 'docker-compose-worky.dev.yml'
-         image: socialworky/worky-backend:dev
+         image: socialworky/worky-backend:dev-${{ github.sha }}
+      env:
+        GIT_SHA: ${{ github.sha }}
 

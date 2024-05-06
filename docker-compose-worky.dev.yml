@@ -3,7 +3,7 @@ services:
   app:
     depends_on:
      - db
-    image: socialworky/worky-backend:dev
+    image: socialworky/worky-backend:dev-${GIT_SHA}
     restart: always
     container_name: worky-backend
     ports:
