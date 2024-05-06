@@ -7,7 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { MailsService } from './mails.service';
 import { UsersService } from '../users/users.service';
 import { CreateMailDto } from './dto/create-mail.dto';
@@ -25,6 +25,7 @@ export class MailsController {
     return this._mailsService.getEmailValidate(token);
   }
 
+  @ApiExcludeEndpoint()
   @Post('forgotPassword')
   async forgotPasswordSend(@Body() data: CreateMailDto) {
     const user = await this._usersService.findOneByEmail(data.email);
@@ -50,6 +51,7 @@ export class MailsController {
       });
   }
 
+  @ApiExcludeEndpoint()
   @Post('resetPassword')
   async resetPassword(@Body() data: CreateMailDto) {
     const user = await this._usersService.findOneByEmail(data.email);
