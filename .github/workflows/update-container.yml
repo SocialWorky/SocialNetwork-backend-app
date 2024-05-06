@@ -1,0 +1,32 @@
+name: Update Container on Portainer
+
+on:
+  push:
+    branches:
+      - development
+
+jobs:
+  update-container:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Build and push Docker image
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+      run: |
+        docker build -t socialworky/worky-backend:dev .
+        docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
+        docker push socialworky/worky-backend:dev
+
+    - name: Login to Portainer
+      run: |
+        docker login -u ${{ secrets.PORTAINER_USERNAME }} -p ${{ secrets.PORTAINER_PASSWORD }} https://nas-docker.compuelec.cl
+
+    - name: Update Portainer Stack
+      run: |
+        docker stack deploy -c docker-compose.yml worky-backend-dev
+
