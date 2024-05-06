@@ -36,7 +36,7 @@ services:
       - POSTGRES_PASSWORD=${DB_PASSWORD}
       - POSTGRES_DB=${DB_DATABASE}
     volumes:
-      - ./postgres-db:/var/lib/postgresql/data
+      - postgres-db:/var/lib/postgresql/data
     ports:
       - ${DB_PORT}:5432
   
@@ -52,11 +52,10 @@ services:
       - PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
       - PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
     volumes:
-      - ./pgadmin-data:/var/lib/pgadmin
+      - pgadmin-data:/var/lib/pgadmin
 
 volumes:
   postgres-db:
     external: false
   pgadmin-data:
     external: false
-    
