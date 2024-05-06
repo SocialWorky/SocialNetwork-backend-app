@@ -33,22 +33,22 @@ jobs:
          stack-name: 'worky-backend-dev'
          stack-definition: 'docker-compose.yml'
          image: socialworky/worky-backend:dev
-       env:
-         SERVER_HOST: ${{ secrets.WORKY_SERVER_HOST_DEV }}
-         APP_VERSION: ${{ secrets.WORKY_APP_VERSION_DEV }}
-         APP_PORT: ${{ secrets.WORKY_APP_PORT_DEV }}
-         DB_HOST: ${{ secrets.WORKY_DB_HOST_DEV }}
-         DB_PORT: ${{ secrets.WORKY_DB_PORT_DEV }}
-         DB_USERNAME: ${{ secrets.WORKY_DB_USERNAME_DEV }}
-         DB_PASSWORD: ${{ secrets.WORKY_DB_PASSWORD_DEV }}
-         DB_DATABASE: ${{ secrets.WORKY_DB_DATABASE_DEV }}
-         DB_SSL: ${{ secrets.WORKY_DB_SSL_DEV }}
-         JWT_SECRET: ${{ secrets.WORKY_JWT_SECRET_DEV }}
+       #env:
+         #SERVER_HOST: ${{ secrets.WORKY_SERVER_HOST_DEV }}
+         #APP_VERSION: ${{ secrets.WORKY_APP_VERSION_DEV }}
+         #APP_PORT: ${{ secrets.WORKY_APP_PORT_DEV }}
+         #DB_HOST: ${{ secrets.WORKY_DB_HOST_DEV }}
+         #DB_PORT: ${{ secrets.WORKY_DB_PORT_DEV }}
+         #DB_USERNAME: ${{ secrets.WORKY_DB_USERNAME_DEV }}
+         #DB_PASSWORD: ${{ secrets.WORKY_DB_PASSWORD_DEV }}
+         #DB_DATABASE: ${{ secrets.WORKY_DB_DATABASE_DEV }}
+         #DB_SSL: ${{ secrets.WORKY_DB_SSL_DEV }}
+         #JWT_SECRET: ${{ secrets.WORKY_JWT_SECRET_DEV }}
          # MAIL
-         MAIL_HOST: ${{ secrets.WORKY_MAIL_HOST_DEV }}
-         MAIL_USER: ${{ secrets.WORKY_MAIL_USER_DEV }}
-         MAIL_PASSWORD: ${{ secrets.WORKY_MAIL_PASSWORD_DEV }}
-         MAIL_FROM: ${{ secrets.WORKY_MAIL_FROM_DEV }}
+         #MAIL_HOST: ${{ secrets.WORKY_MAIL_HOST_DEV }}
+         #MAIL_USER: ${{ secrets.WORKY_MAIL_USER_DEV }}
+         #MAIL_PASSWORD: ${{ secrets.WORKY_MAIL_PASSWORD_DEV }}
+         #MAIL_FROM: ${{ secrets.WORKY_MAIL_FROM_DEV }}
          # DB
          #POSTGRES_USER: ${{ secrets.WORKY_DB_USERNAME_DEV }}
          #POSTGRES_PASSWORD: ${{ secrets.WORKY_DB_PASSWORD_DEV }}
