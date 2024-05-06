@@ -7,7 +7,7 @@ import {
   Param,
   Post,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { MailsService } from './mails.service';
 import { UsersService } from '../users/users.service';
 import { CreateMailDto } from './dto/create-mail.dto';
@@ -67,6 +67,7 @@ export class MailsController {
     });
   }
 
+  @ApiBearerAuth()
   @Get('sendEmailPending')
   async sendEmailPending() {
     return this._mailsService.sendEmailPending();
