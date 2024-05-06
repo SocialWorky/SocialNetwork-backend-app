@@ -54,5 +54,6 @@ jobs:
          POSTGRES_PASSWORD: ${{ secrets.WORKY_DB_PASSWORD_DEV }}
          POSTGRES_DB: ${{ secrets.WORKY_DB_DATABASE_DEV }}
          # PGADMIN
+         PGADMIN_PORT: 82
          PGADMIN_DEFAULT_PASSWORD: losbar191184
          PGADMIN_DEFAULT_EMAIL: soporte@worky.cl
