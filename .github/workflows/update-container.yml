@@ -25,25 +25,25 @@ jobs:
      - name: Deploy stack to Portainer
        uses: carlrygart/portainer-stack-deploy@v1
        with:
-        portainer-host: nas-docker.compuelec.cl
+        portainer-host: https://nas-docker.compuelec.cl
         username: ${{ secrets.PORTAINER_USERNAME }}
         password: ${{ secrets.PORTAINER_PASSWORD }}
         stack-name: 'worky-backend-dev'
         stack-definition: 'docker-compose.yml'
         image: socialworky/worky-backend:dev
        env:
-        SERVER_HOST: $WORKY_SERVER_HOST_DEV
-        APP_VERSION: $WORKY_APP_VERSION_DEV
-        APP_PORT: $WORKY_APP_PORT_DEV
-        DB_HOST: $WORKY_DB_HOST_DEV
-        DB_PORT: $WORKY_DEB_PORT_DEV
-        DB_USERNAME: $WORKY_DB_USERNAME_DEV
-        DB_PASSWORD: $WORKY_DB_PASSWORD_DEV
-        DB_DATABASE: $WORKY_DB_DATABASE_DEV
-        DB_SSL: $WORKY_DB_SSL_DEV
-        JWT_SECRET: $WORKY_JWT_SECRET_DEV
+        SERVER_HOST: ${{ vars.WORKY_SERVER_HOST_DEV }}
+        APP_VERSION: ${{ vars.WORKY_APP_VERSION_DEV }}
+        APP_PORT: ${{ vars.WORKY_APP_PORT_DEV }}
+        DB_HOST: ${{ vars.WORKY_DB_HOST_DEV }}
+        DB_PORT: ${{ vars.WORKY_DEB_PORT_DEV }}
+        DB_USERNAME: ${{ vars.WORKY_DB_USERNAME_DEV }}
+        DB_PASSWORD: ${{ vars.WORKY_DB_PASSWORD_DEV }}
+        DB_DATABASE: ${{ vars.WORKY_DB_DATABASE_DEV }}
+        DB_SSL: ${{ vars.WORKY_DB_SSL_DEV }}
+        JWT_SECRET: ${{ vars.WORKY_JWT_SECRET_DEV }}
         # MAIL
-        MAIL_HOST: $WORKY_MAIL_HOST_DEV
-        MAIL_USER: $WORKY_MAIL_USER_DEV
-        MAIL_PASSWORD: $WORKY_MAIL_PASSWORD_DEV
-        MAIL_FROM: $WORKY_MAIL_FROM_DEV
+        MAIL_HOST: ${{ vars.WORKY_MAIL_HOST_DEV }}
+        MAIL_USER: ${{ vars.WORKY_MAIL_USER_DEV }}
+        MAIL_PASSWORD: ${{ vars.WORKY_MAIL_PASSWORD_DEV }}
+        MAIL_FROM: ${{ vars.WORKY_MAIL_FROM_DEV }}
