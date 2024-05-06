@@ -25,7 +25,7 @@ export class MailsController {
     return this._mailsService.getEmailValidate(token);
   }
 
-  @ApiExcludeEndpoint()
+  //@ApiExcludeEndpoint()
   @Post('forgotPassword')
   async forgotPasswordSend(@Body() data: CreateMailDto) {
     const user = await this._usersService.findOneByEmail(data.email);
