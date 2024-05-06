@@ -25,7 +25,7 @@ jobs:
     - name: Deploy stack to Portainer
       uses: carlrygart/portainer-stack-deploy@v1
       with:
-        portainer-host: https://nas-docker.compuelec.cl
+        portainer-host: nas-docker.compuelec.cl
         username: ${{ secrets.PORTAINER_USERNAME }}
         password: ${{ secrets.PORTAINER_PASSWORD }}
         stack-name: 'worky-backend-dev'
