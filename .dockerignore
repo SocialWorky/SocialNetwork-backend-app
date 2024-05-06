@@ -8,3 +8,4 @@ Dockerfile
 .dockerignore
 README.md
 .env*
+.github/*
