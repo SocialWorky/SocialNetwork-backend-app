@@ -31,7 +31,6 @@ jobs:
          username: ${{ secrets.PORTAINER_USERNAME }}
          password: ${{ secrets.PORTAINER_PASSWORD }}
          stack-name: 'worky-backend-dev'
-         stack-definition: 'docker-compose.yml'
-         template-variables: '{"USER_NAME": "socialworky"}'
+         stack-definition: 'docker-compose-worky.dev.yml'
          image: socialworky/worky-backend:dev
 
