@@ -22,11 +22,13 @@ jobs:
         docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD
         docker push socialworky/worky-backend:dev
 
-    - name: Login to Portainer
-      run: |
-        docker login -u ${{ secrets.PORTAINER_USERNAME }} -p ${{ secrets.PORTAINER_PASSWORD }} https://nas-docker.compuelec.cl
-
-    - name: Update Portainer Stack
-      run: |
-        docker stack deploy -c docker-compose.yml worky-backend-dev
+    - name: Deploy stack to Portainer
+      uses: carlrygart/portainer-stack-deploy@v1
+      with:
+        portainer-host: https://nas-docker.compuelec.cl
+        username: ${{ secrets.PORTAINER_USERNAME }}
+        password: ${{ secrets.PORTAINER_PASSWORD }}
+        stack-name: 'worky-backend-dev'
+        stack-definition: 'docker-compose.yml'
+        image: socialworky/worky-backend:dev
 
