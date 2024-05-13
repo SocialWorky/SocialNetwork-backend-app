@@ -42,7 +42,7 @@ export class User {
   @Column({ default: true })
   isActive: boolean;
 
-  @Column({ length: 500, nullable: true })
+  @Column({ length: 1200, nullable: true })
   token: string;
 
   @Column({ nullable: true })

@@ -164,8 +164,10 @@ export class UsersController {
   update(
     @Param('_id') _id: string,
     @Body() updateUser: UpdateUser,
-  ): Promise<string> {
-    return this.usersService.update(_id, updateUser);
+  ): Promise<{ message: string }> {
+    return this.usersService
+      .update(_id, updateUser)
+      .then(() => ({ message: 'User updated' }));
   }
 
   @Auth(Role.USER)
@@ -180,5 +182,16 @@ export class UsersController {
   @ApiBearerAuth()
   async findOneByEmail(@Param('email') email: string): Promise<User> {
     return this.usersService.findOneByEmail(email);
+  }
+
+  @Auth(Role.USER)
+  @Get('renewtoken/:_id')
+  @ApiBearerAuth()
+  async renewToken(@Param('_id') _id: string): Promise<string> {
+    const user = await this.usersService.findOne(_id);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    return this.authService.renewToken(user);
   }
 }
