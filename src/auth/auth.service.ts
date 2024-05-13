@@ -15,6 +15,7 @@ export class AuthService {
       username: user.username,
       name: user.name + ' ' + user.lastName,
       role: user.role,
+      avatar: user.avatar,
     };
     return this.jwtService.sign(payload);
   }
@@ -27,6 +28,21 @@ export class AuthService {
 
     // Expiration time: 3 hours
     const expirationTime = 3 * 60 * 60;
+
+    return this.jwtService.sign(payload, { expiresIn: expirationTime });
+  }
+
+  renewToken(user: User) {
+    const payload = {
+      id: user._id,
+      email: user.email,
+      username: user.username,
+      name: user.name + ' ' + user.lastName,
+      role: user.role,
+      avatar: user.avatar,
+    };
+
+    const expirationTime = 12 * 60 * 60;
 
     return this.jwtService.sign(payload, { expiresIn: expirationTime });
   }
