@@ -47,12 +47,15 @@ export class PublicationService {
       throw new BadRequestException('Author not found');
     }
 
-    await this.publicationRepository.save({
+    const newPublications = await this.publicationRepository.save({
       ...publication,
       author,
     });
 
-    return { message: 'Publication created successfully' };
+    return {
+      message: 'Publication created successfully',
+      publications: newPublications,
+    };
   }
 
   async getAllPublications() {
@@ -76,6 +79,7 @@ export class PublicationService {
         'author.username',
         'author.name',
         'author.lastName',
+        'author.avatar',
         'publication.createdAt',
         'publication.updatedAt',
         'media._id',

@@ -27,7 +27,7 @@ export class PublicationController {
   @ApiBearerAuth()
   async createPublication(
     @Body() createPublicationDto: CreatePublicationDto,
-  ): Promise<{ message: string }> {
+  ): Promise<{ message: string; publications: any }> {
     return this.publicationService.createPublication(createPublicationDto);
   }
 
