@@ -25,7 +25,7 @@ export class CommentService {
     private authService: AuthService,
   ) {}
 
-  async createComment(createCommentDto: CreateCommentDto): Promise<Comment> {
+  async createComment(createCommentDto: CreateCommentDto) {
     const { content, authorId, idPublication } = createCommentDto;
 
     const comment = new Comment();
@@ -42,7 +42,12 @@ export class CommentService {
     comment.publication =
       await this.publicationRepository.findOne(publicationOptions);
 
-    return this.commentRepository.save(comment);
+    await this.commentRepository.save(comment);
+
+    return {
+      message: 'Comment created successfully',
+      comment: comment,
+    };
   }
 
   async getAllComments(): Promise<Comment[]> {

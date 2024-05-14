@@ -24,7 +24,7 @@ export class CommentController {
   @ApiBearerAuth()
   async createComment(
     @Body() createCommentDto: CreateCommentDto,
-  ): Promise<Comment> {
+  ): Promise<{ message: string; comment: any }> {
     return this.commentService.createComment(createCommentDto);
   }
 
