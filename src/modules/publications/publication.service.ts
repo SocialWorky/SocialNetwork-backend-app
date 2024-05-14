@@ -98,7 +98,10 @@ export class PublicationService {
         'comment.content',
         'comment.createdAt',
         'commentAuthor._id',
+        'commentAuthor.name',
+        'commentAuthor.lastName',
         'commentAuthor.username',
+        'commentAuthor.avatar',
         'commentMedia._id',
         'commentMedia.url',
       ])
