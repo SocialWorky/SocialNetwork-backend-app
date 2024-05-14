@@ -105,6 +105,8 @@ export class PublicationService {
         'commentMedia._id',
         'commentMedia.url',
       ])
+      .orderBy('publication.createdAt', 'DESC')
+      .addOrderBy('comment.createdAt', 'DESC')
       .getMany();
     return publications;
   }
