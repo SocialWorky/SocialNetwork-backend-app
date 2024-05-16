@@ -6,6 +6,7 @@ import {
   Delete,
   Body,
   Param,
+  Query,
 } from '@nestjs/common';
 import { Publication } from './entities/publications.entity';
 import {
@@ -33,8 +34,11 @@ export class PublicationController {
 
   @Get('all')
   @ApiBearerAuth()
-  async getAllPublications(): Promise<Publication[]> {
-    return this.publicationService.getAllPublications();
+  async getAllPublications(
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 10,
+  ): Promise<Publication[]> {
+    return this.publicationService.getAllPublications(page, pageSize);
   }
 
   @Get(':_id')

@@ -3,6 +3,7 @@ import {
   HttpCode,
   HttpStatus,
   Injectable,
+  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -58,7 +59,11 @@ export class PublicationService {
     };
   }
 
-  async getAllPublications() {
+  async getAllPublications(
+    @Query('page') page = 1,
+    @Query('pageSize') pageSize = 10,
+  ) {
+    const skip = (page - 1) * pageSize;
     const publications = await this.publicationRepository
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
@@ -107,6 +112,8 @@ export class PublicationService {
       ])
       .orderBy('publication.createdAt', 'DESC')
       .addOrderBy('comment.createdAt', 'DESC')
+      .skip(skip)
+      .take(pageSize)
       .getMany();
     return publications;
   }
