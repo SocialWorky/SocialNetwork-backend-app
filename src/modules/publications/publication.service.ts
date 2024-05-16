@@ -110,6 +110,7 @@ export class PublicationService {
         'commentMedia._id',
         'commentMedia.url',
       ])
+      .where('publication.deletedAt IS NULL')
       .orderBy('publication.createdAt', 'DESC')
       .addOrderBy('comment.createdAt', 'DESC')
       .skip(skip)
@@ -146,6 +147,6 @@ export class PublicationService {
   }
 
   async deletePublication(id: string): Promise<void> {
-    await this.publicationRepository.delete(id);
+    await this.publicationRepository.update(id, { deletedAt: new Date() });
   }
 }
