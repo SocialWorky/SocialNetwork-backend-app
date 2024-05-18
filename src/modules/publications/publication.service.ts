@@ -40,6 +40,8 @@ export class PublicationService {
     publication._id = this.authService.cryptoIdKey();
     publication.content = createPublicationDto.content;
     publication.privacy = createPublicationDto.privacy;
+    publication.createdAt = new Date();
+    publication.updatedAt = new Date();
 
     const author = await this.userRepository.findOneBy({
       _id: createPublicationDto.authorId,
@@ -134,14 +136,20 @@ export class PublicationService {
       throw new Error('Publication not found');
     }
 
-    publication.content = updatePublicationDto.content
-      ? updatePublicationDto.content
-      : publication.content;
-    publication.privacy = updatePublicationDto.privacy
-      ? updatePublicationDto.privacy
-      : publication.privacy;
+    const shouldUpdate =
+      updatePublicationDto.content || updatePublicationDto.privacy;
 
-    await this.publicationRepository.save(publication);
+    if (shouldUpdate) {
+      publication.content = updatePublicationDto.content
+        ? updatePublicationDto.content
+        : publication.content;
+      publication.privacy = updatePublicationDto.privacy
+        ? updatePublicationDto.privacy
+        : publication.privacy;
+
+      publication.updatedAt = new Date();
+      await this.publicationRepository.save(publication);
+    }
 
     return { message: 'Publication updated successfully' };
   }

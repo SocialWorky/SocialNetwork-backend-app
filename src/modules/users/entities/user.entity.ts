@@ -48,13 +48,13 @@ export class User {
   @Column({ nullable: true })
   avatar: string;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
   @OneToMany(() => Publication, (publication) => publication.author)

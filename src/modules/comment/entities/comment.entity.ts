@@ -38,9 +38,9 @@ export class Comment {
   @OneToMany(() => TagUsers, (tagUsers) => tagUsers.comment)
   taggedUsers: TagUsers[];
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 }

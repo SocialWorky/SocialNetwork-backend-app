@@ -22,7 +22,7 @@ export class TagUsers {
   @Column()
   _idPublication: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
   @ManyToOne(() => Publication, (publication) => publication.reaction)
