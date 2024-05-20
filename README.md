@@ -27,7 +27,7 @@
 ## Node -V
 
 ```bash
-18.18.0
+22.1.0
 ```
 
 ## Installation
