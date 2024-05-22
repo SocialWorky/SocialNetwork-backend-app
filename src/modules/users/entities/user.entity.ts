@@ -12,6 +12,7 @@ import { Comment } from '../../comment/entities/comment.entity';
 import { TagUsers } from '../../tagsUsers/entities/tagUsers.entity';
 import { Reaction } from '../../reaction/entities/reaction.entity';
 import { Role } from '../../../common/enums/rol.enum';
+import { Friendship } from 'src/modules/friends/entities/friend.entity';
 
 @Entity()
 export class User {
@@ -68,4 +69,10 @@ export class User {
 
   @OneToMany(() => Reaction, (reaction) => reaction.user)
   reactions: Reaction[];
+
+  @OneToMany(() => Friendship, friendship => friendship.requester)
+  sentFriendRequests: Friendship[];
+
+  @OneToMany(() => Friendship, friendship => friendship.receiver)
+  receivedFriendRequests: Friendship[];
 }

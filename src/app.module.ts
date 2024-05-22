@@ -14,6 +14,7 @@ import { MediaModule } from './modules/postMediaFiles/postMediaFiles.module';
 import { CustomReactionModule } from './modules/customReaction/customReaction.module';
 import { CommentModule } from './modules/comment/comment.module';
 import { MailsModule } from './modules/mails/mails.module';
+import { FriendsModule } from './modules/friends/friends.module';
 import * as cors from 'cors';
 
 @Module({
@@ -50,6 +51,7 @@ import * as cors from 'cors';
     CustomReactionModule,
     CommentModule,
     MailsModule,
+    FriendsModule,
   ],
   controllers: [],
   providers: [
