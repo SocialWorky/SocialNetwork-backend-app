@@ -1,4 +1,4 @@
-import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
+import { Injectable, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -61,21 +61,47 @@ export class UsersService {
     return this.usersRepository.save(user);
   }
 
-  async findAllSelect(select): Promise<User[]> {
-    return this.usersRepository.find({ select: select });
-  }
+  async findAll(
+    @Query('limit') limit?: number,
+    @Query('role') role?: string,
+    @Query('excludeAdmin') excludeAdmin: boolean = true,
+  ): Promise<User[]> {
+    const params = {
+      limit,
+      role,
+      excludeAdmin,
+    };
 
-  async findAll(): Promise<User[]> {
-    return this.findAllSelect([
-      '_id',
-      'username',
-      'name',
-      'lastName',
-      'email',
-      'role',
-      'isVerified',
-      'avatar',
-    ]);
+    const queryBuilder = await this.usersRepository.createQueryBuilder('user');
+
+    if (params.limit) {
+      queryBuilder.limit(params.limit);
+    }
+
+    if (params.role) {
+      queryBuilder.andWhere('user.role = :role', { role: params.role });
+    }
+
+    if (params.excludeAdmin) {
+      queryBuilder.andWhere('user.role != :role', { role: 'admin' });
+    }
+
+    return queryBuilder
+      .select([
+        'user._id',
+        'user.username',
+        'user.name',
+        'user.lastName',
+        'user.email',
+        'user.role',
+        'user.isVerified',
+        'user.avatar',
+        'user.isActive',
+        'user.createdAt',
+        'user.updatedAt',
+      ])
+      .orderBy('user._id', 'DESC')
+      .getMany();
   }
 
   async findOne(_id: string): Promise<User> {

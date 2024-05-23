@@ -70,9 +70,9 @@ export class User {
   @OneToMany(() => Reaction, (reaction) => reaction.user)
   reactions: Reaction[];
 
-  @OneToMany(() => Friendship, friendship => friendship.requester)
+  @OneToMany(() => Friendship, (friendship) => friendship.requester)
   sentFriendRequests: Friendship[];
 
-  @OneToMany(() => Friendship, friendship => friendship.receiver)
+  @OneToMany(() => Friendship, (friendship) => friendship.receiver)
   receivedFriendRequests: Friendship[];
 }

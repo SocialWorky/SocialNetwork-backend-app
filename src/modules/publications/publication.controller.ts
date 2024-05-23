@@ -41,6 +41,12 @@ export class PublicationController {
     return this.publicationService.getAllPublications(page, pageSize);
   }
 
+  @Get('count')
+  @ApiBearerAuth()
+  async countPublications(): Promise<number> {
+    return this.publicationService.getCountPublications();
+  }
+
   @Get(':_id')
   @ApiBearerAuth()
   async getPublicationById(@Param('_id') _id: string): Promise<Publication> {

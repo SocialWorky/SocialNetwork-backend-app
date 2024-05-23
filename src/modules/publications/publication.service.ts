@@ -121,6 +121,10 @@ export class PublicationService {
     return publications;
   }
 
+  async getCountPublications() {
+    return await this.publicationRepository.count();
+  }
+
   async getPublicationById(_id: string) {
     return await this.publicationRepository.findOneBy({ _id });
   }

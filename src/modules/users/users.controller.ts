@@ -9,6 +9,7 @@ import {
   Put,
   HttpException,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -147,8 +148,12 @@ export class UsersController {
   @Auth(Role.USER)
   @Get()
   @ApiBearerAuth()
-  findAll(): Promise<User[]> {
-    return this.usersService.findAll();
+  findAll(
+    @Query('limit') limit?: number,
+    @Query('role') role?: string,
+    @Query('excludeAdmin') excludeAdmin?: boolean,
+  ): Promise<User[]> {
+    return this.usersService.findAll(limit, role, excludeAdmin);
   }
 
   @Auth(Role.USER)
