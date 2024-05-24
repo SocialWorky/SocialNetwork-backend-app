@@ -49,7 +49,7 @@ export class PublicationController {
 
   @Get(':_id')
   @ApiBearerAuth()
-  async getPublicationById(@Param('_id') _id: string): Promise<Publication> {
+  async getPublicationById(@Param('_id') _id: string): Promise<Publication[]> {
     return this.publicationService.getPublicationById(_id);
   }
 

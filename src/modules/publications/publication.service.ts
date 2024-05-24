@@ -126,7 +126,56 @@ export class PublicationService {
   }
 
   async getPublicationById(_id: string) {
-    return await this.publicationRepository.findOneBy({ _id });
+    const publications = await this.publicationRepository
+      .createQueryBuilder('publication')
+      .leftJoinAndSelect('publication.author', 'author')
+      .leftJoinAndSelect('publication.media', 'media')
+      .leftJoinAndSelect('publication.reaction', 'reaction')
+      .leftJoinAndSelect('reaction.user', 'reactionUser')
+      .leftJoinAndSelect('reaction.customReaction', 'customReaction')
+      .leftJoinAndSelect('publication.taggedUsers', 'taggedUsers')
+      .leftJoinAndSelect('taggedUsers.userTagged', 'taggedUser')
+      .leftJoinAndSelect('publication.comment', 'comment')
+      .leftJoinAndSelect('comment.author', 'commentAuthor')
+      .leftJoinAndSelect('comment.media', 'commentMedia')
+      .select([
+        'publication._id',
+        'publication.content',
+        'publication.privacy',
+        'author._id',
+        'author.username',
+        'author.name',
+        'author.lastName',
+        'author.avatar',
+        'publication.createdAt',
+        'publication.updatedAt',
+        'media._id',
+        'media.url',
+        'reaction._id',
+        'reactionUser._id',
+        'reactionUser.username',
+        'taggedUsers._id',
+        'taggedUser._id',
+        'taggedUser.username',
+        'taggedUser.name',
+        'customReaction._id',
+        'customReaction.name',
+        'customReaction.emoji',
+        'comment._id',
+        'comment.content',
+        'comment.createdAt',
+        'commentAuthor._id',
+        'commentAuthor.name',
+        'commentAuthor.lastName',
+        'commentAuthor.username',
+        'commentAuthor.avatar',
+        'commentMedia._id',
+        'commentMedia.url',
+      ])
+      .where('publication._id = :_id', { _id: _id })
+      .andWhere('publication.deletedAt IS NULL')
+      .getMany();
+    return publications;
   }
 
   async updatePublication(
