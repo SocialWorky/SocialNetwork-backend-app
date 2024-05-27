@@ -11,8 +11,6 @@ export class ConfigController {
   constructor(private readonly configService: ConfigService) {}
 
   @Get()
-  @Auth(Role.ADMIN)
-  @ApiBearerAuth()
   async getConfig(): Promise<Config> {
     return this.configService.getConfig();
   }
