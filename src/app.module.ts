@@ -15,6 +15,7 @@ import { CustomReactionModule } from './modules/customReaction/customReaction.mo
 import { CommentModule } from './modules/comment/comment.module';
 import { MailsModule } from './modules/mails/mails.module';
 import { FriendsModule } from './modules/friends/friends.module';
+import { ConfigModule } from './modules/config/config.module';
 import * as cors from 'cors';
 
 @Module({
@@ -52,6 +53,7 @@ import * as cors from 'cors';
     CommentModule,
     MailsModule,
     FriendsModule,
+    ConfigModule,
   ],
   controllers: [],
   providers: [
