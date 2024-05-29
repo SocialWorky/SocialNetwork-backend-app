@@ -19,6 +19,12 @@ export class CreatePublicationDto {
   privacy: string;
 
   @IsString()
+  @IsOptional()
+  extraData?: {
+    locations: string;
+  };
+
+  @IsString()
   @ApiProperty()
   authorId: string;
 
@@ -45,4 +51,8 @@ export class UpdatePublicationDto {
   @ApiProperty()
   @IsOptional()
   privacy?: string;
+
+  @IsString()
+  @IsOptional()
+  extraData?: string;
 }

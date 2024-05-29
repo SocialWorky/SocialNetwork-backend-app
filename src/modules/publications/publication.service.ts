@@ -40,6 +40,7 @@ export class PublicationService {
     publication._id = this.authService.cryptoIdKey();
     publication.content = createPublicationDto.content;
     publication.privacy = createPublicationDto.privacy;
+    publication.extraData = createPublicationDto.extraData;
     publication.createdAt = new Date();
     publication.updatedAt = new Date();
 
@@ -82,6 +83,7 @@ export class PublicationService {
         'publication._id',
         'publication.content',
         'publication.privacy',
+        'publication.extraData',
         'author._id',
         'author.username',
         'author.name',
@@ -142,6 +144,7 @@ export class PublicationService {
         'publication._id',
         'publication.content',
         'publication.privacy',
+        'publication.extraData',
         'author._id',
         'author.username',
         'author.name',

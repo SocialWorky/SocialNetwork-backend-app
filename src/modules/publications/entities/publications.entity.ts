@@ -48,4 +48,9 @@ export class Publication {
 
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt?: Date;
+
+  @Column('jsonb', { nullable: true })
+  extraData: {
+    locations: string;
+  };
 }
