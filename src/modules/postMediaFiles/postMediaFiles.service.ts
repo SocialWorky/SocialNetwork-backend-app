@@ -37,6 +37,8 @@ export class MediaService {
     const media = new Media();
     media._id = this.authService.cryptoIdKey();
     media.url = createMediaDto.url;
+    media.urlThumbnail = createMediaDto.urlThumbnail;
+    media.urlCompressed = createMediaDto.urlCompressed;
 
     if (createMediaDto.isPublications) {
       const publication = await this.publicationRepository.findOne({

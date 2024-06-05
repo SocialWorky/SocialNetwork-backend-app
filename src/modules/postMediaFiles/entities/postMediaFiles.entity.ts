@@ -10,6 +10,12 @@ export class Media {
   @Column()
   url: string;
 
+  @Column({ nullable: true })
+  urlThumbnail: string;
+
+  @Column({ nullable: true })
+  urlCompressed: string;
+
   @Column({ default: false })
   isPublications: boolean;
 

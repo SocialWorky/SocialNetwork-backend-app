@@ -6,6 +6,14 @@ export class CreateMediaDto {
   @ApiProperty()
   url: string;
 
+  @IsString()
+  @ApiProperty()
+  urlThumbnail: string;
+
+  @IsString()
+  @ApiProperty()
+  urlCompressed: string;
+
   @IsBoolean()
   @ApiProperty()
   @IsOptional()
