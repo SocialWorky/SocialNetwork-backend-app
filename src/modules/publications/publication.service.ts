@@ -156,6 +156,8 @@ export class PublicationService {
         'publication.updatedAt',
         'media._id',
         'media.url',
+        'media.urlThumbnail',
+        'media.urlCompressed',
         'reaction._id',
         'reactionUser._id',
         'reactionUser.username',
