@@ -1,11 +1,12 @@
 import { Injectable, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import { CreateUser, UpdateUser } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { AuthService } from '../../auth/auth.service';
 import { Email } from '../mails/entities/mail.entity';
+import { Role } from 'src/common/enums/rol.enum';
 
 @Injectable()
 export class UsersService {
@@ -108,10 +109,48 @@ export class UsersService {
     return this.usersRepository.findOneBy({ _id: _id });
   }
 
-  async findOneByUsername(username: string): Promise<User> {
-    return this.usersRepository.findOne({
-      where: { username: username },
+  async findOneByUsername(username: string): Promise<
+    {
+      _id: string;
+      username: string;
+      name: string;
+      lastName: string;
+      email: string;
+      role: Role;
+      avatar: string;
+    }[]
+  > {
+    const searchTerms = username.split(' ').filter((term) => term);
+
+    const searchConditions = searchTerms
+      .map((term) => [
+        { name: ILike(`%${term}%`) },
+        { lastName: ILike(`%${term}%`) },
+      ])
+      .flat();
+
+    const users = await this.usersRepository.find({
+      select: [
+        '_id',
+        'username',
+        'name',
+        'lastName',
+        'email',
+        'role',
+        'avatar',
+      ],
+      where: searchConditions,
     });
+
+    return users.map((user) => ({
+      _id: user._id,
+      username: user.username,
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+    }));
   }
 
   async update(_id: string, updateUser: UpdateUser): Promise<string> {

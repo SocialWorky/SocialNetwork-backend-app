@@ -199,4 +199,20 @@ export class UsersController {
     }
     return this.authService.renewToken(user);
   }
+
+  @Auth(Role.USER)
+  @Get('username/:username')
+  @ApiBearerAuth()
+  async findOneByUsername(@Param('username') username: string): Promise<
+    {
+      _id: string;
+      username: string;
+      name: string;
+      email: string;
+      role: Role;
+      avatar: string;
+    }[]
+  > {
+    return this.usersService.findOneByUsername(username);
+  }
 }
