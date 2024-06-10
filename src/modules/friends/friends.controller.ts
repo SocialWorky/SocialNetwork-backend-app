@@ -1,41 +1,62 @@
-import { Controller, Get, Post, Body, Param, Delete, Put, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Put,
+  HttpCode,
+} from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { User } from '../users/entities/user.entity';
-
+import { ApiBearerAuth } from '@nestjs/swagger';
+import { Friendship } from './entities/friend.entity';
 
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
-
+  @ApiBearerAuth()
   @Get(':userId')
   async getFriends(@Param('userId') userId: string): Promise<User[]> {
     return this.friendsService.getFriends(userId);
   }
 
-  @Post('request')
-async sendFriendRequest(
-  @Body('senderId') senderId: string,
-  @Body('receiverId') receiverId: string,
-): Promise<{ message: string; friendshipId: string }> {
-  return this.friendsService.sendFriendRequest(senderId, receiverId);
-}
+  @ApiBearerAuth()
+  @Get('isfriend/:userId/:friendId')
+  async getIsMyFriend(
+    @Param('userId') userId: string,
+    @Param('friendId') friendId: string,
+  ): Promise<Friendship> {
+    return this.friendsService.getIsMyFriend(userId, friendId);
+  }
 
+  @ApiBearerAuth()
+  @Post('request')
+  async sendFriendRequest(
+    @Body('senderId') senderId: string,
+    @Body('receiverId') receiverId: string,
+  ): Promise<{ message: string; friendshipId: string }> {
+    return this.friendsService.sendFriendRequest(senderId, receiverId);
+  }
+
+  @ApiBearerAuth()
   @Put('accept/:friendshipId')
   @HttpCode(204)
-  async acceptFriendRequest(@Param('friendshipId') friendshipId: string): Promise<string> {
+  async acceptFriendRequest(
+    @Param('friendshipId') friendshipId: string,
+  ): Promise<string> {
     await this.friendsService.acceptFriendRequest(friendshipId);
     return 'Friend request accepted successfully.';
   }
 
-  @Delete()
-  async removeFriend(
-    @Body('senderId') senderId: string,
-    @Body('receiverId') receiverId: string,
-  ): Promise<string> {
-    await this.friendsService.removeFriend(senderId, receiverId);
-    return 'Friend removed successfully.';
+  @ApiBearerAuth()
+  @Delete(':id')
+  async removeFriend(@Param('id') id: string): Promise<Friendship> {
+    return await this.friendsService.removeFriend(id);
   }
 
+  @ApiBearerAuth()
   @Put('block/:receiverId')
   @HttpCode(204)
   async blockFriend(

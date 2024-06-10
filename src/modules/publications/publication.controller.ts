@@ -7,6 +7,7 @@ import {
   Body,
   Param,
   Query,
+  Req,
 } from '@nestjs/common';
 import { Publication } from './entities/publications.entity';
 import {
@@ -37,8 +38,16 @@ export class PublicationController {
   async getAllPublications(
     @Query('page') page = 1,
     @Query('pageSize') pageSize = 10,
+    @Query('type') type?: string,
+    @Req() request?: Request,
   ): Promise<Publication[]> {
-    return this.publicationService.getAllPublications(page, pageSize);
+    const userId = request['user'].id;
+    return this.publicationService.getAllPublications(
+      page,
+      pageSize,
+      type,
+      userId,
+    );
   }
 
   @Get('count')

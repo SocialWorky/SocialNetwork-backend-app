@@ -3,10 +3,9 @@ import {
   HttpCode,
   HttpStatus,
   Injectable,
-  Query,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Brackets, Repository } from 'typeorm';
 import { Publication } from './entities/publications.entity';
 import { User } from '../users/entities/user.entity';
 import { Media } from '../postMediaFiles/entities/postMediaFiles.entity';
@@ -16,6 +15,8 @@ import {
   UpdatePublicationDto,
 } from './dto/publication.dto';
 import { AuthService } from '../../auth/auth.service';
+import { Friendship } from '../friends/entities/friend.entity';
+import { Status } from 'src/common/enums/status.enum';
 
 @Injectable()
 export class PublicationService {
@@ -31,6 +32,9 @@ export class PublicationService {
 
     @InjectRepository(Comment)
     private readonly commentRepository: Repository<Comment>,
+
+    @InjectRepository(Friendship)
+    private readonly friendshipRepository: Repository<Friendship>,
     private authService: AuthService,
   ) {}
 
@@ -62,12 +66,34 @@ export class PublicationService {
     };
   }
 
+  async getFriendIds(userId: string): Promise<string[]> {
+    const friendships = await this.friendshipRepository.find({
+      where: [
+        { requester: { _id: userId }, status: Status.ACCEPTED },
+        { receiver: { _id: userId }, status: Status.ACCEPTED },
+      ],
+      relations: ['requester', 'receiver'],
+    });
+
+    const friendIds = friendships.map((friendship) =>
+      friendship.requester._id === userId
+        ? friendship.receiver._id
+        : friendship.requester._id,
+    );
+
+    return friendIds;
+  }
+
   async getAllPublications(
-    @Query('page') page = 1,
-    @Query('pageSize') pageSize = 10,
-  ) {
+    page: number = 1,
+    pageSize: number = 10,
+    type: string = 'all',
+    userId: string,
+  ): Promise<Publication[]> {
     const skip = (page - 1) * pageSize;
-    const publications = await this.publicationRepository
+    const friendIds = await this.getFriendIds(userId); // Obtener los IDs de los amigos
+
+    const queryBuilder = this.publicationRepository
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.media', 'media')
@@ -115,13 +141,50 @@ export class PublicationService {
         'commentAuthor.avatar',
         'commentMedia._id',
         'commentMedia.url',
-      ])
-      .where('publication.deletedAt IS NULL')
-      .orderBy('publication.createdAt', 'DESC')
-      .addOrderBy('comment.createdAt', 'DESC')
-      .skip(skip)
-      .take(pageSize)
-      .getMany();
+      ]);
+
+    if (type === 'all') {
+      queryBuilder
+        .where(
+          new Brackets((qb) => {
+            qb.where('publication.privacy = :privacyPublic', {
+              privacyPublic: 'public',
+            }).orWhere('publication.author._id = :userId', { userId });
+
+            if (friendIds.length > 0) {
+              qb.orWhere(
+                new Brackets((subQb) => {
+                  subQb
+                    .where('publication.author._id IN (:...friendIds)', {
+                      friendIds,
+                    })
+                    .andWhere('publication.privacy IN (:...privacyLevels)', {
+                      privacyLevels: ['friends', 'public'],
+                    });
+                }),
+              );
+            }
+          }),
+        )
+        .andWhere('publication.deletedAt IS NULL')
+        .orderBy('publication.createdAt', 'DESC')
+        .addOrderBy('comment.createdAt', 'DESC');
+    } else if (type === 'public') {
+      queryBuilder
+        .where('publication.privacy = :privacy', { privacy: 'public' })
+        .andWhere('publication.deletedAt IS NULL')
+        .orderBy('publication.createdAt', 'DESC')
+        .addOrderBy('comment.createdAt', 'DESC');
+    } else if (type === 'private') {
+      queryBuilder
+        .where('publication.privacy = :privacy', { privacy: 'private' })
+        .andWhere('publication.author._id = :userId', { userId })
+        .andWhere('publication.deletedAt IS NULL')
+        .orderBy('publication.createdAt', 'DESC')
+        .addOrderBy('comment.createdAt', 'DESC');
+    }
+
+    const publications = await queryBuilder.skip(skip).take(pageSize).getMany();
     return publications;
   }
 

@@ -9,10 +9,11 @@ import { Publication } from './entities/publications.entity';
 import { PublicationController } from './publication.controller';
 import { PublicationService } from './publication.service';
 import { AuthModule } from '../../auth/auth.module';
+import { Friendship } from '../friends/entities/friend.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Publication, Comment]),
+    TypeOrmModule.forFeature([Publication, Comment, Friendship]),
     AuthModule,
     UsersModule,
     MediaModule,
