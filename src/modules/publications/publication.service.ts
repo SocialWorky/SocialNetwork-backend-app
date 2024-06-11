@@ -84,6 +84,26 @@ export class PublicationService {
     return friendIds;
   }
 
+  async getPendingFriendRequests(
+    userId: string,
+  ): Promise<{ userId: string; requestId: string }[]> {
+    const pendingFriendships = await this.friendshipRepository.find({
+      where: [
+        { requester: { _id: userId }, status: Status.PENDING },
+        { receiver: { _id: userId }, status: Status.PENDING },
+      ],
+      relations: ['requester', 'receiver'],
+    });
+
+    return pendingFriendships.map((friendship) => ({
+      userId:
+        friendship.requester._id === userId
+          ? friendship.receiver._id
+          : friendship.requester._id,
+      requestId: friendship.id,
+    }));
+  }
+
   async getAllPublications(
     page: number = 1,
     pageSize: number = 10,
@@ -91,7 +111,8 @@ export class PublicationService {
     userId: string,
   ): Promise<Publication[]> {
     const skip = (page - 1) * pageSize;
-    const friendIds = await this.getFriendIds(userId); // Obtener los IDs de los amigos
+    const friendIds = await this.getFriendIds(userId);
+    const pendingFriendRequests = await this.getPendingFriendRequests(userId);
 
     const queryBuilder = this.publicationRepository
       .createQueryBuilder('publication')
@@ -185,7 +206,19 @@ export class PublicationService {
     }
 
     const publications = await queryBuilder.skip(skip).take(pageSize).getMany();
-    return publications;
+
+    // Agregar isMyFriend e isFriendshipPending a cada publicación
+    return publications.map((publication) => {
+      const pendingRequest = pendingFriendRequests.find(
+        (request) => request.userId === publication.author._id,
+      );
+
+      return {
+        ...publication,
+        isMyFriend: friendIds.includes(publication.author._id),
+        isFriendshipPending: pendingRequest ? pendingRequest.requestId : null,
+      };
+    });
   }
 
   async getCountPublications() {
