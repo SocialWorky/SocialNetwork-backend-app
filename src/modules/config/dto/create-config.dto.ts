@@ -16,4 +16,8 @@ export class CreateConfigDto {
   @IsString()
   @IsNotEmpty()
   privacyPolicy: string;
+
+  @IsString()
+  @IsNotEmpty()
+  customCss: string;
 }

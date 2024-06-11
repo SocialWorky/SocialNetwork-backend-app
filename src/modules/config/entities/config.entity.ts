@@ -13,6 +13,9 @@ export class Config {
     privacyPolicy: string;
   };
 
+  @Column({ default: '' })
+  customCss: string;
+
   @Column()
   createdAt: Date;
 

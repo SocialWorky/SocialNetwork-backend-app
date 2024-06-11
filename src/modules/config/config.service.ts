@@ -21,6 +21,7 @@ export class ConfigService implements OnModuleInit {
         themeColors: JSON.stringify({}),
         privacyPolicy: 'Default Privacy Policy',
       };
+      defaultConfig.customCss = '';
       defaultConfig.createdAt = new Date();
       defaultConfig.updatedAt = new Date();
       await this.configRepository.save(defaultConfig);
@@ -38,8 +39,9 @@ export class ConfigService implements OnModuleInit {
     }
     config.settings = {
       ...config.settings,
-      ...updateConfigDto,
+      //...updateConfigDto,
     };
+    config.customCss = updateConfigDto.customCss;
     config.updatedAt = new Date();
     return this.configRepository.save(config);
   }

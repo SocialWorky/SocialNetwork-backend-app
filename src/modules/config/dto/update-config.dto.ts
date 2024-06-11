@@ -16,4 +16,8 @@ export class UpdateConfigDto {
   @IsString()
   @IsOptional()
   privacyPolicy?: string;
+
+  @IsString()
+  @IsOptional()
+  customCss?: string;
 }

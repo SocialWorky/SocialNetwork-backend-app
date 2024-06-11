@@ -1,6 +1,13 @@
-import { Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, CreateDateColumn, Column, UpdateDateColumn } from "typeorm";
-import { User } from "../../users/entities/user.entity";
-import { Status } from "src/common/enums/status.enum";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  CreateDateColumn,
+  Column,
+  UpdateDateColumn,
+} from 'typeorm';
+import { User } from '../../users/entities/user.entity';
+import { Status } from 'src/common/enums/status.enum';
 
 @Entity('friends')
 export class Friendship {
@@ -22,7 +29,7 @@ export class Friendship {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @Column({ type: 'boolean', default: false, nullable: true})
+  @Column({ type: 'boolean', default: false, nullable: true })
   isBlocked: boolean;
 
   @ManyToOne(() => User, { nullable: true })
