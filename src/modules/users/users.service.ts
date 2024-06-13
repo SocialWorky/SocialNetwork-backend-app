@@ -106,7 +106,27 @@ export class UsersService {
   }
 
   async findOne(_id: string): Promise<User> {
-    return this.usersRepository.findOneBy({ _id: _id });
+    const user = await this.usersRepository.findOne({
+      where: { _id: _id },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    return user;
+  }
+
+  async validUser(_id: string): Promise<boolean> {
+    const user = await this.usersRepository.findOne({
+      where: { _id: _id },
+    });
+
+    if (!user) {
+      return false;
+    }
+
+    return true;
   }
 
   async findOneByUsername(username: string): Promise<

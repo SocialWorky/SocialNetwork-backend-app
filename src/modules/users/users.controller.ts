@@ -5,7 +5,6 @@ import {
   Get,
   Param,
   Post,
-  ParseIntPipe,
   Put,
   HttpException,
   HttpStatus,
@@ -159,7 +158,7 @@ export class UsersController {
   @Auth(Role.USER)
   @Get(':id')
   @ApiBearerAuth()
-  findOne(@Param('_id', ParseIntPipe) _id: string): Promise<User> {
+  findOne(@Param('_id') _id: string): Promise<User> {
     return this.usersService.findOne(_id);
   }
 
@@ -214,5 +213,12 @@ export class UsersController {
     }[]
   > {
     return this.usersService.findOneByUsername(username);
+  }
+
+  @Auth(Role.USER)
+  @Get('validUser/:_id')
+  @ApiBearerAuth()
+  async validUser(@Param('_id') _id: string): Promise<boolean> {
+    return this.usersService.validUser(_id);
   }
 }
