@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Delete } from '@nestjs/common';
 import { CustomReaction } from './entities/customReaction.entity';
 import { CreateCustomReactionDto } from './dto/customReaction.dto';
 import { CustomReactionService } from './customReaction.service';
@@ -12,6 +12,7 @@ import { Role } from 'src/common/enums/rol.enum';
 export class CustomReactionController {
   constructor(private readonly customReactionService: CustomReactionService) {}
 
+  @Auth(Role.ADMIN)
   @Post('create')
   @ApiBearerAuth()
   async createCustomReaction(
@@ -26,5 +27,12 @@ export class CustomReactionController {
   @ApiBearerAuth()
   async getAllCustomReactions(): Promise<CustomReaction[]> {
     return this.customReactionService.getAllCustomReactions();
+  }
+
+  @Auth(Role.ADMIN)
+  @ApiBearerAuth()
+  @Delete('delete/:id')
+  async deleteCustomReaction(@Body() id: string): Promise<void> {
+    return this.customReactionService.deleteCustomReaction(id);
   }
 }

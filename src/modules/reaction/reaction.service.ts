@@ -37,10 +37,8 @@ export class ReactionService {
 
   @HttpCode(HttpStatus.CREATED)
   async createReaction(createReactionDto: CreateReactionDto) {
-    const { authorId, _idCustomReaction } = createReactionDto;
-
     const customReactionRes = await this.customReactionRepository.findOneBy({
-      _id: _idCustomReaction,
+      _id: createReactionDto._idCustomReaction,
     });
 
     if (!customReactionRes) {
@@ -48,12 +46,22 @@ export class ReactionService {
     }
 
     const reaction = new Reaction();
+
     reaction._id = this.authService.cryptoIdKey();
 
-    const authorOptions: FindOneOptions<User> = { where: { _id: authorId } };
-    reaction.user = await this.userRepository.findOne(authorOptions);
+    const userAuthor: FindOneOptions<User> = {
+      where: { _id: createReactionDto.authorId },
+    };
 
-    reaction.customReaction = customReactionRes[0];
+    const user = await this.userRepository.findOne(userAuthor);
+
+    if (!user) {
+      throw new BadRequestException('User not found');
+    }
+
+    reaction.user = user;
+
+    reaction.customReaction = customReactionRes;
 
     if (createReactionDto.isPublications) {
       const publication = await this.publicationRepository.findOne({
@@ -98,16 +106,55 @@ export class ReactionService {
 
   async updateReaction(
     _id: string,
-    reactionData: Partial<Reaction>,
+    reactionData: CreateReactionDto,
   ): Promise<Reaction> {
     const reaction = await this.reactionRepository.findOne({
       where: { _id: _id },
     });
+
     if (!reaction) {
-      throw new Error('Reaction not found');
+      throw new BadRequestException('Reaction not found');
     }
-    Object.assign(reaction, reactionData);
-    return this.reactionRepository.save(reaction);
+
+    const customReactionRes = await this.customReactionRepository.findOneBy({
+      _id: reactionData._idCustomReaction,
+    });
+
+    if (!customReactionRes) {
+      throw new BadRequestException('Custom reaction not found');
+    }
+
+    reaction.customReaction = customReactionRes;
+
+    if (reactionData.isPublications) {
+      const publication = await this.publicationRepository.findOne({
+        where: { _id: reactionData._idPublication },
+      });
+
+      if (!publication) {
+        throw new BadRequestException('Publication not found');
+      }
+
+      reaction.isPublications = true;
+      reaction.isComment = false;
+      reaction.publication = publication;
+    }
+
+    if (reactionData.isComment) {
+      const comment = await this.commentRepository.findOne({
+        where: { _id: reactionData._idPublication },
+      });
+
+      if (!comment) {
+        throw new BadRequestException('Comment not found');
+      }
+
+      reaction.isPublications = false;
+      reaction.isComment = true;
+      reaction.comment = comment;
+    }
+
+    return await this.reactionRepository.save(reaction);
   }
 
   async deleteReaction(_id: string): Promise<void> {

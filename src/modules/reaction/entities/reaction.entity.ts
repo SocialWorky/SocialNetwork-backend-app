@@ -5,6 +5,8 @@ import {
   CreateDateColumn,
   JoinColumn,
   PrimaryColumn,
+  DeleteDateColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 import { Publication } from '../../publications/entities/publications.entity';
 import { Comment } from '../../comment/entities/comment.entity';
@@ -16,28 +18,34 @@ export class Reaction {
   @PrimaryColumn({ type: 'varchar', length: 50 })
   _id: string;
 
-  @ManyToOne(() => User, (user) => user.reactions, { eager: true })
-  user: User;
-
   @Column({ default: false })
   isPublications: boolean;
 
   @Column({ default: false })
   isComment: boolean;
 
-  @ManyToOne(() => CustomReaction, (customReaction) => customReaction._id, {
-    eager: true,
-  })
-  customReaction: CustomReaction;
+  @DeleteDateColumn({ type: 'timestamptz' })
+  deletedAt: Date;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 
-  @ManyToOne(() => Publication, (publication) => publication.reaction)
+  @UpdateDateColumn({ type: 'timestamptz' })
+  updatedAt: Date;
+
+  @ManyToOne(() => User, (user) => user._id)
+  @JoinColumn({ name: 'user_id' })
+  user: User;
+
+  @ManyToOne(() => CustomReaction, (customReaction) => customReaction._id)
+  @JoinColumn({ name: 'customReaction_id' })
+  customReaction: CustomReaction;
+
+  @ManyToOne(() => Publication, (publication) => publication._id)
   @JoinColumn({ name: '_idPublication' })
   publication: Publication;
 
-  @ManyToOne(() => Comment, (comment) => comment.reaction)
+  @ManyToOne(() => Comment, (comment) => comment._id)
   @JoinColumn({ name: '_idComment' })
   comment: Comment;
 }

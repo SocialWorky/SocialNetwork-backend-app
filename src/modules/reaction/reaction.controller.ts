@@ -40,16 +40,16 @@ export class ReactionController {
     return this.reactionService.getAllReactions();
   }
 
-  @Put(':id')
+  @Put('edit/:id')
   @ApiBearerAuth()
   async updateReaction(
     @Param('id') id: string,
-    @Body() reactionData: Partial<Reaction>,
+    @Body() reactionData: CreateReactionDto,
   ): Promise<Reaction> {
     return this.reactionService.updateReaction(id, reactionData);
   }
 
-  @Delete(':id')
+  @Delete('delete/:id')
   @ApiBearerAuth()
   async deleteReaction(@Param('id') id: string): Promise<void> {
     return this.reactionService.deleteReaction(id);
