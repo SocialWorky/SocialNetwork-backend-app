@@ -130,7 +130,7 @@ export class UsersController {
 
   @Get('checkUsername/:username')
   async checkUsername(@Param('username') username: string) {
-    const user = await this.usersService.findOneByUsername(username);
+    const user = await this.usersService.findUserByUserName(username);
     if (user) {
       return true;
     }
@@ -212,7 +212,7 @@ export class UsersController {
       avatar: string;
     }[]
   > {
-    return this.usersService.findOneByUsername(username);
+    return this.usersService.findOneByName(username);
   }
 
   @Auth(Role.USER)
