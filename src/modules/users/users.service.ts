@@ -310,13 +310,12 @@ export class UsersService {
       );
     }
     const token = this.authService.signIn(user);
+
     this.update(user._id, { token: token });
 
-    const profile = await this.profilesRepository.findOne({
-      where: { user: user },
-    });
+    const userValidate = await this.findUserById(user._id);
 
-    if (!profile) {
+    if (!userValidate.profile) {
       const newProfile = new Profile();
       newProfile.user = user;
       await this.profilesRepository.save(newProfile);
@@ -332,18 +331,18 @@ export class UsersService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    const profile = await this.profilesRepository.findOne({
-      where: { _id: userValidate.profile?._id },
-    });
+    // const profile = await this.profilesRepository.findOne({
+    //   where: { _id: userValidate.profile?._id },
+    // });
 
-    if (!profile) {
+    if (!userValidate.profile) {
       const newProfile = new Profile();
       newProfile.user = userValidate;
       await this.profilesRepository.save(newProfile);
       return newProfile;
     }
 
-    return profile;
+    return userValidate.profile;
   }
 
   async updateProfile(

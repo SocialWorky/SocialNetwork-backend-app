@@ -28,6 +28,7 @@ import { Auth } from '../../auth/decorators/auth.decorator';
 import { ActiveUser } from '../../common/decorator/active-user.decorator';
 import { UserActiveInterface } from '../../common/interfaces/user-active.interface';
 import { MailsService } from '../mails/mails.service';
+import { Profile } from './entities/profile.entity';
 
 @ApiTags('Users')
 @Controller('user')
@@ -88,6 +89,7 @@ export class UsersController {
       );
     }
     const token = this.authService.signIn(user);
+
     await this.usersService.update(user._id, { token: token });
 
     await this.usersService.createOrVerifyProfile(user._id);
@@ -118,6 +120,9 @@ export class UsersController {
       };
       const user = await this.usersService.create(createUser);
       const token = this.authService.signIn(user);
+
+      await this.usersService.createOrVerifyProfile(user._id);
+
       await this.usersService.update(user._id, { token: token });
       return {
         token,
@@ -126,6 +131,9 @@ export class UsersController {
     if (emailUser) {
       const user = await this.usersService.findOneByEmail(data.email);
       const token = this.authService.signIn(user);
+
+      await this.usersService.createOrVerifyProfile(user._id);
+
       await this.usersService.update(emailUser._id, { token: token });
       return {
         token,
@@ -163,7 +171,7 @@ export class UsersController {
   @Auth(Role.USER)
   @Get(':_id')
   @ApiBearerAuth()
-  findUserById(@Param('_id') _id: string): Promise<User> {
+  async findUserById(@Param('_id') _id: string): Promise<User> {
     return this.usersService.findUserById(_id);
   }
 
@@ -257,5 +265,12 @@ export class UsersController {
     @Param('_idrequest') _idrequest: string,
   ): Promise<{ status: boolean; _id: string }> {
     return this.usersService.hasPendingFriendRequest(_id, _idrequest);
+  }
+
+  @Auth(Role.USER)
+  @Get('validate-profile/:_id')
+  @ApiBearerAuth()
+  async validateProfile(@Param('_id') _id: string): Promise<Profile> {
+    return this.usersService.createOrVerifyProfile(_id);
   }
 }

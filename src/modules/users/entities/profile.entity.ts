@@ -83,4 +83,5 @@ export class Profile {
   @OneToOne(() => User, (user) => user._id)
   @JoinColumn({ name: 'user' })
   user: User;
+  newProfile: Promise<User>;
 }
