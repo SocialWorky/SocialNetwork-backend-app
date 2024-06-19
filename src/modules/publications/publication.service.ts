@@ -209,16 +209,13 @@ export class PublicationService {
         .andWhere('publication.privacy IN (:...privacyLevels)', {
           privacyLevels: ['public'],
         });
-      if (friendIds.length > 0) {
+      if (friendIds.includes(userId)) {
         queryBuilder.orWhere(
           new Brackets((subQb) => {
-            subQb
-              .where('publication.author._id IN (:...friendIds)', {
-                friendIds,
-              })
-              .andWhere('publication.privacy IN (:...privacyLevels)', {
-                privacyLevels: ['friends', 'public'],
-              });
+            subQb.where('publication.author._id = :consultId', { consultId });
+            subQb.andWhere('publication.privacy IN (:...privacyLevels)', {
+              privacyLevels: ['public', 'friends'],
+            });
           }),
         );
       }
