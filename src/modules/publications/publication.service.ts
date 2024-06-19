@@ -108,12 +108,22 @@ export class PublicationService {
     page: number = 1,
     pageSize: number = 10,
     type: string = 'all',
-    userId: string,
+    userId: string = '',
     consultId: string,
   ): Promise<Publication[]> {
     const skip = (page - 1) * pageSize;
-    const friendIds = await this.getFriendIds(userId);
-    const pendingFriendRequests = await this.getPendingFriendRequests(userId);
+
+    let friendIds = [];
+    let pendingFriendRequests = [];
+
+    if (type === 'all') {
+      friendIds = await this.getFriendIds(userId);
+      pendingFriendRequests = await this.getPendingFriendRequests(userId);
+    }
+    if (type === 'postProfile' && consultId !== userId) {
+      friendIds = await this.getFriendIds(consultId);
+      pendingFriendRequests = await this.getPendingFriendRequests(consultId);
+    }
 
     const queryBuilder = this.publicationRepository
       .createQueryBuilder('publication')
@@ -228,15 +238,7 @@ export class PublicationService {
         })
         .orderBy('publication.createdAt', 'DESC')
         .addOrderBy('comment.createdAt', 'DESC');
-    } else if (type === 'private') {
-      queryBuilder
-        .where('publication.privacy = :privacy', { privacy: 'private' })
-        .andWhere('publication.author._id = :userId', { userId })
-        .andWhere('publication.deletedAt IS NULL')
-        .orderBy('publication.createdAt', 'DESC')
-        .addOrderBy('comment.createdAt', 'DESC');
     }
-
     const publications = await queryBuilder.skip(skip).take(pageSize).getMany();
 
     // Agregar isMyFriend e isFriendshipPending a cada publicación
