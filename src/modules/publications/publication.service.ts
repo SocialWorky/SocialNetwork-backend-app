@@ -55,6 +55,14 @@ export class PublicationService {
       throw new BadRequestException('Author not found');
     }
 
+    const userReceiving = await this.userRepository.findOneBy({
+      _id: createPublicationDto.userReceivingId,
+    });
+
+    if (userReceiving) {
+      publication.userReceiving = userReceiving;
+    }
+
     const newPublications = await this.publicationRepository.save({
       ...publication,
       author,
@@ -128,6 +136,7 @@ export class PublicationService {
     const queryBuilder = this.publicationRepository
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
+      .leftJoinAndSelect('publication.userReceiving', 'userReceiving')
       .leftJoinAndSelect('publication.media', 'media')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
@@ -147,6 +156,11 @@ export class PublicationService {
         'author.name',
         'author.lastName',
         'author.avatar',
+        'userReceiving._id',
+        'userReceiving.username',
+        'userReceiving.name',
+        'userReceiving.lastName',
+        'userReceiving.avatar',
         'publication.createdAt',
         'publication.updatedAt',
         'media._id',
@@ -210,6 +224,7 @@ export class PublicationService {
     ) {
       queryBuilder
         .where('publication.author._id = :consultId', { consultId })
+        .orWhere('publication.userReceiving._id = :consultId', { consultId })
         .andWhere('publication.privacy IN (:...privacyLevels)', {
           privacyLevels: ['public', 'friends'],
         })
