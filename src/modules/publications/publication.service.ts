@@ -109,6 +109,7 @@ export class PublicationService {
     pageSize: number = 10,
     type: string = 'all',
     userId: string,
+    consultId: string,
   ): Promise<Publication[]> {
     const skip = (page - 1) * pageSize;
     const friendIds = await this.getFriendIds(userId);
@@ -192,10 +193,39 @@ export class PublicationService {
         .andWhere('publication.deletedAt IS NULL')
         .orderBy('publication.createdAt', 'DESC')
         .addOrderBy('comment.createdAt', 'DESC');
-    } else if (type === 'public') {
+    } else if (type === 'postProfile' && consultId !== userId) {
       queryBuilder
-        .where('publication.privacy = :privacy', { privacy: 'public' })
+        .where('publication.author._id = :consultId', { consultId })
+        .andWhere('publication.privacy IN (:...privacyLevels)', {
+          privacyLevels: ['public'],
+        });
+      if (friendIds.length > 0) {
+        queryBuilder.orWhere(
+          new Brackets((subQb) => {
+            subQb
+              .where('publication.author._id IN (:...friendIds)', {
+                friendIds,
+              })
+              .andWhere('publication.privacy IN (:...privacyLevels)', {
+                privacyLevels: ['friends', 'public'],
+              });
+          }),
+        );
+      }
+      queryBuilder
         .andWhere('publication.deletedAt IS NULL')
+        .orWhere('publication.userReceiving = :userReceiving', {
+          userReceiving: consultId,
+        })
+        .orderBy('publication.createdAt', 'DESC')
+        .addOrderBy('comment.createdAt', 'DESC');
+    } else if (type === 'postProfile' && consultId === userId) {
+      queryBuilder
+        .where('publication.author._id = :consultId', { consultId })
+        .andWhere('publication.deletedAt IS NULL')
+        .orWhere('publication.userReceiving = :userReceiving', {
+          userReceiving: consultId,
+        })
         .orderBy('publication.createdAt', 'DESC')
         .addOrderBy('comment.createdAt', 'DESC');
     } else if (type === 'private') {

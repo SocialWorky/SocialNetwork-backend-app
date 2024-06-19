@@ -39,6 +39,7 @@ export class PublicationController {
     @Query('page') page = 1,
     @Query('pageSize') pageSize = 10,
     @Query('type') type?: string,
+    @Query('consultId') consultId?: string,
     @Req() request?: Request,
   ): Promise<Publication[]> {
     const userId = request['user'].id;
@@ -47,6 +48,7 @@ export class PublicationController {
       pageSize,
       type,
       userId,
+      consultId,
     );
   }
 

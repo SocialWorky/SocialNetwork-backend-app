@@ -19,6 +19,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateUser, UpdateUser, LoginDto } from './dto/user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 import { AuthService } from '../../auth/auth.service';
@@ -52,7 +53,7 @@ export class UsersController {
     return user;
   }
 
-  //Section Login
+  // Section Login
   @ApiOperation({
     summary: 'Login user by email and password',
   })
@@ -87,11 +88,15 @@ export class UsersController {
       );
     }
     const token = this.authService.signIn(user);
-    this.usersService.update(user._id, { token: token });
+    await this.usersService.update(user._id, { token: token });
+
+    await this.usersService.createOrVerifyProfile(user._id);
+
     return {
       token,
     };
   }
+
   @Post('loginGoogle')
   async loginGoogle(@Body() data: any) {
     const validateToken = await this.authService.validateTokenGoogle(
@@ -113,7 +118,7 @@ export class UsersController {
       };
       const user = await this.usersService.create(createUser);
       const token = this.authService.signIn(user);
-      this.usersService.update(user._id, { token: token });
+      await this.usersService.update(user._id, { token: token });
       return {
         token,
       };
@@ -121,7 +126,7 @@ export class UsersController {
     if (emailUser) {
       const user = await this.usersService.findOneByEmail(data.email);
       const token = this.authService.signIn(user);
-      this.usersService.update(emailUser._id, { token: token });
+      await this.usersService.update(emailUser._id, { token: token });
       return {
         token,
       };
@@ -156,10 +161,10 @@ export class UsersController {
   }
 
   @Auth(Role.USER)
-  @Get(':id')
+  @Get(':_id')
   @ApiBearerAuth()
-  findOne(@Param('_id') _id: string): Promise<User> {
-    return this.usersService.findOne(_id);
+  findUserById(@Param('_id') _id: string): Promise<User> {
+    return this.usersService.findUserById(_id);
   }
 
   @Auth(Role.USER)
@@ -192,7 +197,7 @@ export class UsersController {
   @Get('renewtoken/:_id')
   @ApiBearerAuth()
   async renewToken(@Param('_id') _id: string): Promise<string> {
-    const user = await this.usersService.findOne(_id);
+    const user = await this.usersService.findUserById(_id);
     if (!user) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
@@ -220,5 +225,37 @@ export class UsersController {
   @ApiBearerAuth()
   async validUser(@Param('_id') _id: string): Promise<boolean> {
     return this.usersService.validUser(_id);
+  }
+
+  @Auth(Role.USER)
+  @Put('profile/:_id')
+  @ApiBearerAuth()
+  async updateProfile(
+    @Param('_id') _id: string,
+    @Body() updateProfileDto: UpdateProfileDto,
+  ): Promise<{ message: string }> {
+    return this.usersService
+      .updateProfile(_id, updateProfileDto)
+      .then(() => ({ message: 'Profile updated' }));
+  }
+
+  @Auth(Role.USER)
+  @Get('friends/:_id/:_idrequest')
+  @ApiBearerAuth()
+  async friends(
+    @Param('_id') _id: string,
+    @Param('_idrequest') _idrequest: string,
+  ): Promise<boolean> {
+    return this.usersService.areFriends(_id, _idrequest);
+  }
+
+  @Auth(Role.USER)
+  @Get('pending-friend/:_id/:_idrequest')
+  @ApiBearerAuth()
+  async pendingFriend(
+    @Param('_id') _id: string,
+    @Param('_idrequest') _idrequest: string,
+  ): Promise<{ status: boolean; _id: string }> {
+    return this.usersService.hasPendingFriendRequest(_id, _idrequest);
   }
 }

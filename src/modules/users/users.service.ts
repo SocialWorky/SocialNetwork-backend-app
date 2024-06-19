@@ -2,11 +2,15 @@ import { Injectable, HttpException, HttpStatus, Query } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
-import { CreateUser, UpdateUser } from './dto/user.dto';
+import { CreateUser, LoginDto, UpdateUser } from './dto/user.dto';
+import { UpdateProfileDto } from './dto/update-profile.dto';
 import { User } from './entities/user.entity';
+import { Profile } from './entities/profile.entity';
 import { AuthService } from '../../auth/auth.service';
 import { Email } from '../mails/entities/mail.entity';
 import { Role } from 'src/common/enums/rol.enum';
+import { Status } from 'src/common/enums/status.enum';
+import { Friendship } from '../friends/entities/friend.entity';
 
 @Injectable()
 export class UsersService {
@@ -14,8 +18,14 @@ export class UsersService {
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
 
+    @InjectRepository(Profile)
+    private readonly profilesRepository: Repository<Profile>,
+
     @InjectRepository(Email)
     private readonly emailRepository: Repository<Email>,
+
+    @InjectRepository(Friendship)
+    private readonly friendshipRepository: Repository<Friendship>,
 
     private readonly authService: AuthService,
   ) {}
@@ -59,7 +69,63 @@ export class UsersService {
     user.token = createUserDto.token;
     user.avatar = createUserDto.avatar;
 
-    return this.usersRepository.save(user);
+    const savedUser = await this.usersRepository.save(user);
+
+    const profile = new Profile();
+    profile.user = savedUser;
+    await this.profilesRepository.save(profile);
+
+    return savedUser;
+  }
+
+  async update(_id: string, updateUser: UpdateUser): Promise<string> {
+    const user = await this.usersRepository.findOne({
+      where: { _id: _id },
+    });
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    if (updateUser.username) {
+      user.username = updateUser.username;
+    }
+
+    if (updateUser.name) {
+      user.name = updateUser.name;
+    }
+
+    if (updateUser.lastName) {
+      user.lastName = updateUser.lastName;
+    }
+
+    if (updateUser.role) {
+      user.role = updateUser.role;
+    }
+
+    if (updateUser.isVerified !== undefined) {
+      user.isVerified = updateUser.isVerified;
+    }
+
+    if (updateUser.isActive !== undefined) {
+      user.isActive = updateUser.isActive;
+    }
+
+    if (updateUser.avatar) {
+      user.avatar = updateUser.avatar;
+    }
+
+    if (updateUser.token) {
+      user.token = updateUser.token;
+    }
+
+    if (updateUser.password) {
+      user.password = await bcrypt.hash(updateUser.password, 10);
+    }
+
+    await this.usersRepository.save(user);
+
+    return 'User ' + user.username + ' updated';
   }
 
   async findAll(
@@ -88,6 +154,7 @@ export class UsersService {
     }
 
     return queryBuilder
+      .leftJoinAndSelect('user.profile', 'profile')
       .select([
         'user._id',
         'user.username',
@@ -95,19 +162,34 @@ export class UsersService {
         'user.lastName',
         'user.email',
         'user.role',
+        'profile',
         'user.isVerified',
         'user.avatar',
         'user.isActive',
         'user.createdAt',
         'user.updatedAt',
       ])
-      .orderBy('user._id', 'DESC')
+      .orderBy('user.createdAt', 'DESC')
       .getMany();
   }
 
-  async findOne(_id: string): Promise<User> {
+  async findUserById(_id: string): Promise<User> {
     const user = await this.usersRepository.findOne({
       where: { _id: _id },
+      relations: ['profile'],
+      select: [
+        '_id',
+        'username',
+        'name',
+        'lastName',
+        'email',
+        'role',
+        'isVerified',
+        'avatar',
+        'isActive',
+        'createdAt',
+        'updatedAt',
+      ],
     });
 
     if (!user) {
@@ -185,54 +267,14 @@ export class UsersService {
     }));
   }
 
-  async update(_id: string, updateUser: UpdateUser): Promise<string> {
-    const user = await this.usersRepository.findOne({
-      where: { _id: _id },
+  async findOneByEmail(email: string): Promise<User> {
+    return this.usersRepository.findOne({
+      where: { email: email },
     });
+  }
 
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
-
-    if (updateUser.username) {
-      user.username = updateUser.username;
-    }
-
-    if (updateUser.name) {
-      user.name = updateUser.name;
-    }
-
-    if (updateUser.lastName) {
-      user.lastName = updateUser.lastName;
-    }
-
-    if (updateUser.role) {
-      user.role = updateUser.role;
-    }
-
-    if (updateUser.isVerified !== undefined) {
-      user.isVerified = updateUser.isVerified;
-    }
-
-    if (updateUser.isActive !== undefined) {
-      user.isActive = updateUser.isActive;
-    }
-
-    if (updateUser.avatar) {
-      user.avatar = updateUser.avatar;
-    }
-
-    if (updateUser.token) {
-      user.token = updateUser.token;
-    }
-
-    if (updateUser.password) {
-      user.password = await bcrypt.hash(updateUser.password, 10);
-    }
-
-    await this.usersRepository.save(user);
-
-    return 'User ' + user.username + ' updated';
+  async compareHash(password: string, hash: string): Promise<boolean> {
+    return await bcrypt.compare(password, hash);
   }
 
   async remove(idUserDelet: string): Promise<string> {
@@ -248,13 +290,195 @@ export class UsersService {
     return 'User ' + userToDelete.username + ' removed';
   }
 
-  async findOneByEmail(email: string): Promise<User> {
-    return this.usersRepository.findOne({
-      where: { email: email },
+  async loginUser(loginData: LoginDto): Promise<{ token: string }> {
+    const user = await this.findOneByEmail(loginData.email);
+    if (!user) {
+      throw new HttpException(
+        'Unauthorized access. Please provide valid credentials to access this resource',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const userVerified = user.isVerified;
+    if (!userVerified) {
+      throw new HttpException('User is not verified', HttpStatus.UNAUTHORIZED);
+    }
+    const match = await this.compareHash(loginData.password, user.password);
+    if (!match) {
+      throw new HttpException(
+        'Unauthorized access. Please provide valid credentials to access this resource',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    const token = this.authService.signIn(user);
+    this.update(user._id, { token: token });
+
+    const profile = await this.profilesRepository.findOne({
+      where: { user: user },
     });
+
+    if (!profile) {
+      const newProfile = new Profile();
+      newProfile.user = user;
+      await this.profilesRepository.save(newProfile);
+    }
+
+    return { token };
   }
 
-  async compareHash(password: string, hash: string): Promise<boolean> {
-    return await bcrypt.compare(password, hash);
+  async createOrVerifyProfile(_id: string) {
+    const userValidate = await this.findUserById(_id);
+
+    if (!userValidate) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const profile = await this.profilesRepository.findOne({
+      where: { _id: userValidate.profile?._id },
+    });
+
+    if (!profile) {
+      const newProfile = new Profile();
+      newProfile.user = userValidate;
+      await this.profilesRepository.save(newProfile);
+      return newProfile;
+    }
+
+    return profile;
+  }
+
+  async updateProfile(
+    userId: string,
+    updateProfileDto: UpdateProfileDto,
+  ): Promise<Profile> {
+    const user = await this.findUserById(userId);
+
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+
+    const profile = await this.profilesRepository.findOne({
+      where: { _id: user.profile?._id },
+    });
+
+    if (!profile) {
+      throw new HttpException('Profile not found', HttpStatus.NOT_FOUND);
+    }
+    if (updateProfileDto.legend) {
+      profile.legend = updateProfileDto.legend;
+    }
+    if (updateProfileDto.coverImage) {
+      profile.coverImage = updateProfileDto.coverImage;
+    }
+    if (updateProfileDto.dateOfBirth) {
+      profile.dateOfBirth = updateProfileDto.dateOfBirth;
+    }
+    if (updateProfileDto.description) {
+      profile.description = updateProfileDto.description;
+    }
+    if (updateProfileDto.location && updateProfileDto.location.city) {
+      profile.location.city = updateProfileDto.location.city;
+    }
+    if (updateProfileDto.location && updateProfileDto.location.region) {
+      profile.location.region = updateProfileDto.location.region;
+    }
+    if (updateProfileDto.location && updateProfileDto.location.country) {
+      profile.location.country = updateProfileDto.location.country;
+    }
+    if (updateProfileDto.socialNetwork) {
+      profile.socialNetwork = {
+        nombre: updateProfileDto.socialNetwork.nombre,
+        link: updateProfileDto.socialNetwork.link,
+        type: updateProfileDto.socialNetwork.type,
+      };
+    }
+    if (updateProfileDto.relationshipStatus) {
+      profile.relationshipStatus = updateProfileDto.relationshipStatus;
+    }
+    if (updateProfileDto.website) {
+      profile.website = updateProfileDto.website;
+    }
+    if (updateProfileDto.phone) {
+      profile.phone = updateProfileDto.phone;
+    }
+    if (updateProfileDto.whatsapp) {
+      profile.whatsapp = {
+        number: updateProfileDto.whatsapp.number,
+        isViewable: updateProfileDto.whatsapp.isViewable,
+      };
+    }
+    if (updateProfileDto.sex) {
+      profile.sex = updateProfileDto.sex;
+    }
+    if (updateProfileDto.work) {
+      profile.work = updateProfileDto.work;
+    }
+    if (updateProfileDto.school) {
+      profile.school = updateProfileDto.school;
+    }
+    if (updateProfileDto.university) {
+      profile.university = updateProfileDto.university;
+    }
+    if (updateProfileDto.hobbies) {
+      profile.hobbies = {
+        name: updateProfileDto.hobbies.name,
+      };
+    }
+    if (updateProfileDto.interests) {
+      profile.interests = {
+        name: updateProfileDto.interests.name,
+      };
+    }
+    if (updateProfileDto.languages) {
+      profile.languages = {
+        name: updateProfileDto.languages.name,
+      };
+    }
+
+    await this.profilesRepository.save(profile);
+
+    return profile;
+  }
+
+  async areFriends(userId: string, requestId: string): Promise<boolean> {
+    const existingFriendship = await this.friendshipRepository.findOne({
+      where: [
+        {
+          requester: { _id: userId },
+          receiver: { _id: requestId },
+          status: Status.ACCEPTED,
+        },
+        {
+          requester: { _id: requestId },
+          receiver: { _id: userId },
+          status: Status.ACCEPTED,
+        },
+      ],
+      relations: ['requester', 'receiver'],
+    });
+
+    return !!existingFriendship;
+  }
+
+  async hasPendingFriendRequest(
+    userId1: string,
+    userId2: string,
+  ): Promise<{ status: boolean; _id: string }> {
+    const pendingFriendship = await this.friendshipRepository.findOne({
+      where: [
+        {
+          requester: { _id: userId1 },
+          receiver: { _id: userId2 },
+          status: Status.PENDING,
+        },
+        {
+          requester: { _id: userId2 },
+          receiver: { _id: userId1 },
+          status: Status.PENDING,
+        },
+      ],
+      relations: ['requester', 'receiver'],
+    });
+
+    return { status: !!pendingFriendship, _id: pendingFriendship?.id };
   }
 }

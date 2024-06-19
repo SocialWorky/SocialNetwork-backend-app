@@ -21,6 +21,15 @@ export class FriendsService {
 
   async getIsMyFriend(userId: string, friendId: string): Promise<Friendship> {
     const friendship = await this.friendshipRepository.findOne({
+      relations: ['requester', 'receiver', 'blockedBy'],
+      select: [
+        'id',
+        'status',
+        'isBlocked',
+        'blockedBy',
+        'requester',
+        'receiver',
+      ],
       where: [
         {
           requester: { _id: userId },
@@ -31,10 +40,37 @@ export class FriendsService {
           receiver: { _id: userId },
         },
       ],
+      loadEagerRelations: false,
+      join: {
+        alias: 'friendship',
+        leftJoinAndSelect: {
+          requester: 'friendship.requester',
+          receiver: 'friendship.receiver',
+        },
+      },
     });
 
+    if (friendship) {
+      friendship.requester = {
+        _id: friendship.requester._id,
+        name: friendship.requester.name,
+        lastName: friendship.requester.lastName,
+        emial: friendship.requester.email,
+        avatar: friendship.requester.avatar,
+        role: friendship.requester.role,
+      } as any;
+
+      friendship.receiver = {
+        _id: friendship.receiver._id,
+        name: friendship.receiver.name,
+        lastName: friendship.receiver.lastName,
+        emial: friendship.receiver.email,
+        avatar: friendship.receiver.avatar,
+        role: friendship.receiver.role,
+      } as any;
+    }
+
     return friendship;
-    //return friendship ? true : false;
   }
 
   async getFriends(userId: string): Promise<User[]> {

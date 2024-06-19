@@ -30,6 +30,10 @@ export class CreatePublicationDto {
 
   @IsString()
   @IsOptional()
+  userReceivingId?: string;
+
+  @IsString()
+  @IsOptional()
   mediaId?: string;
 
   @IsString()

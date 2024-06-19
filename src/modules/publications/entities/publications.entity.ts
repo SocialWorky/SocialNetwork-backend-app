@@ -28,6 +28,9 @@ export class Publication {
   @ManyToOne(() => User, (user) => user._id, { eager: true })
   author: User;
 
+  @ManyToOne(() => User, (user) => user._id, { nullable: true, eager: true })
+  userReceiving: User | null;
+
   @OneToMany(() => Media, (media) => media.publication)
   media: Media[];
 

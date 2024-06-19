@@ -6,6 +6,7 @@ import {
   OneToMany,
   PrimaryColumn,
   DeleteDateColumn,
+  OneToOne,
 } from 'typeorm';
 import { Publication } from '../../publications/entities/publications.entity';
 import { Comment } from '../../comment/entities/comment.entity';
@@ -13,6 +14,7 @@ import { TagUsers } from '../../tagsUsers/entities/tagUsers.entity';
 import { Reaction } from '../../reaction/entities/reaction.entity';
 import { Role } from '../../../common/enums/rol.enum';
 import { Friendship } from 'src/modules/friends/entities/friend.entity';
+import { Profile } from './profile.entity';
 
 @Entity()
 export class User {
@@ -58,8 +60,14 @@ export class User {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
+  @OneToOne(() => Profile, (profile) => profile.user)
+  profile: Profile;
+
   @OneToMany(() => Publication, (publication) => publication.author)
   publications: Publication[];
+
+  @OneToMany(() => Publication, (publication) => publication.userReceiving)
+  publicationsReceived: Publication[];
 
   @OneToMany(() => Comment, (comment) => comment.author)
   comments: Comment[];
