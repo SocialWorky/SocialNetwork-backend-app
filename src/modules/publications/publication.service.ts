@@ -203,27 +203,26 @@ export class PublicationService {
         .andWhere('publication.deletedAt IS NULL')
         .orderBy('publication.createdAt', 'DESC')
         .addOrderBy('comment.createdAt', 'DESC');
+    } else if (
+      type === 'postProfile' &&
+      consultId !== userId &&
+      friendIds.includes(userId)
+    ) {
+      queryBuilder
+        .where('publication.author._id = :consultId', { consultId })
+        .andWhere('publication.privacy IN (:...privacyLevels)', {
+          privacyLevels: ['public', 'friends'],
+        })
+        .andWhere('publication.deletedAt IS NULL')
+        .orderBy('publication.createdAt', 'DESC')
+        .addOrderBy('comment.createdAt', 'DESC');
     } else if (type === 'postProfile' && consultId !== userId) {
       queryBuilder
         .where('publication.author._id = :consultId', { consultId })
         .andWhere('publication.privacy IN (:...privacyLevels)', {
           privacyLevels: ['public'],
-        });
-      if (friendIds.includes(userId)) {
-        queryBuilder.orWhere(
-          new Brackets((subQb) => {
-            subQb.where('publication.author._id = :consultId', { consultId });
-            subQb.andWhere('publication.privacy IN (:...privacyLevels)', {
-              privacyLevels: ['public', 'friends'],
-            });
-          }),
-        );
-      }
-      queryBuilder
-        .andWhere('publication.deletedAt IS NULL')
-        .orWhere('publication.userReceiving = :userReceiving', {
-          userReceiving: consultId,
         })
+        .andWhere('publication.deletedAt IS NULL')
         .orderBy('publication.createdAt', 'DESC')
         .addOrderBy('comment.createdAt', 'DESC');
     } else if (type === 'postProfile' && consultId === userId) {
