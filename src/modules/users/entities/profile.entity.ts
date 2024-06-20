@@ -18,8 +18,8 @@ export class Profile {
   @Column({ nullable: true })
   coverImage: string;
 
-  @Column({ type: 'date', nullable: true })
-  dateOfBirth: Date;
+  @Column({ nullable: true })
+  dateOfBirth: string;
 
   @Column({ nullable: true })
   description: string;
@@ -45,11 +45,11 @@ export class Profile {
   website: string;
 
   @Column({ nullable: true })
-  phone: number;
+  phone: string;
 
   @Column('jsonb', { nullable: true })
   whatsapp: {
-    number: number;
+    number: string;
     isViewable: boolean;
   };
 

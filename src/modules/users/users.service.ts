@@ -363,25 +363,53 @@ export class UsersService {
       throw new HttpException('Profile not found', HttpStatus.NOT_FOUND);
     }
     if (updateProfileDto.legend) {
-      profile.legend = updateProfileDto.legend;
+      if (updateProfileDto.legend === 'null') {
+        profile.legend = null;
+      } else {
+        profile.legend = updateProfileDto.legend;
+      }
     }
     if (updateProfileDto.coverImage) {
-      profile.coverImage = updateProfileDto.coverImage;
+      if (updateProfileDto.coverImage === 'null') {
+        profile.coverImage = null;
+      } else {
+        profile.coverImage = updateProfileDto.coverImage;
+      }
     }
     if (updateProfileDto.dateOfBirth) {
-      profile.dateOfBirth = updateProfileDto.dateOfBirth;
+      if (updateProfileDto.dateOfBirth === 'null') {
+        profile.dateOfBirth = null;
+      } else {
+        profile.dateOfBirth = updateProfileDto.dateOfBirth;
+      }
     }
     if (updateProfileDto.description) {
-      profile.description = updateProfileDto.description;
+      if (updateProfileDto.description === 'null') {
+        profile.description = null;
+      } else {
+        profile.description = updateProfileDto.description;
+      }
     }
     if (updateProfileDto.location && updateProfileDto.location.city) {
-      profile.location.city = updateProfileDto.location.city;
+      if (updateProfileDto.location.city === 'null') {
+        profile.location.city = null;
+      } else {
+        profile.location.city = updateProfileDto.location.city;
+      }
     }
     if (updateProfileDto.location && updateProfileDto.location.region) {
-      profile.location.region = updateProfileDto.location.region;
+      if (updateProfileDto.location.region === 'null') {
+        profile.location.region = null;
+      } else {
+        profile.location.region = updateProfileDto.location.region;
+      }
     }
     if (updateProfileDto.location && updateProfileDto.location.country) {
-      profile.location.country = updateProfileDto.location.country;
+      if (updateProfileDto.location.country === 'null') {
+        profile.location.country = null;
+      } else {
+        profile.location.country = updateProfileDto.location.country;
+      }
     }
     if (updateProfileDto.socialNetwork) {
       profile.socialNetwork = {
@@ -391,13 +419,25 @@ export class UsersService {
       };
     }
     if (updateProfileDto.relationshipStatus) {
-      profile.relationshipStatus = updateProfileDto.relationshipStatus;
+      if (updateProfileDto.relationshipStatus === 'null') {
+        profile.relationshipStatus = null;
+      } else {
+        profile.relationshipStatus = updateProfileDto.relationshipStatus;
+      }
     }
     if (updateProfileDto.website) {
-      profile.website = updateProfileDto.website;
+      if (updateProfileDto.website === 'null') {
+        profile.website = null;
+      } else {
+        profile.website = updateProfileDto.website;
+      }
     }
     if (updateProfileDto.phone) {
-      profile.phone = updateProfileDto.phone;
+      if (updateProfileDto.phone === 'null') {
+        profile.phone = null;
+      } else {
+        profile.phone = updateProfileDto.phone;
+      }
     }
     if (updateProfileDto.whatsapp) {
       profile.whatsapp = {
@@ -406,16 +446,32 @@ export class UsersService {
       };
     }
     if (updateProfileDto.sex) {
-      profile.sex = updateProfileDto.sex;
+      if (updateProfileDto.sex === 'null') {
+        profile.sex = null;
+      } else {
+        profile.sex = updateProfileDto.sex;
+      }
     }
     if (updateProfileDto.work) {
-      profile.work = updateProfileDto.work;
+      if (updateProfileDto.work === 'null') {
+        profile.work = null;
+      } else {
+        profile.work = updateProfileDto.work;
+      }
     }
     if (updateProfileDto.school) {
-      profile.school = updateProfileDto.school;
+      if (updateProfileDto.school === 'null') {
+        profile.school = null;
+      } else {
+        profile.school = updateProfileDto.school;
+      }
     }
     if (updateProfileDto.university) {
-      profile.university = updateProfileDto.university;
+      if (updateProfileDto.university === 'null') {
+        profile.university = null;
+      } else {
+        profile.university = updateProfileDto.university;
+      }
     }
     if (updateProfileDto.hobbies) {
       profile.hobbies = {

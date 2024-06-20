@@ -1,8 +1,6 @@
 import {
   IsString,
   IsOptional,
-  IsDate,
-  IsNumber,
   IsBoolean,
   ValidateNested,
 } from 'class-validator';
@@ -37,9 +35,9 @@ class SocialNetworkDto {
 }
 
 class WhatsappDto {
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  number?: number;
+  number?: string;
 
   @IsBoolean()
   @IsOptional()
@@ -76,10 +74,9 @@ export class CreateProfileDto {
   @IsOptional()
   coverImage?: string;
 
-  @IsDate()
+  @IsString()
   @IsOptional()
-  @Type(() => Date)
-  dateOfBirth?: Date;
+  dateOfBirth?: string;
 
   @IsString()
   @IsOptional()
@@ -103,9 +100,9 @@ export class CreateProfileDto {
   @IsOptional()
   website?: string;
 
-  @IsNumber()
+  @IsString()
   @IsOptional()
-  phone?: number;
+  phone?: string;
 
   @ValidateNested()
   @IsOptional()
