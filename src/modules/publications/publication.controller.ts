@@ -47,8 +47,8 @@ export class PublicationController {
       page,
       pageSize,
       type,
-      userId,
       consultId,
+      userId,
     );
   }
 

@@ -116,8 +116,8 @@ export class PublicationService {
     page: number = 1,
     pageSize: number = 10,
     type: string = 'all',
-    userId: string = '',
     consultId: string,
+    userId: string = '',
   ): Promise<Publication[]> {
     const skip = (page - 1) * pageSize;
 
@@ -224,11 +224,11 @@ export class PublicationService {
     ) {
       queryBuilder
         .where('publication.author._id = :consultId', { consultId })
-        .orWhere('publication.userReceiving._id = :consultId', { consultId })
         .andWhere('publication.privacy IN (:...privacyLevels)', {
           privacyLevels: ['public', 'friends'],
         })
         .andWhere('publication.deletedAt IS NULL')
+        .orWhere('publication.userReceiving._id = :consultId', { consultId })
         .orderBy('publication.createdAt', 'DESC')
         .addOrderBy('comment.createdAt', 'DESC');
     } else if (type === 'postProfile' && consultId !== userId) {
