@@ -17,6 +17,7 @@ import { MailsModule } from './modules/mails/mails.module';
 import { FriendsModule } from './modules/friends/friends.module';
 import { ConfigModule } from './modules/config/config.module';
 import { ScraperModule } from './modules/scraper/scraper.module';
+import { ReportsModule } from './modules/reports/reports.module';
 import * as cors from 'cors';
 
 @Module({
@@ -56,6 +57,7 @@ import * as cors from 'cors';
     FriendsModule,
     ConfigModule,
     ScraperModule,
+    ReportsModule,
   ],
   controllers: [],
   providers: [

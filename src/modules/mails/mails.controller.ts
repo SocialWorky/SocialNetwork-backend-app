@@ -74,4 +74,22 @@ export class MailsController {
   async sendEmailPending() {
     return this._mailsService.sendEmailPending();
   }
+
+  @ApiBearerAuth()
+  @Post('sendNotification')
+  async sendNotification(@Body() data: CreateMailDto) {
+    const user = await this._usersService.findOneByEmail(data.email);
+    if (!user) {
+      throw new HttpException(
+        'Email not exist in the database or is invalid',
+        HttpStatus.UNAUTHORIZED,
+      );
+    }
+    return this._mailsService.sendEmailWithRetry(user._id, data).then(() => {
+      return {
+        message: 'Email notification send successfully',
+        email: user.email,
+      };
+    });
+  }
 }

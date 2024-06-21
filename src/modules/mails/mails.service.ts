@@ -81,6 +81,9 @@ export class MailsService {
       if (mailData.template === 'reset-password') {
         await this.sendEmailResetPassword(mailData);
       }
+      if (mailData.template === 'notification') {
+        await this.sendNotification(mailData);
+      }
     } catch (error) {
       if (retries > 0) {
         this.logger.error(`Error sending email: ${error.message}. Retrying...`);
@@ -224,6 +227,39 @@ export class MailsService {
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
+    } catch (error) {
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+  }
+
+  async sendNotification(mailData: CreateMailDto) {
+    const user = await this.userRepository.findOneBy({ email: mailData.email });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+    const url = `${mailData.url}`;
+    const title = mailData.title;
+    const greet = mailData.greet;
+    const message = mailData.message;
+    const subMessage = mailData.subMessage;
+    const buttonMessage = mailData.buttonMessage;
+
+    try {
+      this._mailerService.sendMail({
+        to: user.email,
+        subject: mailData.subject,
+        template: './notification',
+        context: {
+          name: user.name + ' ' + user.lastName,
+          url,
+          title,
+          greet,
+          message,
+          subMessage,
+          buttonMessage,
+        },
+      });
+      this.logger.log(`Email sent to ${mailData.email}`);
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
     }
