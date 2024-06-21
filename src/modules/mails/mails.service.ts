@@ -237,29 +237,23 @@ export class MailsService {
     if (!user) {
       throw new UnauthorizedException('User not found');
     }
-    const url = `${mailData.url}`;
-    const title = mailData.title;
-    const greet = mailData.greet;
-    const message = mailData.message;
-    const subMessage = mailData.subMessage;
-    const buttonMessage = mailData.buttonMessage;
 
     try {
-      this._mailerService.sendMail({
+      await this._mailerService.sendMail({
         to: user.email,
         subject: mailData.subject,
         template: './notification',
         context: {
           name: user.name + ' ' + user.lastName,
-          url,
-          title,
-          greet,
-          message,
-          subMessage,
-          buttonMessage,
+          url: mailData.url,
+          title: mailData.title,
+          greet: mailData.greet,
+          message: mailData.message,
+          subMessage: mailData.subMessage, // HTML content
+          buttonMessage: mailData.buttonMessage,
         },
       });
-      this.logger.log(`Email sent to ${mailData.email}`);
+      this.logger.log(`Email sent to ${user.email}`);
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
     }

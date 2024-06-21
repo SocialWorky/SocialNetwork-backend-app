@@ -156,11 +156,13 @@ export class PublicationService {
         'author.name',
         'author.lastName',
         'author.avatar',
+        'author.email',
         'userReceiving._id',
         'userReceiving.username',
         'userReceiving.name',
         'userReceiving.lastName',
         'userReceiving.avatar',
+        'userReceiving.email',
         'publication.createdAt',
         'publication.updatedAt',
         'media._id',
@@ -274,6 +276,7 @@ export class PublicationService {
     const publications = await this.publicationRepository
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
+      .leftJoinAndSelect('publication.userReceiving', 'userReceiving')
       .leftJoinAndSelect('publication.media', 'media')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
@@ -293,6 +296,13 @@ export class PublicationService {
         'author.name',
         'author.lastName',
         'author.avatar',
+        'author.email',
+        'userReceiving._id',
+        'userReceiving.username',
+        'userReceiving.name',
+        'userReceiving.lastName',
+        'userReceiving.avatar',
+        'userReceiving.email',
         'publication.createdAt',
         'publication.updatedAt',
         'media._id',
