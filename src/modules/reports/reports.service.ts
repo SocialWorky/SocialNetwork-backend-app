@@ -4,6 +4,7 @@ import { UpdateReportDto } from './dto/update-report.dto';
 import { Report } from './entities/report.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ReportStatus } from 'src/common/enums/status.enum';
 
 @Injectable()
 export class ReportsService {
@@ -39,5 +40,9 @@ export class ReportsService {
 
   remove(_id: string) {
     return `This action removes a #${_id} report`;
+  }
+
+  findReportStatus(status: ReportStatus) {
+    return this.reportRepository.find({ where: { status } });
   }
 }
