@@ -36,7 +36,7 @@ export class FriendsController {
   async sendFriendRequest(
     @Body('senderId') senderId: string,
     @Body('receiverId') receiverId: string,
-  ): Promise<{ message: string; friendshipId: string }> {
+  ): Promise<{ message: string }> {
     return this.friendsService.sendFriendRequest(senderId, receiverId);
   }
 

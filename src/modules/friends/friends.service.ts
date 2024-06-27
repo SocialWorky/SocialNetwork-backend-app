@@ -86,45 +86,42 @@ export class FriendsService {
       .map((friendship) => friendship.receiver);
   }
 
-  async sendFriendRequest(
-    senderId: string,
-    receiverId: string,
-  ): Promise<{ message: string; friendshipId: string }> {
-    const sender = await this.userRepository.findOne({
-      where: { _id: senderId },
+  async getFriendIds(userId: string): Promise<string[]> {
+    const friendships = await this.friendshipRepository.find({
+      where: [
+        { requester: { _id: userId }, status: Status.ACCEPTED },
+        { receiver: { _id: userId }, status: Status.ACCEPTED },
+      ],
+      relations: ['requester', 'receiver'],
     });
-    const receiver = await this.userRepository.findOne({
-      where: { _id: receiverId },
+
+    const friendIds = friendships.map((friendship) =>
+      friendship.requester._id === userId
+        ? friendship.receiver._id
+        : friendship.requester._id,
+    );
+
+    return friendIds;
+  }
+
+  async sendFriendRequest(
+    senderId: any,
+    receiverId: any,
+  ): Promise<{ message: string }> {
+    const sender = await this.userRepository.findOneBy({
+      _id: senderId,
+    });
+    const receiver = await this.userRepository.findOneBy({
+      _id: receiverId,
     });
 
     if (!sender || !receiver) {
       throw new Error('User not found');
     }
 
-    const existingRequest = await this.friendshipRepository.findOne({
-      where: { requester: sender } && { receiver: receiver } && {
-          status: Status.PENDING,
-        },
-    });
+    const friendIds = await this.getFriendIds(senderId);
 
-    const existingFriendship = await this.friendshipRepository.findOne({
-      where: { requester: sender } && { receiver: receiver } && {
-          status: Status.ACCEPTED,
-        },
-    });
-
-    if (existingRequest) {
-      if (existingRequest.isBlocked) {
-        throw new ConflictException(
-          'Cannot send friend request, one of the users is blocked.',
-        );
-      }
-      throw new ConflictException(
-        'you have already sent a friend request to this user.',
-      );
-    }
-
-    if (existingFriendship) {
+    if (friendIds.includes(receiverId)) {
       throw new ConflictException('You are already friends with this user.');
     }
 
@@ -133,10 +130,9 @@ export class FriendsService {
     friendship.receiver = receiver;
     friendship.status = Status.PENDING;
 
-    const savedFriendship = await this.friendshipRepository.save(friendship);
+    await this.friendshipRepository.save(friendship);
     return {
       message: 'Friend request sent successfully.',
-      friendshipId: savedFriendship.id,
     };
   }
 
