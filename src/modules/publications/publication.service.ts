@@ -112,6 +112,7 @@ export class PublicationService {
     }));
   }
 
+  // TODO: Este método debería ser refactorizado para que sea más eficiente, los filtros se estan realizando en memoria.
   async getAllPublications(
     page: number = 1,
     pageSize: number = 10,
@@ -127,8 +128,7 @@ export class PublicationService {
     if (type === 'all') {
       friendIds = await this.getFriendIds(userId);
       pendingFriendRequests = await this.getPendingFriendRequests(userId);
-    }
-    if (type === 'postProfile' && consultId !== userId) {
+    } else if (type === 'postProfile' && consultId !== userId) {
       friendIds = await this.getFriendIds(consultId);
       pendingFriendRequests = await this.getPendingFriendRequests(consultId);
     }
@@ -216,46 +216,54 @@ export class PublicationService {
             }
           }),
         )
-        .andWhere('publication.deletedAt IS NULL')
-        .orderBy('publication.createdAt', 'DESC')
-        .addOrderBy('comment.createdAt', 'DESC');
+        .andWhere('publication.deletedAt IS NULL');
     } else if (
+      // TODO: consultId es el id del usuario al que se le está viendo el perfil
       type === 'postProfile' &&
       consultId !== userId &&
-      friendIds.includes(userId)
+      friendIds.includes(userId) //TODO: userId es el id del usuario que está viendo el perfil y vemos si esta en la lista de amigos
     ) {
       queryBuilder
         .where('publication.author._id = :consultId', { consultId })
+        .orWhere('publication.userReceiving = :userReceiving', {
+          userReceiving: consultId,
+        })
         .andWhere('publication.privacy IN (:...privacyLevels)', {
           privacyLevels: ['public', 'friends'],
         })
-        .andWhere('publication.deletedAt IS NULL')
-        .orWhere('publication.userReceiving._id = :consultId', { consultId })
-        .orderBy('publication.createdAt', 'DESC')
-        .addOrderBy('comment.createdAt', 'DESC');
-    } else if (type === 'postProfile' && consultId !== userId) {
+        .andWhere('publication.deletedAt IS NULL');
+    } else if (
+      type === 'postProfile' &&
+      consultId !== userId &&
+      !friendIds.includes(userId) //TODO: userId es el id del usuario que está viendo el perfil y vemos si no esta en la lista de amigos
+    ) {
       queryBuilder
         .where('publication.author._id = :consultId', { consultId })
         .andWhere('publication.privacy IN (:...privacyLevels)', {
           privacyLevels: ['public'],
         })
-        .andWhere('publication.deletedAt IS NULL')
-        .orderBy('publication.createdAt', 'DESC')
-        .addOrderBy('comment.createdAt', 'DESC');
+        .andWhere('publication.deletedAt IS NULL');
     } else if (type === 'postProfile' && consultId === userId) {
       queryBuilder
         .where('publication.author._id = :consultId', { consultId })
-        .andWhere('publication.deletedAt IS NULL')
         .orWhere('publication.userReceiving = :userReceiving', {
           userReceiving: consultId,
         })
-        .orderBy('publication.createdAt', 'DESC')
-        .addOrderBy('comment.createdAt', 'DESC');
+        .andWhere('publication.deletedAt IS NULL');
     }
-    const publications = await queryBuilder.skip(skip).take(pageSize).getMany();
 
-    // Agregar isMyFriend e isFriendshipPending a cada publicación
-    return publications.map((publication) => {
+    queryBuilder
+      .orderBy('publication.createdAt', 'DESC')
+      .addOrderBy('comment.createdAt', 'DESC');
+
+    //TODO Aplicar paginación después de filtrar
+    const publications = await queryBuilder.getMany();
+
+    //TODO Recortar las publicaciones después de filtrarlas y ordenarlas
+    const paginatedPublications = publications.slice(skip, skip + pageSize);
+
+    //TODO Agregar isMyFriend e isFriendshipPending a cada publicación
+    return paginatedPublications.map((publication) => {
       const pendingRequest = pendingFriendRequests.find(
         (request) => request.userId === publication.author._id,
       );
@@ -332,6 +340,7 @@ export class PublicationService {
       ])
       .where('publication._id = :_id', { _id: _id })
       .andWhere('publication.deletedAt IS NULL')
+      .orderBy('comment.createdAt', 'DESC')
       .getMany();
     return publications;
   }
