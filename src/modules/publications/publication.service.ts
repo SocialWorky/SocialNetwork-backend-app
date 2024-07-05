@@ -339,6 +339,8 @@ export class PublicationService {
         'commentAuthor.avatar',
         'commentMedia._id',
         'commentMedia.url',
+        'commentMedia.urlThumbnail',
+        'commentMedia.urlCompressed',
       ])
       .where('publication._id = :_id', { _id: _id })
       .andWhere('publication.deletedAt IS NULL')
