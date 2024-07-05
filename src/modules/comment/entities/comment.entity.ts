@@ -22,20 +22,34 @@ export class Comment {
   @Column()
   content: string;
 
-  @ManyToOne(() => User, (user) => user._id, { eager: true })
+  @ManyToOne(() => User, (user) => user._id, {
+    eager: true,
+    onDelete: 'CASCADE',
+  })
   author: User;
 
-  @OneToMany(() => Media, (media) => media.comment)
+  @OneToMany(() => Media, (media) => media.comment, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   media: Media[];
 
-  @ManyToOne(() => Publication, (publication) => publication.comment)
+  @ManyToOne(() => Publication, (publication) => publication.comment, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: '_idPublication' })
   publication: Publication;
 
-  @OneToMany(() => Reaction, (reaction) => reaction.comment)
+  @OneToMany(() => Reaction, (reaction) => reaction.comment, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   reaction: Reaction[];
 
-  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.comment)
+  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.comment, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   taggedUsers: TagUsers[];
 
   @CreateDateColumn({ type: 'timestamptz' })
