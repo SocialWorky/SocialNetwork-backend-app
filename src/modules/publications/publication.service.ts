@@ -191,6 +191,8 @@ export class PublicationService {
         'commentAuthor.avatar',
         'commentMedia._id',
         'commentMedia.url',
+        'commentMedia.urlThumbnail',
+        'commentMedia.urlCompressed',
       ]);
 
     if (type === 'all') {
