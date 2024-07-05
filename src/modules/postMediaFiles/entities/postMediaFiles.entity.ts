@@ -22,11 +22,13 @@ export class Media {
   @Column({ default: false })
   isComment: boolean;
 
-  @ManyToOne(() => Publication, (publication) => publication._id)
+  @ManyToOne(() => Publication, (publication) => publication.media, {
+    onDelete: 'CASCADE',
+  })
   @JoinColumn({ name: '_idPublication' })
   publication: Publication;
 
-  @ManyToOne(() => Comment, (comment) => comment._id)
+  @ManyToOne(() => Comment, (comment) => comment.media, { onDelete: 'CASCADE' })
   @JoinColumn({ name: '_idComment' })
   comment: Comment;
 }

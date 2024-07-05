@@ -31,16 +31,28 @@ export class Publication {
   @ManyToOne(() => User, (user) => user._id, { nullable: true, eager: true })
   userReceiving: User | null;
 
-  @OneToMany(() => Media, (media) => media.publication)
+  @OneToMany(() => Media, (media) => media.publication, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   media: Media[];
 
-  @OneToMany(() => Comment, (comment) => comment.publication)
+  @OneToMany(() => Comment, (comment) => comment.publication, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   comment: Comment[];
 
-  @OneToMany(() => Reaction, (reaction) => reaction.publication)
+  @OneToMany(() => Reaction, (reaction) => reaction.publication, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   reaction: Reaction[];
 
-  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.publication)
+  @OneToMany(() => TagUsers, (tagUsers) => tagUsers.publication, {
+    cascade: true,
+    onDelete: 'CASCADE',
+  })
   taggedUsers: TagUsers[];
 
   @CreateDateColumn({ type: 'timestamptz' })

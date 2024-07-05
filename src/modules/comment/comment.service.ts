@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindOneOptions, Repository } from 'typeorm';
 import { Comment } from './entities/comment.entity';
@@ -73,10 +73,6 @@ export class CommentService {
   }
 
   async deleteComment(_id: string): Promise<void> {
-    const comment = await this.commentRepository.findOne({ where: { _id } });
-    if (!comment) {
-      throw new NotFoundException('Comment not found');
-    }
-    await this.commentRepository.remove(comment);
+    await this.commentRepository.delete(_id);
   }
 }
