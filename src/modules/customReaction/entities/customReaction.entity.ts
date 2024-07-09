@@ -20,6 +20,9 @@ export class CustomReaction {
   @Column()
   emoji: string;
 
+  @Column({ default: false })
+  isDeleted: boolean;
+
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date;
 

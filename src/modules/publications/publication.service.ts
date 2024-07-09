@@ -140,7 +140,12 @@ export class PublicationService {
       .leftJoinAndSelect('publication.media', 'media')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
-      .leftJoinAndSelect('reaction.customReaction', 'customReaction')
+      .leftJoinAndSelect(
+        'reaction.customReaction',
+        'customReaction',
+        undefined,
+        { withDeleted: true },
+      )
       .leftJoinAndSelect('publication.taggedUsers', 'taggedUsers')
       .leftJoinAndSelect('taggedUsers.userTagged', 'taggedUser')
       .leftJoinAndSelect('publication.comment', 'comment')
@@ -294,7 +299,12 @@ export class PublicationService {
       .leftJoinAndSelect('publication.media', 'media')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
-      .leftJoinAndSelect('reaction.customReaction', 'customReaction')
+      .leftJoinAndSelect(
+        'reaction.customReaction',
+        'customReaction',
+        undefined,
+        { withDeleted: true },
+      )
       .leftJoinAndSelect('publication.taggedUsers', 'taggedUsers')
       .leftJoinAndSelect('taggedUsers.userTagged', 'taggedUser')
       .leftJoinAndSelect('publication.comment', 'comment')

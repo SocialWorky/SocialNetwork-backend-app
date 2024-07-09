@@ -27,10 +27,12 @@ export class CustomReactionService {
   }
 
   async getAllCustomReactions(): Promise<CustomReaction[]> {
-    return await this.customReactionRepository.find();
+    return await this.customReactionRepository.find({
+      withDeleted: true,
+    });
   }
 
   async deleteCustomReaction(_id: string): Promise<void> {
-    await this.customReactionRepository.update(_id, { deletedAt: new Date() });
+    await this.customReactionRepository.update(_id, { isDeleted: true });
   }
 }
