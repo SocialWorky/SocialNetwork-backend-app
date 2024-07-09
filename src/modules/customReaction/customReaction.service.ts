@@ -32,7 +32,7 @@ export class CustomReactionService {
     });
   }
 
-  async deleteCustomReaction(id: string): Promise<void> {
-    await this.customReactionRepository.update(id, { deletedAt: new Date() });
+  async deleteCustomReaction(_id: string): Promise<void> {
+    await this.customReactionRepository.update(_id, { deletedAt: new Date() });
   }
 }
