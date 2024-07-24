@@ -1,6 +1,10 @@
-// scraper.controller.ts
-
-import { Controller, Get, Query, ValidationPipe } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Query,
+  ValidationPipe,
+  BadRequestException,
+} from '@nestjs/common';
 import { ScraperService } from './scraper.service';
 
 @Controller('scrape')
@@ -15,7 +19,9 @@ export class ScraperController {
       const metadata = await this.scraperService.scrapeMetadata(url);
       return metadata;
     } catch (error) {
-      throw new Error(`Failed to scrape metadata: ${error.message}`);
+      throw new BadRequestException(
+        `Failed to scrape metadata: ${error.message}`,
+      );
     }
   }
 }
