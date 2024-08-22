@@ -105,8 +105,8 @@ export class FriendsService {
   }
 
   async sendFriendRequest(
-    senderId: any,
-    receiverId: any,
+    senderId: string,
+    receiverId: string,
   ): Promise<{ message: string }> {
     const sender = await this.userRepository.findOneBy({
       _id: senderId,

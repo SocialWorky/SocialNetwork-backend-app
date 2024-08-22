@@ -27,7 +27,7 @@ async function bootstrap() {
     .setDescription(
       "This is a social networking application that adapts to the customer's needs.",
     )
-    .setVersion('1.0')
+    .setVersion('v1.0.0')
     .addBearerAuth()
     .build();
   const options: SwaggerDocumentOptions = {

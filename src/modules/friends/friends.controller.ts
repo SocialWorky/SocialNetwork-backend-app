@@ -7,22 +7,25 @@ import {
   Delete,
   Put,
   HttpCode,
+  UseGuards,
 } from '@nestjs/common';
 import { FriendsService } from './friends.service';
 import { User } from '../users/entities/user.entity';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Friendship } from './entities/friend.entity';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
+@ApiTags('Friends')
+@UseGuards(AuthGuard)
+@ApiBearerAuth()
 @Controller('friends')
 export class FriendsController {
   constructor(private readonly friendsService: FriendsService) {}
-  @ApiBearerAuth()
   @Get(':userId')
   async getFriends(@Param('userId') userId: string): Promise<User[]> {
     return this.friendsService.getFriends(userId);
   }
 
-  @ApiBearerAuth()
   @Get('isfriend/:userId/:friendId')
   async getIsMyFriend(
     @Param('userId') userId: string,
@@ -31,7 +34,6 @@ export class FriendsController {
     return this.friendsService.getIsMyFriend(userId, friendId);
   }
 
-  @ApiBearerAuth()
   @Post('request')
   async sendFriendRequest(
     @Body('senderId') senderId: string,
@@ -40,7 +42,6 @@ export class FriendsController {
     return this.friendsService.sendFriendRequest(senderId, receiverId);
   }
 
-  @ApiBearerAuth()
   @Put('accept/:friendshipId')
   @HttpCode(204)
   async acceptFriendRequest(
@@ -50,13 +51,11 @@ export class FriendsController {
     return 'Friend request accepted successfully.';
   }
 
-  @ApiBearerAuth()
   @Delete(':id')
   async removeFriend(@Param('id') id: string): Promise<Friendship> {
     return await this.friendsService.removeFriend(id);
   }
 
-  @ApiBearerAuth()
   @Put('block/:receiverId')
   @HttpCode(204)
   async blockFriend(

@@ -51,11 +51,40 @@ export class CommentService {
   }
 
   async getAllComments(): Promise<Comment[]> {
-    return this.commentRepository.find();
+    const queryBuilder = this.commentRepository
+      .createQueryBuilder('comment')
+      .leftJoinAndSelect('comment.author', 'author')
+      .leftJoinAndSelect('comment.publication', 'publication')
+      .leftJoinAndSelect('comment.media', 'media')
+      .select([
+        'comment._id',
+        'comment.content',
+        'comment.createdAt',
+        'comment.updatedAt',
+        'author._id',
+        'author.username',
+        'author.name',
+        'author.lastName',
+        'publication._id',
+        'publication.content',
+        'publication.privacy',
+        'publication.extraData',
+        'publication.createdAt',
+        'publication.updatedAt',
+        'media._id',
+        'media.url',
+        'media.urlThumbnail',
+        'media.urlCompressed',
+      ]);
+
+    queryBuilder.addOrderBy('comment.createdAt', 'DESC');
+
+    return queryBuilder.getMany();
+    // return this.commentRepository.find();
   }
 
   async updateComment(
-    _id: string, // ID del comentario a editar
+    _id: string,
     updateCommentDto: CreateCommentDto,
   ): Promise<Comment> {
     const { content } = updateCommentDto;

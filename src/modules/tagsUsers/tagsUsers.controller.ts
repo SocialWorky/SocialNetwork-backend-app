@@ -7,6 +7,7 @@ import {
   Body,
   HttpException,
   HttpStatus,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { CreateTagDto } from './dto/tagsUsers.dto';
@@ -14,15 +15,17 @@ import { TagUsers } from './entities/tagUsers.entity';
 import { TagsUsersService } from './tagsUsers.service';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/rol.enum';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @ApiTags('Tagging')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
 @Auth(Role.USER)
 @Controller('tags')
 export class TagsUsersController {
   constructor(private readonly tagService: TagsUsersService) {}
 
   @Post('create')
-  @ApiBearerAuth()
   async createTag(
     @Body() createTagDto: CreateTagDto,
   ): Promise<{ message: string }> {
@@ -30,7 +33,6 @@ export class TagsUsersController {
   }
 
   @Get(':_idPublication')
-  @ApiBearerAuth()
   async getTagById(
     @Param('_idPublication') _idPublication: string,
   ): Promise<TagUsers> {
@@ -47,7 +49,6 @@ export class TagsUsersController {
   }
 
   @Delete(':_id')
-  @ApiBearerAuth()
   async deleteTag(@Param('_id') _id: string): Promise<void> {
     return this.tagService.deleteTag(_id);
   }

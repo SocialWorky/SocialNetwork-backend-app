@@ -6,11 +6,13 @@ import {
   HttpStatus,
   Param,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { MailsService } from './mails.service';
 import { UsersService } from '../users/users.service';
 import { CreateMailDto } from './dto/create-mail.dto';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @ApiTags('Email')
 @Controller('email')
@@ -25,7 +27,6 @@ export class MailsController {
     return this._mailsService.getEmailValidate(token);
   }
 
-  //@ApiExcludeEndpoint()
   @Post('forgotPassword')
   async forgotPasswordSend(@Body() data: CreateMailDto) {
     const user = await this._usersService.findOneByEmail(data.email);
@@ -69,12 +70,15 @@ export class MailsController {
     });
   }
 
+  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @Get('sendEmailPending')
   async sendEmailPending() {
     return this._mailsService.sendEmailPending();
   }
 
+  @ApiExcludeEndpoint()
+  @UseGuards(AuthGuard)
   @ApiBearerAuth()
   @Post('sendNotification')
   async sendNotification(@Body() data: CreateMailDto) {

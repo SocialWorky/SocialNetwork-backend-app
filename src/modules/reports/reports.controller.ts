@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { CreateReportDto } from './dto/create-report.dto';
@@ -13,8 +14,11 @@ import { UpdateReportDto } from './dto/update-report.dto';
 import { ReportStatus } from 'src/common/enums/status.enum';
 import { Auth } from 'src/auth/decorators/auth.decorator';
 import { Role } from 'src/common/enums/rol.enum';
-import { ApiBearerAuth } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
+@ApiTags('Reports')
+@UseGuards(AuthGuard)
 @Controller('reports')
 export class ReportsController {
   constructor(private readonly reportsService: ReportsService) {}
@@ -26,11 +30,13 @@ export class ReportsController {
     return this.reportsService.create(createReportDto);
   }
 
+  @ApiBearerAuth()
   @Get()
   findAll() {
     return this.reportsService.findAll();
   }
 
+  @ApiBearerAuth()
   @Get(':_id')
   findOne(@Param('_id') _id: string) {
     return this.reportsService.findOne(_id);

@@ -9,6 +9,7 @@ import {
   HttpException,
   HttpStatus,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -29,6 +30,7 @@ import { ActiveUser } from '../../common/decorator/active-user.decorator';
 import { UserActiveInterface } from '../../common/interfaces/user-active.interface';
 import { MailsService } from '../mails/mails.service';
 import { Profile } from './entities/profile.entity';
+import { AuthGuard } from 'src/auth/guard/auth.guard';
 
 @ApiTags('Users')
 @Controller('user')
@@ -99,6 +101,7 @@ export class UsersController {
     };
   }
 
+  @ApiExcludeEndpoint()
   @Post('loginGoogle')
   async loginGoogle(@Body() data: any) {
     const validateToken = await this.authService.validateTokenGoogle(
@@ -150,16 +153,18 @@ export class UsersController {
     return false;
   }
 
-  @Get('profile')
-  @Auth(Role.USER)
   @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Auth(Role.USER)
+  @Get('profile')
   getProfile(@ActiveUser() user: UserActiveInterface) {
     return user;
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get()
-  @ApiBearerAuth()
   findAll(
     @Query('limit') limit?: number,
     @Query('role') role?: string,
@@ -168,16 +173,18 @@ export class UsersController {
     return this.usersService.findAll(limit, role, excludeAdmin);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get(':_id')
-  @ApiBearerAuth()
   async findUserById(@Param('_id') _id: string): Promise<User> {
     return this.usersService.findUserById(_id);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Put('edit/:_id')
-  @ApiBearerAuth()
   update(
     @Param('_id') _id: string,
     @Body() updateUser: UpdateUser,
@@ -187,23 +194,26 @@ export class UsersController {
       .then(() => ({ message: 'User updated' }));
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Delete('delete/:_idUserDelete')
-  @ApiBearerAuth()
   async remove(@Param('_idUserDelete') _idUserDelete: string): Promise<string> {
     return this.usersService.remove(_idUserDelete);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get('email/:email')
-  @ApiBearerAuth()
   async findOneByEmail(@Param('email') email: string): Promise<User> {
     return this.usersService.findOneByEmail(email);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get('renewtoken/:_id')
-  @ApiBearerAuth()
   async renewToken(@Param('_id') _id: string): Promise<string> {
     const user = await this.usersService.findUserById(_id);
     if (!user) {
@@ -212,9 +222,10 @@ export class UsersController {
     return this.authService.renewToken(user);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get('username/:username')
-  @ApiBearerAuth()
   async findOneByUsername(@Param('username') username: string): Promise<
     {
       _id: string;
@@ -228,16 +239,18 @@ export class UsersController {
     return this.usersService.findOneByName(username);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get('validUser/:_id')
-  @ApiBearerAuth()
   async validUser(@Param('_id') _id: string): Promise<boolean> {
     return this.usersService.validUser(_id);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Put('profile/:_id')
-  @ApiBearerAuth()
   async updateProfile(
     @Param('_id') _id: string,
     @Body() updateProfileDto: UpdateProfileDto,
@@ -247,9 +260,10 @@ export class UsersController {
       .then(() => ({ message: 'Profile updated' }));
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get('friends/:_id/:_idrequest')
-  @ApiBearerAuth()
   async friends(
     @Param('_id') _id: string,
     @Param('_idrequest') _idrequest: string,
@@ -257,9 +271,10 @@ export class UsersController {
     return this.usersService.areFriends(_id, _idrequest);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get('pending-friend/:_id/:_idrequest')
-  @ApiBearerAuth()
   async pendingFriend(
     @Param('_id') _id: string,
     @Param('_idrequest') _idrequest: string,
@@ -267,9 +282,10 @@ export class UsersController {
     return this.usersService.hasPendingFriendRequest(_id, _idrequest);
   }
 
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
   @Auth(Role.USER)
   @Get('validate-profile/:_id')
-  @ApiBearerAuth()
   async validateProfile(@Param('_id') _id: string): Promise<Profile> {
     return this.usersService.createOrVerifyProfile(_id);
   }
