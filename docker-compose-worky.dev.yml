@@ -1,0 +1,43 @@
+version: "3"
+services:
+  app:
+    depends_on:
+     - db
+    image: socialworky/worky-backend:dev-${GIT_SHA}
+    restart: always
+    container_name: worky-backend
+    ports:
+      - ${APP_PORT}:3000
+    environment:
+      SERVER_HOST: ${SERVER_HOST}
+      APP_VERSION: ${APP_VERSION}
+      APP_PORT: ${APP_PORT}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_SSL: ${DB_SSL}
+      JWT_SECRET: ${JWT_SECRET}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      # MAIL
+      MAIL_HOST: ${MAIL_HOST}
+      MAIL_USER: ${MAIL_USER}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
+      MAIL_FROM: ${MAIL_FROM}
+    dns:
+      - 1.1.1.1
+  db:
+    container_name: postgres-db
+    image: postgres:15.1
+    restart: always
+    environment:
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
+    volumes:
+      - postgres-db:/var/lib/postgresql/data
+
+volumes:
+  postgres-db:
+    external: false
