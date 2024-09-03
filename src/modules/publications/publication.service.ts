@@ -119,7 +119,7 @@ export class PublicationService {
     type: string = 'all',
     consultId: string,
     userId: string = '',
-  ): Promise<Publication[]> {
+  ): Promise<{ publications: Publication[]; total: number }> {
     const skip = (page - 1) * pageSize;
 
     let friendIds = [];
@@ -229,10 +229,9 @@ export class PublicationService {
         )
         .andWhere('publication.deletedAt IS NULL');
     } else if (
-      // TODO: consultId es el id del usuario al que se le está viendo el perfil
       type === 'postProfile' &&
       consultId !== userId &&
-      friendIds.includes(userId) //TODO: userId es el id del usuario que está viendo el perfil y vemos si esta en la lista de amigos
+      friendIds.includes(userId)
     ) {
       queryBuilder
         .where('publication.author._id = :consultId', { consultId })
@@ -246,7 +245,7 @@ export class PublicationService {
     } else if (
       type === 'postProfile' &&
       consultId !== userId &&
-      !friendIds.includes(userId) //TODO: userId es el id del usuario que está viendo el perfil y vemos si no esta en la lista de amigos
+      !friendIds.includes(userId)
     ) {
       queryBuilder
         .where('publication.author._id = :consultId', { consultId })
@@ -267,6 +266,9 @@ export class PublicationService {
       .orderBy('publication.createdAt', 'DESC')
       .addOrderBy('comment.createdAt', 'DESC');
 
+    // Contar el total de publicaciones sin aplicar paginación
+    const total = await queryBuilder.getCount();
+
     //TODO Aplicar paginación después de filtrar
     const publications = await queryBuilder.getMany();
 
@@ -274,7 +276,7 @@ export class PublicationService {
     const paginatedPublications = publications.slice(skip, skip + pageSize);
 
     //TODO Agregar isMyFriend e isFriendshipPending a cada publicación
-    return paginatedPublications.map((publication) => {
+    const finalPublications = paginatedPublications.map((publication) => {
       const pendingRequest = pendingFriendRequests.find(
         (request) => request.userId === publication.author._id,
       );
@@ -285,6 +287,11 @@ export class PublicationService {
         isFriendshipPending: pendingRequest ? pendingRequest.requestId : null,
       };
     });
+
+    return {
+      publications: finalPublications,
+      total,
+    };
   }
 
   async getCountPublications() {

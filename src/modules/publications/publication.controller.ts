@@ -43,7 +43,7 @@ export class PublicationController {
     @Query('type') type?: string,
     @Query('consultId') consultId?: string,
     @Req() request?: Request,
-  ): Promise<Publication[]> {
+  ): Promise<{ publications: Publication[]; total: number }> {
     const userId = request['user'].id;
     return this.publicationService.getAllPublications(
       page,
