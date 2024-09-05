@@ -11,6 +11,18 @@ export class CreateConfigDto {
 
   @IsString()
   @IsNotEmpty()
+  contactEmail: string;
+
+  @IsString()
+  @IsNotEmpty()
+  faviconUrl: string;
+
+  @IsString()
+  @IsNotEmpty()
+  loginMethods: string; // JSON string
+
+  @IsString()
+  @IsNotEmpty()
   themeColors: string; // JSON string
 
   @IsString()
