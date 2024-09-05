@@ -31,34 +31,11 @@ export class ConfigService implements OnModuleInit {
     }
   }
 
-  async UpdateConfigDto(updateConfigDto: UpdateConfigDto): Promise<Config> {
-    let config = await this.configRepository.findOne({ where: { id: 1 } });
-    if (!config) {
-      config = new Config();
-    }
-    config.settings = {
-      logoUrl: updateConfigDto.logoUrl || config.settings.logoUrl,
-      title: updateConfigDto.title || config.settings.title,
-      themeColors: updateConfigDto.themeColors || config.settings.themeColors,
-      privacyPolicy:
-        updateConfigDto.privacyPolicy || config.settings.privacyPolicy,
-      contactEmail:
-        updateConfigDto.contactEmail || config.settings.contactEmail,
-      faviconUrl: updateConfigDto.faviconUrl || config.settings.faviconUrl,
-      loginMethods:
-        updateConfigDto.loginMethods || config.settings.loginMethods,
-    };
-    config.customCss = updateConfigDto.customCss;
-    config.updatedAt = new Date();
-    return this.configRepository.save(config);
-  }
-
   async getConfig(): Promise<Config> {
     return this.configRepository.findOne({ where: { id: 1 } });
   }
 
   async updateConfig(updateConfigDto: UpdateConfigDto): Promise<Config> {
-    this.UpdateConfigDto(updateConfigDto);
     let config = await this.configRepository.findOne({ where: { id: 1 } });
     if (!config) {
       config = new Config();
