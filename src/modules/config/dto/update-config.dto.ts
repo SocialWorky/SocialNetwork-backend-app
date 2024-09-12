@@ -26,4 +26,19 @@ export class UpdateConfigDto {
   @IsString()
   @IsOptional()
   customCss?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  contactEmail?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  faviconUrl?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  loginMethods?: string; // JSON string
 }

@@ -9,6 +9,9 @@ export class Config {
   settings: {
     logoUrl: string;
     title: string;
+    contactEmail: string;
+    faviconUrl: string;
+    loginMethods: string;
     themeColors: string;
     privacyPolicy: string;
   };

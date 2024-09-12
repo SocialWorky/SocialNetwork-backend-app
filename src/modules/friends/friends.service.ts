@@ -138,7 +138,7 @@ export class FriendsService {
 
   async acceptFriendRequest(friendshipId: string): Promise<void> {
     const friendship = await this.friendshipRepository.findOne({
-      where: { id: friendshipId } && { status: Status.PENDING },
+      where: { id: friendshipId, status: Status.PENDING },
       relations: ['requester', 'receiver'],
     });
 
@@ -150,9 +150,11 @@ export class FriendsService {
     await this.friendshipRepository.save(friendship);
 
     const reverseFriendship = await this.friendshipRepository.findOne({
-      where: { requester: friendship.receiver } && {
-          receiver: friendship.requester,
-        } && { status: Status.ACCEPTED },
+      where: {
+        requester: friendship.receiver,
+        receiver: friendship.requester,
+        status: Status.ACCEPTED,
+      },
     });
 
     if (!reverseFriendship) {
@@ -190,9 +192,7 @@ export class FriendsService {
     }
 
     const existingFriendship = await this.friendshipRepository.findOne({
-      where: { requester: sender } && { receiver: receiver } && {
-          status: Status.ACCEPTED,
-        },
+      where: { requester: sender, receiver: receiver, status: Status.ACCEPTED },
     });
 
     if (existingFriendship) {
