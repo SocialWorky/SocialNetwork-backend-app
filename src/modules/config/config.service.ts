@@ -16,7 +16,7 @@ export class ConfigService implements OnModuleInit {
     if (configCount === 0) {
       const defaultConfig = new Config();
       defaultConfig.settings = {
-        logoUrl: 'worky-your-logo.png',
+        logoUrl: 'assets/img/navbar/worky-your-logo.png',
         title: 'Worky',
         themeColors: JSON.stringify({}),
         privacyPolicy: 'Default Privacy Policy',
