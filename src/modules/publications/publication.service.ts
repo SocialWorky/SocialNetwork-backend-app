@@ -138,6 +138,8 @@ export class PublicationService {
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.userReceiving', 'userReceiving')
       .leftJoinAndSelect('publication.media', 'media')
+      .leftJoinAndSelect('media.comments', 'mediaComments')
+      .leftJoinAndSelect('mediaComments.author', 'mediaCommentsAuthor')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
       .leftJoinAndSelect(
@@ -151,6 +153,8 @@ export class PublicationService {
       .leftJoinAndSelect('publication.comment', 'comment')
       .leftJoinAndSelect('comment.author', 'commentAuthor')
       .leftJoinAndSelect('comment.media', 'commentMedia')
+      .leftJoinAndSelect('commentMedia.comments', 'commentMediaComments')
+      .leftJoinAndSelect('commentMediaComments.author', 'commentMediaCommentsAuthor')
       .select([
         'publication._id',
         'publication.content',
@@ -174,6 +178,14 @@ export class PublicationService {
         'media.url',
         'media.urlThumbnail',
         'media.urlCompressed',
+        'mediaComments._id',
+        'mediaComments.content',
+        'mediaComments.createdAt',
+        'mediaCommentsAuthor._id',
+        'mediaCommentsAuthor.name',
+        'mediaCommentsAuthor.lastName',
+        'mediaCommentsAuthor.username',
+        'mediaCommentsAuthor.avatar',
         'reaction._id',
         'reaction.isPublications',
         'reaction.isComment',
@@ -202,6 +214,14 @@ export class PublicationService {
         'commentMedia.url',
         'commentMedia.urlThumbnail',
         'commentMedia.urlCompressed',
+        'commentMediaComments._id',
+        'commentMediaComments.content',
+        'commentMediaComments.createdAt',
+        'commentMediaCommentsAuthor._id',
+        'commentMediaCommentsAuthor.name',
+        'commentMediaCommentsAuthor.lastName',
+        'commentMediaCommentsAuthor.username',
+        'commentMediaCommentsAuthor.avatar',
       ]);
 
     if (type === 'all') {
@@ -304,6 +324,8 @@ export class PublicationService {
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.userReceiving', 'userReceiving')
       .leftJoinAndSelect('publication.media', 'media')
+      .leftJoinAndSelect('media.comments', 'mediaComments')
+      .leftJoinAndSelect('mediaComments.author', 'mediaCommentsAuthor')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
       .leftJoinAndSelect(
@@ -317,6 +339,8 @@ export class PublicationService {
       .leftJoinAndSelect('publication.comment', 'comment')
       .leftJoinAndSelect('comment.author', 'commentAuthor')
       .leftJoinAndSelect('comment.media', 'commentMedia')
+      .leftJoinAndSelect('commentMedia.comments', 'commentMediaComments')
+      .leftJoinAndSelect('commentMediaComments.author', 'commentMediaCommentsAuthor')
       .select([
         'publication._id',
         'publication.content',
@@ -340,6 +364,14 @@ export class PublicationService {
         'media.url',
         'media.urlThumbnail',
         'media.urlCompressed',
+        'mediaComments._id',
+        'mediaComments.content',
+        'mediaComments.createdAt',
+        'mediaCommentsAuthor._id',
+        'mediaCommentsAuthor.name',
+        'mediaCommentsAuthor.lastName',
+        'mediaCommentsAuthor.username',
+        'mediaCommentsAuthor.avatar',
         'reaction._id',
         'reaction.isPublications',
         'reaction.isComment',
@@ -368,6 +400,14 @@ export class PublicationService {
         'commentMedia.url',
         'commentMedia.urlThumbnail',
         'commentMedia.urlCompressed',
+        'commentMediaComments._id',
+        'commentMediaComments.content',
+        'commentMediaComments.createdAt',
+        'commentMediaCommentsAuthor._id',
+        'commentMediaCommentsAuthor.name',
+        'commentMediaCommentsAuthor.lastName',
+        'commentMediaCommentsAuthor.username',
+        'commentMediaCommentsAuthor.avatar',
       ])
       .where('publication._id = :_id', { _id: _id })
       .andWhere('publication.deletedAt IS NULL')

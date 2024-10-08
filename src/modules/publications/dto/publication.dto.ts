@@ -8,10 +8,10 @@ enum PrivacyOptions {
 }
 
 export class CreatePublicationDto {
-  @IsNotEmpty()
   @ApiProperty()
   @IsString()
-  content: string;
+  @IsOptional()
+  content?: string;
 
   @IsNotEmpty()
   @ApiProperty()

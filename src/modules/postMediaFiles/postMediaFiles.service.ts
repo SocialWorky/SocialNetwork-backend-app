@@ -78,7 +78,29 @@ export class MediaService {
   }
 
   async getMediaById(_id: string): Promise<Media> {
-    return this.mediaRepository.findOneBy({ _id: _id });
+    return this.mediaRepository
+      .createQueryBuilder('media')
+      .leftJoinAndSelect('media.comments', 'comment')
+      .leftJoinAndSelect('comment.author', 'author')
+      .select([
+        'media._id',
+        'media.url',
+        'media.urlThumbnail',
+        'media.urlCompressed',
+        'media.isPublications',
+        'media.isComment',
+        'comment._id',
+        'comment.content',
+        'comment.createdAt',
+        'author._id',
+        'author.username',
+        'author.name',
+        'author.lastName',
+        'author.avatar',
+        'author.email',
+      ])
+      .where('media._id = :_id', { _id })
+      .getOne();
   }
 
   async deleteMedia(_id: string): Promise<void> {
