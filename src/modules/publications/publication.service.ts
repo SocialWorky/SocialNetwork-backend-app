@@ -159,6 +159,7 @@ export class PublicationService {
         'publication._id',
         'publication.content',
         'publication.privacy',
+        'publication.fixed',
         'publication.extraData',
         'author._id',
         'author.username',
@@ -283,7 +284,8 @@ export class PublicationService {
     }
 
     queryBuilder
-      .orderBy('publication.createdAt', 'DESC')
+      .orderBy('publication.fixed', 'DESC')
+      .addOrderBy('publication.createdAt', 'DESC')
       .addOrderBy('comment.createdAt', 'DESC');
 
     // Contar el total de publicaciones sin aplicar paginación
@@ -345,6 +347,7 @@ export class PublicationService {
         'publication._id',
         'publication.content',
         'publication.privacy',
+        'publication.fixed',
         'publication.extraData',
         'author._id',
         'author.username',
@@ -427,20 +430,20 @@ export class PublicationService {
       throw new Error('Publication not found');
     }
 
-    const shouldUpdate =
-      updatePublicationDto.content || updatePublicationDto.privacy;
-
-    if (shouldUpdate) {
-      publication.content = updatePublicationDto.content
-        ? updatePublicationDto.content
-        : publication.content;
-      publication.privacy = updatePublicationDto.privacy
-        ? updatePublicationDto.privacy
-        : publication.privacy;
-
-      publication.updatedAt = new Date();
-      await this.publicationRepository.save(publication);
+    if (updatePublicationDto.fixed !== undefined) {
+      publication.fixed = updatePublicationDto.fixed;
     }
+
+    if (updatePublicationDto.content) {
+      publication.content = updatePublicationDto.content;
+    }
+
+    if (updatePublicationDto.privacy) {
+      publication.privacy = updatePublicationDto.privacy;
+    }
+
+    publication.updatedAt = new Date();
+    await this.publicationRepository.save(publication);
 
     return { message: 'Publication updated successfully' };
   }
