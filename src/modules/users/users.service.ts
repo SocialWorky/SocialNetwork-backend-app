@@ -327,10 +327,6 @@ export class UsersService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    // const profile = await this.profilesRepository.findOne({
-    //   where: { _id: userValidate.profile?._id },
-    // });
-
     if (!userValidate.profile) {
       const newProfile = new Profile();
       newProfile.user = userValidate;
@@ -370,6 +366,13 @@ export class UsersService {
         profile.coverImage = null;
       } else {
         profile.coverImage = updateProfileDto.coverImage;
+      }
+    }
+    if (updateProfileDto.coverImageMobile) {
+      if (updateProfileDto.coverImageMobile === 'null') {
+        profile.coverImageMobile = null;
+      } else {
+        profile.coverImageMobile = updateProfileDto.coverImageMobile;
       }
     }
     if (updateProfileDto.dateOfBirth) {

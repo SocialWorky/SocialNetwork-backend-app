@@ -19,6 +19,9 @@ export class Profile {
   coverImage: string;
 
   @Column({ nullable: true })
+  coverImageMobile: string;
+
+  @Column({ nullable: true })
   dateOfBirth: string;
 
   @Column({ nullable: true })
