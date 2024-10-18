@@ -29,7 +29,7 @@ import { Email } from './entities/mail.entity';
           // },
         },
         defaults: {
-          from: `"Worky-No Reply" <${process.env.MAIL_FROM}>`,
+          from: `"${process.env.APP_NAME} - No Reply" <${process.env.MAIL_FROM}>`,
         },
         template: {
           dir: join(__dirname, 'templates'),
