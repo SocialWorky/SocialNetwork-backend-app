@@ -37,4 +37,7 @@ export class Email {
 
   @Column()
   template?: string;
+
+  @Column()
+  templateLogo?: string;
 }

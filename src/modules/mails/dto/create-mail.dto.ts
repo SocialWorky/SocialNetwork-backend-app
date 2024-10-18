@@ -40,4 +40,8 @@ export class CreateMailDto {
   @IsOptional()
   @IsString()
   template?: string;
+
+  @IsOptional()
+  @IsString()
+  templateLogo?: string;
 }

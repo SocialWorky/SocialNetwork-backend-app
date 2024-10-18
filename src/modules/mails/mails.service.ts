@@ -39,7 +39,7 @@ export class MailsService {
     email.subMessage = mailData.subMessage;
     email.buttonMessage = mailData.buttonMessage;
     email.template = mailData.template ? mailData.template : '';
-
+    email.templateLogo = mailData.templateLogo ? mailData.templateLogo : '';
     return await this.emailRepository.save(email);
   }
 
@@ -117,7 +117,7 @@ export class MailsService {
     const message = mailData.message;
     const subMessage = mailData.subMessage;
     const buttonMessage = mailData.buttonMessage;
-
+    const templateLogo = mailData.templateLogo;
     try {
       await this._mailerService.sendMail({
         to: user.email,
@@ -131,6 +131,7 @@ export class MailsService {
           message,
           subMessage,
           buttonMessage,
+          templateLogo,
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
@@ -168,7 +169,7 @@ export class MailsService {
     const message = mailData.message;
     const subMessage = mailData.subMessage;
     const buttonMessage = mailData.buttonMessage;
-
+    const templateLogo = mailData.templateLogo;
     try {
       await this._mailerService.sendMail({
         to: user.email,
@@ -182,6 +183,7 @@ export class MailsService {
           message,
           subMessage,
           buttonMessage,
+          templateLogo,
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
@@ -210,7 +212,7 @@ export class MailsService {
     const message = mailData.message;
     const subMessage = mailData.subMessage;
     const buttonMessage = mailData.buttonMessage;
-
+    const templateLogo = mailData.templateLogo;
     try {
       await this._mailerService.sendMail({
         to: user.email,
@@ -224,6 +226,7 @@ export class MailsService {
           message,
           subMessage,
           buttonMessage,
+          templateLogo,
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
@@ -251,6 +254,7 @@ export class MailsService {
           message: mailData.message,
           subMessage: mailData.subMessage, // HTML content
           buttonMessage: mailData.buttonMessage,
+          templateLogo: mailData.templateLogo,
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
