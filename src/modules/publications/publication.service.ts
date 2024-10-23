@@ -255,10 +255,12 @@ export class PublicationService {
       friendIds.includes(userId)
     ) {
       queryBuilder
-        .where('publication.author._id = :consultId', { consultId })
-        .orWhere('publication.userReceiving = :userReceiving', {
-          userReceiving: consultId,
-        })
+        .where(
+          new Brackets((qb) => {
+            qb.where('publication.author._id = :consultId', { consultId })
+              .orWhere('publication.userReceiving = :consultId');
+          })
+        )
         .andWhere('publication.privacy IN (:...privacyLevels)', {
           privacyLevels: ['public', 'friends'],
         })
@@ -276,10 +278,14 @@ export class PublicationService {
         .andWhere('publication.deletedAt IS NULL');
     } else if (type === 'postProfile' && consultId === userId) {
       queryBuilder
-        .where('publication.author._id = :consultId', { consultId })
-        .orWhere('publication.userReceiving = :userReceiving', {
-          userReceiving: consultId,
-        })
+        .where(
+          new Brackets(qb => {
+            qb.where('publication.author._id = :consultId', { consultId })
+              .orWhere('publication.userReceiving = :userReceiving', {
+                userReceiving: consultId,
+              });
+          })
+        )
         .andWhere('publication.deletedAt IS NULL');
     }
 
