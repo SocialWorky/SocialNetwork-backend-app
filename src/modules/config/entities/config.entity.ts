@@ -14,6 +14,8 @@ export class Config {
     loginMethods: string;
     themeColors: string;
     privacyPolicy: string;
+    urlSite: string;
+    description: string;
   };
 
   @Column({ default: '' })

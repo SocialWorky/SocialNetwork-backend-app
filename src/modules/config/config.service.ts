@@ -23,6 +23,8 @@ export class ConfigService implements OnModuleInit {
         contactEmail: 'soporte@worky.cl',
         faviconUrl: 'favicon.ico',
         loginMethods: JSON.stringify({ email: true, google: true }),
+        urlSite: 'http://localhost:3000',
+        description: 'Worky es una plataforma para compartir ofertas de trabajo',
       };
       defaultConfig.customCss = '';
       defaultConfig.createdAt = new Date();
@@ -51,6 +53,8 @@ export class ConfigService implements OnModuleInit {
       faviconUrl: updateConfigDto.faviconUrl || config.settings.faviconUrl,
       loginMethods:
         updateConfigDto.loginMethods || config.settings.loginMethods,
+      urlSite: updateConfigDto.urlSite || config.settings.urlSite,
+      description: updateConfigDto.description || config.settings.description,
     };
     config.customCss = updateConfigDto.customCss;
     config.updatedAt = new Date();

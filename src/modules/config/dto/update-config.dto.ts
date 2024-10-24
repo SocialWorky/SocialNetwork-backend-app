@@ -41,4 +41,14 @@ export class UpdateConfigDto {
   @IsString()
   @IsOptional()
   loginMethods?: string; // JSON string
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  urlSite?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
 }
