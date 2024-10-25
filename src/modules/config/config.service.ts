@@ -26,6 +26,13 @@ export class ConfigService implements OnModuleInit {
         urlSite: 'http://localhost:3000',
         description: 'Worky es una plataforma para compartir ofertas de trabajo',
       };
+      defaultConfig.services = {
+        logs: {
+          enabled: false,
+          urlApi: '',
+          token: '',
+        },
+      };
       defaultConfig.customCss = '';
       defaultConfig.createdAt = new Date();
       defaultConfig.updatedAt = new Date();
@@ -34,7 +41,16 @@ export class ConfigService implements OnModuleInit {
   }
 
   async getConfig(): Promise<Config> {
-    return this.configRepository.findOne({ where: { id: 1 } });
+    const config = await this.configRepository.findOne({ where: { id: 1 } });
+    delete config.services;
+    return config;
+  }
+
+  async getServices(): Promise<Config> {
+    return this.configRepository.findOne({
+      select: ['services'],
+      where: { id: 1 },
+    });
   }
 
   async updateConfig(updateConfigDto: UpdateConfigDto): Promise<Config> {
@@ -56,6 +72,10 @@ export class ConfigService implements OnModuleInit {
       urlSite: updateConfigDto.urlSite || config.settings.urlSite,
       description: updateConfigDto.description || config.settings.description,
     };
+    config.services = {
+      logs: !Array.isArray(updateConfigDto.services.logs) ? updateConfigDto.services.logs : config.services.logs,
+    };
+
     config.customCss = updateConfigDto.customCss;
     config.updatedAt = new Date();
     return this.configRepository.save(config);

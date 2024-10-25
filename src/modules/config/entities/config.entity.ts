@@ -1,3 +1,4 @@
+import { IsNotEmpty } from 'class-validator/types/decorator/decorators';
 import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 @Entity()
@@ -16,6 +17,17 @@ export class Config {
     privacyPolicy: string;
     urlSite: string;
     description: string;
+  };
+
+  @Column('jsonb', {
+     default: { logs: { enabled: false, urlApi: '', token: '' } }, nullable: true 
+  })
+  services: {
+    logs: {
+      enabled: boolean;
+      urlApi: string;
+      token: string;
+    };
   };
 
   @Column({ default: '' })

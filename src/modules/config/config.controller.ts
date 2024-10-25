@@ -26,4 +26,12 @@ export class ConfigController {
   ): Promise<Config> {
     return this.configService.updateConfig(updateConfigDto);
   }
+
+  @Get('services')
+  @UseGuards(AuthGuard)
+  @Auth(Role.ADMIN)
+  @ApiBearerAuth()
+  async getServices(): Promise<Config> {
+    return this.configService.getServices();
+  }
 }
