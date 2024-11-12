@@ -18,6 +18,7 @@ import { FriendsModule } from './modules/friends/friends.module';
 import { ConfigModule } from './modules/config/config.module';
 import { ScraperModule } from './modules/scraper/scraper.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { CustomFieldModule } from './modules/custom-field/custom-field.module';
 import * as cors from 'cors';
 
 @Module({
@@ -58,6 +59,7 @@ import * as cors from 'cors';
     ConfigModule,
     ScraperModule,
     ReportsModule,
+    CustomFieldModule,
   ],
   controllers: [],
   providers: [
