@@ -55,8 +55,9 @@ export class CustomFieldService {
 
     return this.customFieldRepository.save(customField);
   }
-
   remove(id: string) {
+    const customField = this.customFieldRepository.findOne({ where: { id } });
+    if (!customField) return;
     return this.customFieldRepository.delete(id);    
   }
 }

@@ -16,6 +16,7 @@ export enum CustomFieldDestination {
 }
 
 export interface FieldOptions {
+  multiSelect?: boolean;
   required?: boolean;
   placeholder?: string;
   defaultValue?: any;

@@ -12,6 +12,10 @@ class Choice {
 class Options {
     @IsOptional()
     @IsBoolean()
+    multiSelect?: boolean;
+
+    @IsOptional()
+    @IsBoolean()
     required?: boolean;
 
     @IsOptional()
