@@ -42,7 +42,7 @@ export class PublicationService {
   async createPublication(createPublicationDto: CreatePublicationDto) {
     const publication = new Publication();
     publication._id = this.authService.cryptoIdKey();
-    publication.content = createPublicationDto.content;
+    publication.content = createPublicationDto.content || '';
     publication.privacy = createPublicationDto.privacy;
     publication.extraData = createPublicationDto.extraData;
     publication.createdAt = new Date();
