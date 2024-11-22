@@ -29,7 +29,7 @@ export class ConfigController {
 
   @Get('services')
   @UseGuards(AuthGuard)
-  @Auth(Role.ADMIN)
+  @Auth(Role.USER)
   @ApiBearerAuth()
   async getServices(): Promise<Config> {
     return this.configService.getServices();
