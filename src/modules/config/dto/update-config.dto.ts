@@ -56,10 +56,10 @@ export class UpdateConfigDto {
   @IsObject()
   @IsOptional()
   services?: {
-    logs: {
-      enabled: boolean;
-      urlApi: string;
-      token: string;
+    logs?: {
+      enabled?: boolean;
+      urlApi?: string;
+      token?: string;
     };
   };
 }

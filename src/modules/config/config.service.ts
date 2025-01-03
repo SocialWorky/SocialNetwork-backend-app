@@ -73,11 +73,14 @@ export class ConfigService implements OnModuleInit {
       description: updateConfigDto.description || config.settings.description,
     };
 
-    if(updateConfigDto.services.logs) {
-      config.services = {
-        logs: !Array.isArray(updateConfigDto.services.logs) ? updateConfigDto.services.logs : config.services.logs,
-      };
-    }
+    config.services = {
+      logs: {
+        enabled: updateConfigDto.services.logs.enabled || config.services.logs.enabled,
+        urlApi: updateConfigDto.services.logs.urlApi || config.services.logs.urlApi,
+        token: updateConfigDto.services.logs.token || config.services.logs.token,
+      },
+    };
+ 
 
     config.customCss = updateConfigDto.customCss;
     config.updatedAt = new Date();
