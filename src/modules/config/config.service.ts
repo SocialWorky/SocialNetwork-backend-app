@@ -80,11 +80,7 @@ export class ConfigService implements OnModuleInit {
       return this.configRepository.save(config);
     }
     config.services = {
-      logs: {
-        enabled: updateConfigDto.services.logs.enabled || config.services.logs.enabled,
-        urlApi: updateConfigDto.services.logs.urlApi || config.services.logs.urlApi,
-        token: updateConfigDto.services.logs.token || config.services.logs.token,
-      },
+      logs: !Array.isArray(updateConfigDto.services.logs) ? updateConfigDto.services.logs : config.services.logs,
     };
  
     return this.configRepository.save(config);

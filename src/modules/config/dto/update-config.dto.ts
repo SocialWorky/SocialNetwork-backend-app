@@ -57,9 +57,9 @@ export class UpdateConfigDto {
   @IsOptional()
   services?: {
     logs?: {
-      enabled?: boolean;
-      urlApi?: string;
-      token?: string;
+      enabled: boolean;
+      urlApi: string;
+      token: string;
     };
   };
 }
