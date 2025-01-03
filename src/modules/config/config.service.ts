@@ -73,6 +73,12 @@ export class ConfigService implements OnModuleInit {
       description: updateConfigDto.description || config.settings.description,
     };
 
+    config.customCss = updateConfigDto.customCss;
+    config.updatedAt = new Date();
+
+    if (updateConfigDto.services === undefined) {
+      return this.configRepository.save(config);
+    }
     config.services = {
       logs: {
         enabled: updateConfigDto.services.logs.enabled || config.services.logs.enabled,
@@ -81,9 +87,6 @@ export class ConfigService implements OnModuleInit {
       },
     };
  
-
-    config.customCss = updateConfigDto.customCss;
-    config.updatedAt = new Date();
     return this.configRepository.save(config);
   }
 }
