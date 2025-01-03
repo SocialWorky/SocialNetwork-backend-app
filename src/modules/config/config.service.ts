@@ -72,9 +72,12 @@ export class ConfigService implements OnModuleInit {
       urlSite: updateConfigDto.urlSite || config.settings.urlSite,
       description: updateConfigDto.description || config.settings.description,
     };
-    config.services = {
-      logs: !Array.isArray(updateConfigDto.services.logs) ? updateConfigDto.services.logs : config.services.logs,
-    };
+
+    if(updateConfigDto.services.logs) {
+      config.services = {
+        logs: !Array.isArray(updateConfigDto.services.logs) ? updateConfigDto.services.logs : config.services.logs,
+      };
+    }
 
     config.customCss = updateConfigDto.customCss;
     config.updatedAt = new Date();
