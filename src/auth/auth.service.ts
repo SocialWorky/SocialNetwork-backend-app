@@ -82,11 +82,11 @@ export class AuthService {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const client = new OAuth2Client(clientId);
     try {
-      const verifiy = await client.verifyIdToken({
+      const verify = await client.verifyIdToken({
         idToken: token,
         audience: clientId,
       });
-      const user = verifiy.getPayload();
+      const user = verify.getPayload();
       return user;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');

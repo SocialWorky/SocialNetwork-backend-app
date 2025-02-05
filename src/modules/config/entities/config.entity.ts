@@ -17,6 +17,7 @@ export class Config {
     privacyPolicy: string;
     urlSite: string;
     description: string;
+    invitationCode: boolean;
   };
 
   @Column('jsonb', {

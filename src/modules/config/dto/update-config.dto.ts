@@ -53,6 +53,10 @@ export class UpdateConfigDto {
   description?: string;
 
   @ApiProperty()
+  @IsOptional()
+  invitationCode?: boolean;
+
+  @ApiProperty()
   @IsObject()
   @IsOptional()
   services?: {

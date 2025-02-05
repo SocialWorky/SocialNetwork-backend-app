@@ -25,6 +25,7 @@ export class ConfigService implements OnModuleInit {
         loginMethods: JSON.stringify({ email: true, google: true }),
         urlSite: 'http://localhost:3000',
         description: 'Worky es una plataforma para compartir ofertas de trabajo',
+        invitationCode: false,
       };
       defaultConfig.services = {
         logs: {
@@ -58,6 +59,7 @@ export class ConfigService implements OnModuleInit {
     if (!config) {
       config = new Config();
     }
+
     config.settings = {
       logoUrl: updateConfigDto.logoUrl || config.settings.logoUrl,
       title: updateConfigDto.title || config.settings.title,
@@ -71,6 +73,7 @@ export class ConfigService implements OnModuleInit {
         updateConfigDto.loginMethods || config.settings.loginMethods,
       urlSite: updateConfigDto.urlSite || config.settings.urlSite,
       description: updateConfigDto.description || config.settings.description,
+      invitationCode: updateConfigDto.invitationCode ?? config.settings.invitationCode,
     };
 
     config.customCss = updateConfigDto.customCss;
