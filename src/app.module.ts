@@ -1,4 +1,3 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -19,6 +18,7 @@ import { ConfigModule } from './modules/config/config.module';
 import { ScraperModule } from './modules/scraper/scraper.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { CustomFieldModule } from './modules/custom-field/custom-field.module';
+import { InvitationCodeModule } from './modules/invitation-code/invitation-code.module';
 import * as cors from 'cors';
 
 @Module({
@@ -60,6 +60,7 @@ import * as cors from 'cors';
     ScraperModule,
     ReportsModule,
     CustomFieldModule,
+    InvitationCodeModule,
   ],
   controllers: [],
   providers: [
