@@ -45,6 +45,14 @@ export class UsersController {
   @ApiExcludeEndpoint()
   async create(@Body() createUser: CreateUser): Promise<User> {
     const user = await this.usersService.create(createUser);
+
+    if (!user) {
+      throw new HttpException(
+        'Failed to create user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
     await this._mailsService
       .sendEmailWithRetry(user._id, createUser.mailDataValidate)
       .catch(() => {

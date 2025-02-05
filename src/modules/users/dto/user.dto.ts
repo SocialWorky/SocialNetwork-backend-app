@@ -55,6 +55,9 @@ export class CreateUser {
 
   @IsOptional()
   mailDataValidate?: CreateMailDto;
+
+  @IsOptional()
+  invitationCode?: string;
 }
 export class UpdateUser {
   @Transform(({ value }) => value.trim())

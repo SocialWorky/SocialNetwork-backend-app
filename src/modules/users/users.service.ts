@@ -11,6 +11,8 @@ import { Email } from '../mails/entities/mail.entity';
 import { Role } from 'src/common/enums/rol.enum';
 import { Status } from 'src/common/enums/status.enum';
 import { Friendship } from '../friends/entities/friend.entity';
+import { ConfigService } from '../config/config.service';
+import { InvitationCodeService } from '../invitation-code/invitation-code.service';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +30,11 @@ export class UsersService {
     private readonly friendshipRepository: Repository<Friendship>,
 
     private readonly authService: AuthService,
+    
+    private _configService: ConfigService,
+
+    private readonly _invitationCodeService: InvitationCodeService,
+
   ) {}
 
   async create(createUserDto: CreateUser): Promise<User> {
@@ -53,6 +60,28 @@ export class UsersService {
         'Username is already in use',
         HttpStatus.BAD_REQUEST,
       );
+    }
+
+    const configData = await this._configService.getConfig();
+    if (configData.settings.invitationCode) {
+      if (!createUserDto.invitationCode) {
+        throw new HttpException(
+          'Invitation code is required',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const validateInvitation = await this._invitationCodeService.validate(createUserDto.email, createUserDto.invitationCode);
+
+      if (!validateInvitation) {
+        throw new HttpException(
+          'Invalid invitation code',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      createUserDto.isVerified = true;
+
     }
 
     const user = new User();
