@@ -1,4 +1,3 @@
-// src/invitation-code/invitation-code.entity.ts
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn } from 'typeorm';
 
 @Entity()
