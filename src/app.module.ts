@@ -18,7 +18,7 @@ import { ConfigModule } from './modules/config/config.module';
 import { ScraperModule } from './modules/scraper/scraper.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { CustomFieldModule } from './modules/custom-field/custom-field.module';
-import { InvitationCodeModule } from './modules/invitation-code/invitation-code.module';
+import { InvitationCodeModule } from './modules/invitationCode/invitation-code.module';
 import * as cors from 'cors';
 
 @Module({

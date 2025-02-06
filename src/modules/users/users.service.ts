@@ -12,7 +12,7 @@ import { Role } from 'src/common/enums/rol.enum';
 import { Status } from 'src/common/enums/status.enum';
 import { Friendship } from '../friends/entities/friend.entity';
 import { ConfigService } from '../config/config.service';
-import { InvitationCodeService } from '../invitation-code/invitation-code.service';
+import { InvitationCodeService } from '../invitationCode/invitation-code.service';
 
 @Injectable()
 export class UsersService {

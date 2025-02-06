@@ -9,7 +9,7 @@ import { MailsService } from '../mails/mails.service';
 import { Email } from '../mails/entities/mail.entity';
 import { Friendship } from '../friends/entities/friend.entity';
 import { ConfigModule } from '../config/config.module';
-import { InvitationCodeModule } from '../invitation-code/invitation-code.module';
+import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
 
 @Module({
   imports: [

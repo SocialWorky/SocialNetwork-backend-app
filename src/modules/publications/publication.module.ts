@@ -11,7 +11,7 @@ import { PublicationService } from './publication.service';
 import { AuthModule } from '../../auth/auth.module';
 import { Friendship } from '../friends/entities/friend.entity';
 import { ConfigModule } from '../config/config.module';
-import { InvitationCodeModule } from '../invitation-code/invitation-code.module';
+import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
 
 @Module({
   imports: [
