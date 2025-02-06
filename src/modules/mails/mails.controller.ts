@@ -96,4 +96,18 @@ export class MailsController {
       };
     });
   }
+
+  @UseGuards(AuthGuard)
+  @ApiBearerAuth()
+  @Post('sendEmail')
+  async sendEmailNotification(@Body() data: CreateMailDto) {
+    return this._mailsService.sendEmailWithRetry(null, data).then(() => {
+      return {
+        message: 'Email notification send successfully',
+        email: data.email,
+      };
+    });
+  }
+
+
 }
