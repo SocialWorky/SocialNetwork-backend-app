@@ -12,34 +12,25 @@ import { Role } from '../../common/enums/rol.enum';
 export class InvitationCodeController {
   constructor(private readonly invitationCodeService: InvitationCodeService) {}
 
-  /**
-   * Genera un código de invitación para un email dado.
-   */
   @UseGuards(AuthGuard)
   @Auth(Role.ADMIN)
   @ApiBearerAuth()
   @Post('generate')
   async generate(@Body('email') email: string): Promise<InvitationCode> {
     if (!email || !this.isValidEmail(email)) {
-      throw new HttpException('Email inválido', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Invalid Email', HttpStatus.BAD_REQUEST);
     }
     return this.invitationCodeService.generate(email);
   }
 
-  /**
-   * Valida si un código pertenece a un email específico.
-   */
   @Post('validate')
   async validate(@Body('email') email: string, @Body('code') code: string): Promise<boolean> {
     if (!email || !this.isValidEmail(email) || !code) {
-      throw new HttpException('Parámetros inválidos', HttpStatus.BAD_REQUEST);
+      throw new HttpException('Invalid parameters', HttpStatus.BAD_REQUEST);
     }
     return this.invitationCodeService.validate(email, code);
   }
 
-  /**
-   * Obtiene todos los códigos de invitación.
-   */
   @UseGuards(AuthGuard)
   @Auth(Role.ADMIN)
   @ApiBearerAuth()
@@ -48,9 +39,6 @@ export class InvitationCodeController {
     return this.invitationCodeService.findAll();
   }
 
-  /**
-   * Validación simple de email.
-   */
   private isValidEmail(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
