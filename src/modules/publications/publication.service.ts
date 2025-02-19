@@ -70,7 +70,23 @@ export class PublicationService {
 
     return {
       message: 'Publication created successfully',
-      publications: newPublications,
+      publications: {
+        _id: newPublications._id,
+        content: newPublications.content,
+        privacy: newPublications.privacy,
+        extraData: newPublications.extraData,
+        createdAt: newPublications.createdAt,
+        updatedAt: newPublications.updatedAt,
+        fixed: newPublications.fixed,
+        author: {
+          _id: author._id,
+          username: author.username,
+          name: author.name,
+          lastName: author.lastName,
+          avatar: author.avatar,
+          email: author.email,
+        },
+      },
     };
   }
 
@@ -326,7 +342,19 @@ export class PublicationService {
     return await this.publicationRepository.count();
   }
 
-  async getPublicationById(_id: string) {
+  async getPublicationById(_id: string, currentUserId: string) {
+
+    let friendIds = [];
+    let pendingFriendRequests = [];
+
+
+    // Obtener los IDs de los amigos del usuario actual
+    friendIds = await this.getFriendIds(currentUserId);
+
+    // Obtener las solicitudes de amistad pendientes del usuario actual
+    pendingFriendRequests = await this.getPendingFriendRequests(currentUserId);
+
+    // Consulta principal
     const publications = await this.publicationRepository
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
@@ -418,11 +446,39 @@ export class PublicationService {
         'commentMediaCommentsAuthor.username',
         'commentMediaCommentsAuthor.avatar',
       ])
-      .where('publication._id = :_id', { _id: _id })
+      .where('publication._id = :_id', { _id })
       .andWhere('publication.deletedAt IS NULL')
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('author._id = :currentUserId', { currentUserId }) // El usuario es el autor
+            .orWhere(
+              new Brackets((subQb) => {
+                subQb
+                  .where('author._id IN (:...friendIds)', { friendIds }) // El usuario es amigo del autor
+                  .andWhere('publication.privacy IN (:...privacyLevels)', {
+                    privacyLevels: ['friends', 'public'],
+                  });
+              }),
+            );
+        }),
+      )
       .orderBy('comment.createdAt', 'DESC')
       .getMany();
-    return publications;
+
+      //TODO Agregar isMyFriend e isFriendshipPending a cada publicación
+      const finalPublications = publications.map((publication) => {
+        const pendingRequest = pendingFriendRequests.find(
+          (request) => request.userId === publication.author._id,
+        );
+
+        return {
+          ...publication,
+          isMyFriend: friendIds.includes(publication.author._id),
+          isFriendshipPending: pendingRequest ? pendingRequest.requestId : null,
+        };
+      });
+
+    return finalPublications;
   }
 
   async updatePublication(
@@ -454,7 +510,8 @@ export class PublicationService {
     return { message: 'Publication updated successfully' };
   }
 
-  async deletePublication(id: string): Promise<void> {
+  async deletePublication(id: string): Promise<{ _id: string }> {
     await this.publicationRepository.update(id, { deletedAt: new Date() });
+    return { _id: id };
   }
 }
