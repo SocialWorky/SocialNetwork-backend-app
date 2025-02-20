@@ -51,6 +51,9 @@ export class User {
   @Column({ nullable: true })
   avatar: string;
 
+  @Column({ default: true })
+  isTooltipActive: boolean;
+
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date;
 

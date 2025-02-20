@@ -152,6 +152,10 @@ export class UsersService {
       user.password = await bcrypt.hash(updateUser.password, 10);
     }
 
+    if (updateUser.isTooltipActive !== undefined) {
+      user.isTooltipActive = updateUser.isTooltipActive;
+    }
+
     await this.usersRepository.save(user);
 
     return 'User ' + user.username + ' updated';
@@ -215,6 +219,7 @@ export class UsersService {
         'role',
         'isVerified',
         'avatar',
+        'isTooltipActive',
         'isActive',
         'createdAt',
         'updatedAt',

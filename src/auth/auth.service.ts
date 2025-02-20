@@ -16,6 +16,7 @@ export class AuthService {
       name: user.name + ' ' + user.lastName,
       role: user.role,
       avatar: user.avatar,
+      isTooltipActive: user.isTooltipActive,
     };
     return this.jwtService.sign(payload);
   }
@@ -40,6 +41,7 @@ export class AuthService {
       name: user.name + ' ' + user.lastName,
       role: user.role,
       avatar: user.avatar,
+      isTooltipActive: user.isTooltipActive,
     };
 
     const expirationTime = 12 * 60 * 60;
