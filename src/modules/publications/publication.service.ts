@@ -310,17 +310,13 @@ export class PublicationService {
       .addOrderBy('publication.createdAt', 'DESC')
       .addOrderBy('comment.createdAt', 'DESC');
 
-    // Contar el total de publicaciones sin aplicar paginación
-    const total = await queryBuilder.getCount();
-
-    //TODO Aplicar paginación después de filtrar
-    const publications = await queryBuilder.getMany();
-
-    //TODO Recortar las publicaciones después de filtrarlas y ordenarlas
-    const paginatedPublications = publications.slice(skip, skip + pageSize);
+    const [publications, total] = await queryBuilder
+      .skip(skip)
+      .take(pageSize)
+      .getManyAndCount();
 
     //TODO Agregar isMyFriend e isFriendshipPending a cada publicación
-    const finalPublications = paginatedPublications.map((publication) => {
+    const finalPublications = publications.map((publication) => {
       const pendingRequest = pendingFriendRequests.find(
         (request) => request.userId === publication.author._id,
       );
@@ -450,16 +446,19 @@ export class PublicationService {
       .andWhere('publication.deletedAt IS NULL')
       .andWhere(
         new Brackets((qb) => {
-          qb.where('author._id = :currentUserId', { currentUserId }) // El usuario es el autor
-            .orWhere(
+          qb.where('publication.author._id = :currentUserId', { currentUserId });
+          
+          if (friendIds.length > 0) {
+            qb.orWhere(
               new Brackets((subQb) => {
                 subQb
-                  .where('author._id IN (:...friendIds)', { friendIds }) // El usuario es amigo del autor
+                  .where('publication.author._id IN (:...friendIds)', { friendIds })
                   .andWhere('publication.privacy IN (:...privacyLevels)', {
                     privacyLevels: ['friends', 'public'],
                   });
               }),
             );
+          }
         }),
       )
       .orderBy('comment.createdAt', 'DESC')
