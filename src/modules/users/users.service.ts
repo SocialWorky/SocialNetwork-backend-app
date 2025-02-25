@@ -156,6 +156,10 @@ export class UsersService {
       user.isTooltipActive = updateUser.isTooltipActive;
     }
 
+    if (updateUser.lastConnection) {
+      user.lastConnection = updateUser.lastConnection;
+    }
+
     await this.usersRepository.save(user);
 
     return 'User ' + user.username + ' updated';

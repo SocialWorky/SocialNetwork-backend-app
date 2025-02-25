@@ -106,6 +106,9 @@ export class UpdateUser {
 
   @IsOptional()
   isTooltipActive?: boolean;
+
+  @IsOptional()
+  lastConnection?: Date;
 }
 export class LoginDto {
   @ApiProperty({

@@ -19,6 +19,7 @@ import { ScraperModule } from './modules/scraper/scraper.module';
 import { ReportsModule } from './modules/reports/reports.module';
 import { CustomFieldModule } from './modules/custom-field/custom-field.module';
 import { InvitationCodeModule } from './modules/invitationCode/invitation-code.module';
+import { WebhookModule } from './modules/webhook/webhook.module';
 import * as cors from 'cors';
 
 @Module({
@@ -61,6 +62,7 @@ import * as cors from 'cors';
     ReportsModule,
     CustomFieldModule,
     InvitationCodeModule,
+    WebhookModule,
   ],
   controllers: [],
   providers: [

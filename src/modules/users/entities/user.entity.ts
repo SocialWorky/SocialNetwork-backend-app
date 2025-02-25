@@ -63,6 +63,9 @@ export class User {
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
 
+  @Column({ type: 'timestamptz', nullable: true })
+  lastConnection: Date;
+
   @OneToOne(() => Profile, (profile) => profile.user)
   profile: Profile;
 

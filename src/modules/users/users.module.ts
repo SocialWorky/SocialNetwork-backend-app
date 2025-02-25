@@ -10,6 +10,7 @@ import { Email } from '../mails/entities/mail.entity';
 import { Friendship } from '../friends/entities/friend.entity';
 import { ConfigModule } from '../config/config.module';
 import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
+import { WebhookModule } from '../webhook/webhook.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
     AuthModule,
     ConfigModule,
     InvitationCodeModule,
+    WebhookModule,
   ],
   providers: [UsersService, MailsService ],
   controllers: [UsersController],
