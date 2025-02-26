@@ -8,6 +8,7 @@ import { join } from 'path';
 import { AuthModule } from '../../auth/auth.module';
 import { UsersModule } from '../users/users.module';
 import { Email } from './entities/mail.entity';
+import { WebhookModule } from '../webhook/webhook.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { Email } from './entities/mail.entity';
         },
       }),
     }),
+    WebhookModule,
   ],
   controllers: [MailsController],
   providers: [MailsService],

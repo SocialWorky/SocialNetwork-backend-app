@@ -56,16 +56,19 @@ export class UsersController {
       );
     }
 
-    await this._mailsService
-      .sendEmailWithRetry(user._id, createUser.mailDataValidate)
-      .catch(() => {
-        throw new HttpException(
-          'Failed send email',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      });
-
-    this._eventService.emit(EventEnum.USER_REGISTERED, user);
+    if (!user.isVerified) {
+      await this._mailsService
+        .sendEmailWithRetry(user._id, createUser.mailDataValidate)
+        .catch(() => {
+          throw new HttpException(
+            'Failed send email',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        });
+      this._eventService.emit(EventEnum.USER_REGISTERED, user);
+    } else {
+      this._eventService.emit(EventEnum.USER_EMAIL_VERIFIED, user);
+    }
 
     return user;
   }

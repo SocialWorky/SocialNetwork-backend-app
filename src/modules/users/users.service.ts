@@ -227,6 +227,7 @@ export class UsersService {
         'isActive',
         'createdAt',
         'updatedAt',
+        'lastConnection',
       ],
     });
 
