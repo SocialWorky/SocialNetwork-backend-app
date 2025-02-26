@@ -1,4 +1,3 @@
-// src/invitation-code/invitation-code.module.ts
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InvitationCode } from './entities/invitation-code.entity';

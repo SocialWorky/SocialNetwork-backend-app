@@ -10,7 +10,9 @@ import { Role } from '../../common/enums/rol.enum';
 @ApiTags('InvitationsCode')
 @Controller('invitations-code')
 export class InvitationCodeController {
-  constructor(private readonly invitationCodeService: InvitationCodeService) {}
+  constructor(
+    private readonly invitationCodeService: InvitationCodeService,
+  ) {}
 
   @UseGuards(AuthGuard)
   @Auth(Role.ADMIN)
