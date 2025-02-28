@@ -341,16 +341,13 @@ export class PublicationService {
   async getPublicationById(_id: string, currentUserId: string) {
 
     let friendIds = [];
+
     let pendingFriendRequests = [];
 
-
-    // Obtener los IDs de los amigos del usuario actual
     friendIds = await this.getFriendIds(currentUserId);
 
-    // Obtener las solicitudes de amistad pendientes del usuario actual
     pendingFriendRequests = await this.getPendingFriendRequests(currentUserId);
 
-    // Consulta principal
     const publications = await this.publicationRepository
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
@@ -446,7 +443,8 @@ export class PublicationService {
       .andWhere('publication.deletedAt IS NULL')
       .andWhere(
         new Brackets((qb) => {
-          qb.where('publication.author._id = :currentUserId', { currentUserId });
+          qb.where('publication.author._id = :currentUserId', { currentUserId })
+          .orWhere('publication.privacy = :privacyPublic', { privacyPublic: 'public' });
           
           if (friendIds.length > 0) {
             qb.orWhere(
