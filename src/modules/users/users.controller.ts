@@ -328,6 +328,23 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Auth(Role.USER)
+  @Get('myfriends/:_id')
+  async friendsRequest(@Param('_id') _id: string): Promise<
+    {
+      _id: string;
+      username: string;
+      name: string;
+      lastName: string;
+      email: string;
+      avatar: string;
+    }[]
+  > {
+    return this.usersService.getFriendsList(_id);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Auth(Role.USER)
   @Get('validate-profile/:_id')
   async validateProfile(@Param('_id') _id: string): Promise<Profile> {
     return this.usersService.createOrVerifyProfile(_id);

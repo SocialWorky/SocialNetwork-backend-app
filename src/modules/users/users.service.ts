@@ -574,4 +574,42 @@ export class UsersService {
 
     return { status: !!pendingFriendship, _id: pendingFriendship?.id };
   }
+
+  async getFriendsList(userId: string): Promise<
+    {
+      _id: string;
+      username: string;
+      name: string;
+      lastName: string;
+      email: string;
+      avatar: string;
+    }[]
+  > {
+    const friendships = await this.friendshipRepository.find({
+      where: [
+        { requester: { _id: userId }, status: Status.ACCEPTED },
+        { receiver: { _id: userId }, status: Status.ACCEPTED },
+      ],
+      relations: ['requester', 'receiver'],
+    });
+  
+    const friends = friendships.map((friendship) => {
+      const friend =
+        friendship.requester._id === userId
+          ? friendship.receiver
+          : friendship.requester;
+  
+      return {
+        _id: friend._id,
+        username: friend.username,
+        name: friend.name,
+        lastName: friend.lastName,
+        email: friend.email,  
+        avatar: friend.avatar,
+      };
+    });
+  
+    return friends;
+  }
+
 }
