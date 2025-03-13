@@ -42,7 +42,7 @@ export class PublicationService {
   async createPublication(createPublicationDto: CreatePublicationDto) {
     const publication = new Publication();
     publication._id = this.authService.cryptoIdKey();
-    publication.content = createPublicationDto.content;
+    publication.content = createPublicationDto.content || '';
     publication.privacy = createPublicationDto.privacy;
     publication.extraData = createPublicationDto.extraData;
     publication.createdAt = new Date();
@@ -70,7 +70,23 @@ export class PublicationService {
 
     return {
       message: 'Publication created successfully',
-      publications: newPublications,
+      publications: {
+        _id: newPublications._id,
+        content: newPublications.content,
+        privacy: newPublications.privacy,
+        extraData: newPublications.extraData,
+        createdAt: newPublications.createdAt,
+        updatedAt: newPublications.updatedAt,
+        fixed: newPublications.fixed,
+        author: {
+          _id: author._id,
+          username: author.username,
+          name: author.name,
+          lastName: author.lastName,
+          avatar: author.avatar,
+          email: author.email,
+        },
+      },
     };
   }
 
@@ -138,6 +154,8 @@ export class PublicationService {
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.userReceiving', 'userReceiving')
       .leftJoinAndSelect('publication.media', 'media')
+      .leftJoinAndSelect('media.comments', 'mediaComments')
+      .leftJoinAndSelect('mediaComments.author', 'mediaCommentsAuthor')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
       .leftJoinAndSelect(
@@ -151,10 +169,13 @@ export class PublicationService {
       .leftJoinAndSelect('publication.comment', 'comment')
       .leftJoinAndSelect('comment.author', 'commentAuthor')
       .leftJoinAndSelect('comment.media', 'commentMedia')
+      .leftJoinAndSelect('commentMedia.comments', 'commentMediaComments')
+      .leftJoinAndSelect('commentMediaComments.author', 'commentMediaCommentsAuthor')
       .select([
         'publication._id',
         'publication.content',
         'publication.privacy',
+        'publication.fixed',
         'publication.extraData',
         'author._id',
         'author.username',
@@ -174,6 +195,14 @@ export class PublicationService {
         'media.url',
         'media.urlThumbnail',
         'media.urlCompressed',
+        'mediaComments._id',
+        'mediaComments.content',
+        'mediaComments.createdAt',
+        'mediaCommentsAuthor._id',
+        'mediaCommentsAuthor.name',
+        'mediaCommentsAuthor.lastName',
+        'mediaCommentsAuthor.username',
+        'mediaCommentsAuthor.avatar',
         'reaction._id',
         'reaction.isPublications',
         'reaction.isComment',
@@ -202,6 +231,14 @@ export class PublicationService {
         'commentMedia.url',
         'commentMedia.urlThumbnail',
         'commentMedia.urlCompressed',
+        'commentMediaComments._id',
+        'commentMediaComments.content',
+        'commentMediaComments.createdAt',
+        'commentMediaCommentsAuthor._id',
+        'commentMediaCommentsAuthor.name',
+        'commentMediaCommentsAuthor.lastName',
+        'commentMediaCommentsAuthor.username',
+        'commentMediaCommentsAuthor.avatar',
       ]);
 
     if (type === 'all') {
@@ -234,10 +271,12 @@ export class PublicationService {
       friendIds.includes(userId)
     ) {
       queryBuilder
-        .where('publication.author._id = :consultId', { consultId })
-        .orWhere('publication.userReceiving = :userReceiving', {
-          userReceiving: consultId,
-        })
+        .where(
+          new Brackets((qb) => {
+            qb.where('publication.author._id = :consultId', { consultId })
+              .orWhere('publication.userReceiving = :consultId');
+          })
+        )
         .andWhere('publication.privacy IN (:...privacyLevels)', {
           privacyLevels: ['public', 'friends'],
         })
@@ -255,28 +294,29 @@ export class PublicationService {
         .andWhere('publication.deletedAt IS NULL');
     } else if (type === 'postProfile' && consultId === userId) {
       queryBuilder
-        .where('publication.author._id = :consultId', { consultId })
-        .orWhere('publication.userReceiving = :userReceiving', {
-          userReceiving: consultId,
-        })
+        .where(
+          new Brackets(qb => {
+            qb.where('publication.author._id = :consultId', { consultId })
+              .orWhere('publication.userReceiving = :userReceiving', {
+                userReceiving: consultId,
+              });
+          })
+        )
         .andWhere('publication.deletedAt IS NULL');
     }
 
     queryBuilder
-      .orderBy('publication.createdAt', 'DESC')
+      .orderBy('publication.fixed', 'DESC')
+      .addOrderBy('publication.createdAt', 'DESC')
       .addOrderBy('comment.createdAt', 'DESC');
 
-    // Contar el total de publicaciones sin aplicar paginación
-    const total = await queryBuilder.getCount();
-
-    //TODO Aplicar paginación después de filtrar
-    const publications = await queryBuilder.getMany();
-
-    //TODO Recortar las publicaciones después de filtrarlas y ordenarlas
-    const paginatedPublications = publications.slice(skip, skip + pageSize);
+    const [publications, total] = await queryBuilder
+      .skip(skip)
+      .take(pageSize)
+      .getManyAndCount();
 
     //TODO Agregar isMyFriend e isFriendshipPending a cada publicación
-    const finalPublications = paginatedPublications.map((publication) => {
+    const finalPublications = publications.map((publication) => {
       const pendingRequest = pendingFriendRequests.find(
         (request) => request.userId === publication.author._id,
       );
@@ -298,12 +338,23 @@ export class PublicationService {
     return await this.publicationRepository.count();
   }
 
-  async getPublicationById(_id: string) {
+  async getPublicationById(_id: string, currentUserId: string) {
+
+    let friendIds = [];
+
+    let pendingFriendRequests = [];
+
+    friendIds = await this.getFriendIds(currentUserId);
+
+    pendingFriendRequests = await this.getPendingFriendRequests(currentUserId);
+
     const publications = await this.publicationRepository
       .createQueryBuilder('publication')
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.userReceiving', 'userReceiving')
       .leftJoinAndSelect('publication.media', 'media')
+      .leftJoinAndSelect('media.comments', 'mediaComments')
+      .leftJoinAndSelect('mediaComments.author', 'mediaCommentsAuthor')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
       .leftJoinAndSelect(
@@ -317,10 +368,13 @@ export class PublicationService {
       .leftJoinAndSelect('publication.comment', 'comment')
       .leftJoinAndSelect('comment.author', 'commentAuthor')
       .leftJoinAndSelect('comment.media', 'commentMedia')
+      .leftJoinAndSelect('commentMedia.comments', 'commentMediaComments')
+      .leftJoinAndSelect('commentMediaComments.author', 'commentMediaCommentsAuthor')
       .select([
         'publication._id',
         'publication.content',
         'publication.privacy',
+        'publication.fixed',
         'publication.extraData',
         'author._id',
         'author.username',
@@ -340,6 +394,14 @@ export class PublicationService {
         'media.url',
         'media.urlThumbnail',
         'media.urlCompressed',
+        'mediaComments._id',
+        'mediaComments.content',
+        'mediaComments.createdAt',
+        'mediaCommentsAuthor._id',
+        'mediaCommentsAuthor.name',
+        'mediaCommentsAuthor.lastName',
+        'mediaCommentsAuthor.username',
+        'mediaCommentsAuthor.avatar',
         'reaction._id',
         'reaction.isPublications',
         'reaction.isComment',
@@ -368,12 +430,52 @@ export class PublicationService {
         'commentMedia.url',
         'commentMedia.urlThumbnail',
         'commentMedia.urlCompressed',
+        'commentMediaComments._id',
+        'commentMediaComments.content',
+        'commentMediaComments.createdAt',
+        'commentMediaCommentsAuthor._id',
+        'commentMediaCommentsAuthor.name',
+        'commentMediaCommentsAuthor.lastName',
+        'commentMediaCommentsAuthor.username',
+        'commentMediaCommentsAuthor.avatar',
       ])
-      .where('publication._id = :_id', { _id: _id })
+      .where('publication._id = :_id', { _id })
       .andWhere('publication.deletedAt IS NULL')
+      .andWhere(
+        new Brackets((qb) => {
+          qb.where('publication.author._id = :currentUserId', { currentUserId })
+          .orWhere('publication.privacy = :privacyPublic', { privacyPublic: 'public' });
+          
+          if (friendIds.length > 0) {
+            qb.orWhere(
+              new Brackets((subQb) => {
+                subQb
+                  .where('publication.author._id IN (:...friendIds)', { friendIds })
+                  .andWhere('publication.privacy IN (:...privacyLevels)', {
+                    privacyLevels: ['friends', 'public'],
+                  });
+              }),
+            );
+          }
+        }),
+      )
       .orderBy('comment.createdAt', 'DESC')
       .getMany();
-    return publications;
+
+      //TODO Agregar isMyFriend e isFriendshipPending a cada publicación
+      const finalPublications = publications.map((publication) => {
+        const pendingRequest = pendingFriendRequests.find(
+          (request) => request.userId === publication.author._id,
+        );
+
+        return {
+          ...publication,
+          isMyFriend: friendIds.includes(publication.author._id),
+          isFriendshipPending: pendingRequest ? pendingRequest.requestId : null,
+        };
+      });
+
+    return finalPublications;
   }
 
   async updatePublication(
@@ -387,25 +489,26 @@ export class PublicationService {
       throw new Error('Publication not found');
     }
 
-    const shouldUpdate =
-      updatePublicationDto.content || updatePublicationDto.privacy;
-
-    if (shouldUpdate) {
-      publication.content = updatePublicationDto.content
-        ? updatePublicationDto.content
-        : publication.content;
-      publication.privacy = updatePublicationDto.privacy
-        ? updatePublicationDto.privacy
-        : publication.privacy;
-
-      publication.updatedAt = new Date();
-      await this.publicationRepository.save(publication);
+    if (updatePublicationDto.fixed !== undefined) {
+      publication.fixed = updatePublicationDto.fixed;
     }
+
+    if (updatePublicationDto.content) {
+      publication.content = updatePublicationDto.content;
+    }
+
+    if (updatePublicationDto.privacy) {
+      publication.privacy = updatePublicationDto.privacy;
+    }
+
+    publication.updatedAt = new Date();
+    await this.publicationRepository.save(publication);
 
     return { message: 'Publication updated successfully' };
   }
 
-  async deletePublication(id: string): Promise<void> {
+  async deletePublication(id: string): Promise<{ _id: string }> {
     await this.publicationRepository.update(id, { deletedAt: new Date() });
+    return { _id: id };
   }
 }

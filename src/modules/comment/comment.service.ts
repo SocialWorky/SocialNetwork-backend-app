@@ -26,7 +26,7 @@ export class CommentService {
   ) {}
 
   async createComment(createCommentDto: CreateCommentDto) {
-    const { content, authorId, idPublication } = createCommentDto;
+    const { content, authorId, idPublication, idMedia } = createCommentDto;
 
     const comment = new Comment();
     comment._id = this.authService.cryptoIdKey();
@@ -36,17 +36,23 @@ export class CommentService {
     const authorOptions: FindOneOptions<User> = { where: { _id: authorId } };
     comment.author = await this.userRepository.findOne(authorOptions);
 
-    const publicationOptions: FindOneOptions<Publication> = {
-      where: { _id: idPublication },
-    };
-    comment.publication =
-      await this.publicationRepository.findOne(publicationOptions);
+    if (idMedia) {
+      const mediaOptions: FindOneOptions<Media> = { where: { _id: idMedia } };
+      comment.mediaComment = await this.mediaRepository.findOne(mediaOptions);
+    }
+    if (idPublication) {
+      const publicationOptions: FindOneOptions<Publication> = {
+        where: { _id: idPublication },
+      };
+      comment.publication =
+        await this.publicationRepository.findOne(publicationOptions);
+    }
 
     await this.commentRepository.save(comment);
 
     return {
       message: 'Comment created successfully',
-      comment: comment,
+      comment: comment, // Return the comment created full data, refactor this to return only the necessary data
     };
   }
 

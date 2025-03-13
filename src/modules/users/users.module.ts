@@ -8,13 +8,19 @@ import { AuthModule } from '../../auth/auth.module';
 import { MailsService } from '../mails/mails.service';
 import { Email } from '../mails/entities/mail.entity';
 import { Friendship } from '../friends/entities/friend.entity';
+import { ConfigModule } from '../config/config.module';
+import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
+import { WebhookModule } from '../webhook/webhook.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Email, Profile, Friendship]),
     AuthModule,
+    ConfigModule,
+    InvitationCodeModule,
+    WebhookModule,
   ],
-  providers: [UsersService, MailsService],
+  providers: [UsersService, MailsService ],
   controllers: [UsersController],
   exports: [TypeOrmModule, UsersService, MailsService],
 })

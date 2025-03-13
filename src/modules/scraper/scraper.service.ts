@@ -1,18 +1,16 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import axios from 'axios';
-import cheerio from 'cheerio';
+import * as cheerio from 'cheerio';
 
 @Injectable()
 export class ScraperService {
   async scrapeMetadata(url: string): Promise<any> {
     try {
-      // Validar URL
       const validUrl = this.validateUrl(url);
       if (!validUrl) {
         throw new BadRequestException('Invalid URL provided');
       }
 
-      // Configurar User-Agent para evitar bloqueos
       const response = await axios.get(url, {
         headers: {
           'User-Agent':
@@ -45,16 +43,12 @@ export class ScraperService {
         twitterImage: {
           url: $('meta[name="twitter:image"]').attr('content'),
         },
-        // Metadatos adicionales para Facebook
         fbAppId: $('meta[property="fb:app_id"]').attr('content'),
         fbAdmins: $('meta[property="fb:admins"]').attr('content'),
-        // Metadatos adicionales para WhatsApp
-        whatsappImage: $('meta[property="og:image"]').attr('content'), // WhatsApp utiliza Open Graph
-        // Metadatos adicionales para Instagram
+        whatsappImage: $('meta[property="og:image"]').attr('content'),
         instagramUsername: $('meta[property="instapp:owner_user_id"]').attr(
           'content',
         ),
-        // Metadatos adicionales para LinkedIn
         linkedinTitle: $('meta[property="og:title"]').attr('content'),
         linkedinDescription: $('meta[property="og:description"]').attr(
           'content',

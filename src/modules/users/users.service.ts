@@ -11,6 +11,8 @@ import { Email } from '../mails/entities/mail.entity';
 import { Role } from 'src/common/enums/rol.enum';
 import { Status } from 'src/common/enums/status.enum';
 import { Friendship } from '../friends/entities/friend.entity';
+import { ConfigService } from '../config/config.service';
+import { InvitationCodeService } from '../invitationCode/invitation-code.service';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +30,11 @@ export class UsersService {
     private readonly friendshipRepository: Repository<Friendship>,
 
     private readonly authService: AuthService,
+    
+    private _configService: ConfigService,
+
+    private readonly _invitationCodeService: InvitationCodeService,
+
   ) {}
 
   async create(createUserDto: CreateUser): Promise<User> {
@@ -53,6 +60,28 @@ export class UsersService {
         'Username is already in use',
         HttpStatus.BAD_REQUEST,
       );
+    }
+
+    const configData = await this._configService.getConfig();
+    if (configData.settings.invitationCode) {
+      if (!createUserDto.invitationCode) {
+        throw new HttpException(
+          'Invitation code is required',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      const validateInvitation = await this._invitationCodeService.validate(createUserDto.email, createUserDto.invitationCode);
+
+      if (!validateInvitation) {
+        throw new HttpException(
+          'Invalid invitation code',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      createUserDto.isVerified = true;
+
     }
 
     const user = new User();
@@ -123,6 +152,14 @@ export class UsersService {
       user.password = await bcrypt.hash(updateUser.password, 10);
     }
 
+    if (updateUser.isTooltipActive !== undefined) {
+      user.isTooltipActive = updateUser.isTooltipActive;
+    }
+
+    if (updateUser.lastConnection) {
+      user.lastConnection = updateUser.lastConnection;
+    }
+
     await this.usersRepository.save(user);
 
     return 'User ' + user.username + ' updated';
@@ -186,9 +223,11 @@ export class UsersService {
         'role',
         'isVerified',
         'avatar',
+        'isTooltipActive',
         'isActive',
         'createdAt',
         'updatedAt',
+        'lastConnection',
       ],
     });
 
@@ -215,10 +254,6 @@ export class UsersService {
     const user = await this.usersRepository.findOne({
       where: { username: username },
     });
-
-    if (!user) {
-      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-    }
 
     return user;
   }
@@ -331,10 +366,6 @@ export class UsersService {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    // const profile = await this.profilesRepository.findOne({
-    //   where: { _id: userValidate.profile?._id },
-    // });
-
     if (!userValidate.profile) {
       const newProfile = new Profile();
       newProfile.user = userValidate;
@@ -374,6 +405,13 @@ export class UsersService {
         profile.coverImage = null;
       } else {
         profile.coverImage = updateProfileDto.coverImage;
+      }
+    }
+    if (updateProfileDto.coverImageMobile) {
+      if (updateProfileDto.coverImageMobile === 'null') {
+        profile.coverImageMobile = null;
+      } else {
+        profile.coverImageMobile = updateProfileDto.coverImageMobile;
       }
     }
     if (updateProfileDto.dateOfBirth) {
@@ -536,4 +574,42 @@ export class UsersService {
 
     return { status: !!pendingFriendship, _id: pendingFriendship?.id };
   }
+
+  async getFriendsList(userId: string): Promise<
+    {
+      _id: string;
+      username: string;
+      name: string;
+      lastName: string;
+      email: string;
+      avatar: string;
+    }[]
+  > {
+    const friendships = await this.friendshipRepository.find({
+      where: [
+        { requester: { _id: userId }, status: Status.ACCEPTED },
+        { receiver: { _id: userId }, status: Status.ACCEPTED },
+      ],
+      relations: ['requester', 'receiver'],
+    });
+  
+    const friends = friendships.map((friendship) => {
+      const friend =
+        friendship.requester._id === userId
+          ? friendship.receiver
+          : friendship.requester;
+  
+      return {
+        _id: friend._id,
+        username: friend.username,
+        name: friend.name,
+        lastName: friend.lastName,
+        email: friend.email,  
+        avatar: friend.avatar,
+      };
+    });
+  
+    return friends;
+  }
+
 }

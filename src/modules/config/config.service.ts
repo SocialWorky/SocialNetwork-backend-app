@@ -23,6 +23,16 @@ export class ConfigService implements OnModuleInit {
         contactEmail: 'soporte@worky.cl',
         faviconUrl: 'favicon.ico',
         loginMethods: JSON.stringify({ email: true, google: true }),
+        urlSite: 'http://localhost:3000',
+        description: 'Worky es una plataforma para compartir ofertas de trabajo',
+        invitationCode: false,
+      };
+      defaultConfig.services = {
+        logs: {
+          enabled: false,
+          urlApi: '',
+          token: '',
+        },
       };
       defaultConfig.customCss = '';
       defaultConfig.createdAt = new Date();
@@ -32,7 +42,16 @@ export class ConfigService implements OnModuleInit {
   }
 
   async getConfig(): Promise<Config> {
-    return this.configRepository.findOne({ where: { id: 1 } });
+    const config = await this.configRepository.findOne({ where: { id: 1 } });
+    delete config.services;
+    return config;
+  }
+
+  async getServices(): Promise<Config> {
+    return this.configRepository.findOne({
+      select: ['services'],
+      where: { id: 1 },
+    });
   }
 
   async updateConfig(updateConfigDto: UpdateConfigDto): Promise<Config> {
@@ -40,6 +59,7 @@ export class ConfigService implements OnModuleInit {
     if (!config) {
       config = new Config();
     }
+
     config.settings = {
       logoUrl: updateConfigDto.logoUrl || config.settings.logoUrl,
       title: updateConfigDto.title || config.settings.title,
@@ -51,9 +71,21 @@ export class ConfigService implements OnModuleInit {
       faviconUrl: updateConfigDto.faviconUrl || config.settings.faviconUrl,
       loginMethods:
         updateConfigDto.loginMethods || config.settings.loginMethods,
+      urlSite: updateConfigDto.urlSite || config.settings.urlSite,
+      description: updateConfigDto.description || config.settings.description,
+      invitationCode: updateConfigDto.invitationCode ?? config.settings.invitationCode,
     };
+
     config.customCss = updateConfigDto.customCss;
     config.updatedAt = new Date();
+
+    if (updateConfigDto.services === undefined) {
+      return this.configRepository.save(config);
+    }
+    config.services = {
+      logs: !Array.isArray(updateConfigDto.services.logs) ? updateConfigDto.services.logs : config.services.logs,
+    };
+ 
     return this.configRepository.save(config);
   }
 }

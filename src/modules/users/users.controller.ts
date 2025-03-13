@@ -30,7 +30,9 @@ import { ActiveUser } from '../../common/decorator/active-user.decorator';
 import { UserActiveInterface } from '../../common/interfaces/user-active.interface';
 import { MailsService } from '../mails/mails.service';
 import { Profile } from './entities/profile.entity';
-import { AuthGuard } from 'src/auth/guard/auth.guard';
+import { AuthGuard } from '../../auth/guard/auth.guard';
+import { EventService } from '../webhook/event.service';
+import { EventEnum } from '../webhook/enums/event.enum';
 
 @ApiTags('Users')
 @Controller('user')
@@ -39,20 +41,35 @@ export class UsersController {
     private readonly usersService: UsersService,
     private authService: AuthService,
     private readonly _mailsService: MailsService,
+    private readonly _eventService: EventService,
   ) {}
 
   @Post('create')
   @ApiExcludeEndpoint()
   async create(@Body() createUser: CreateUser): Promise<User> {
     const user = await this.usersService.create(createUser);
-    await this._mailsService
-      .sendEmailWithRetry(user._id, createUser.mailDataValidate)
-      .catch(() => {
-        throw new HttpException(
-          'Failed send email',
-          HttpStatus.INTERNAL_SERVER_ERROR,
-        );
-      });
+
+    if (!user) {
+      throw new HttpException(
+        'Failed to create user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+    if (!user.isVerified) {
+      await this._mailsService
+        .sendEmailWithRetry(user._id, createUser.mailDataValidate)
+        .catch(() => {
+          throw new HttpException(
+            'Failed send email',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
+        });
+      this._eventService.emit(EventEnum.USER_REGISTERED, user);
+    } else {
+      this._eventService.emit(EventEnum.USER_EMAIL_VERIFIED, user);
+    }
+
     return user;
   }
 
@@ -92,9 +109,22 @@ export class UsersController {
     }
     const token = this.authService.signIn(user);
 
-    await this.usersService.update(user._id, { token: token });
+    await this.usersService.update(user._id, { token: token, lastConnection: new Date() });
 
     await this.usersService.createOrVerifyProfile(user._id);
+
+    const userLoged = {
+      _id : user._id,
+      username: user.username,
+      name: user.name,
+      lastName: user.lastName,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      lastConnection: user.lastConnection,
+    }
+
+    this._eventService.emit(EventEnum.USER_LOGIN, userLoged);
 
     return {
       token,
@@ -138,6 +168,9 @@ export class UsersController {
       await this.usersService.createOrVerifyProfile(user._id);
 
       await this.usersService.update(emailUser._id, { token: token });
+
+      this._eventService.emit(EventEnum.USER_LOGIN, user);
+
       return {
         token,
       };
@@ -189,9 +222,14 @@ export class UsersController {
     @Param('_id') _id: string,
     @Body() updateUser: UpdateUser,
   ): Promise<{ message: string }> {
-    return this.usersService
+
+    const user = this.usersService
       .update(_id, updateUser)
       .then(() => ({ message: 'User updated' }));
+
+    this._eventService.emit(EventEnum.USER_EDITED, user);
+
+    return user;
   }
 
   @ApiBearerAuth()
@@ -199,6 +237,11 @@ export class UsersController {
   @Auth(Role.USER)
   @Delete('delete/:_idUserDelete')
   async remove(@Param('_idUserDelete') _idUserDelete: string): Promise<string> {
+    const user = await this.usersService.findUserById(_idUserDelete);
+    if (!user) {
+      throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+    }
+    this._eventService.emit(EventEnum.USER_DELETED, user);
     return this.usersService.remove(_idUserDelete);
   }
 
@@ -280,6 +323,23 @@ export class UsersController {
     @Param('_idrequest') _idrequest: string,
   ): Promise<{ status: boolean; _id: string }> {
     return this.usersService.hasPendingFriendRequest(_id, _idrequest);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard)
+  @Auth(Role.USER)
+  @Get('myfriends/:_id')
+  async friendsRequest(@Param('_id') _id: string): Promise<
+    {
+      _id: string;
+      username: string;
+      name: string;
+      lastName: string;
+      email: string;
+      avatar: string;
+    }[]
+  > {
+    return this.usersService.getFriendsList(_id);
   }
 
   @ApiBearerAuth()

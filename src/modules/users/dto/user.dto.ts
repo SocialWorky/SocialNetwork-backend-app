@@ -55,6 +55,12 @@ export class CreateUser {
 
   @IsOptional()
   mailDataValidate?: CreateMailDto;
+
+  @IsOptional()
+  invitationCode?: string;
+
+  @IsOptional()
+  isTooltipActive?: boolean;
 }
 export class UpdateUser {
   @Transform(({ value }) => value.trim())
@@ -97,6 +103,12 @@ export class UpdateUser {
   @IsString()
   @IsOptional()
   avatar?: string;
+
+  @IsOptional()
+  isTooltipActive?: boolean;
+
+  @IsOptional()
+  lastConnection?: Date;
 }
 export class LoginDto {
   @ApiProperty({

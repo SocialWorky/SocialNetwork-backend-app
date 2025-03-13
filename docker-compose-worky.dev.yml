@@ -12,6 +12,7 @@ services:
       SERVER_HOST: ${SERVER_HOST}
       APP_VERSION: ${APP_VERSION}
       APP_PORT: ${APP_PORT}
+      APP_NAME: ${APP_NAME}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_USERNAME: ${DB_USERNAME}

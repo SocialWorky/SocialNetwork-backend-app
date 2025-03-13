@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, IsEnum, IsOptional } from 'class-validator';
+import { IsNotEmpty, IsString, IsEnum, IsOptional, IsBoolean } from 'class-validator';
 
 enum PrivacyOptions {
   PUBLIC = 'public',
@@ -8,10 +8,10 @@ enum PrivacyOptions {
 }
 
 export class CreatePublicationDto {
-  @IsNotEmpty()
   @ApiProperty()
   @IsString()
-  content: string;
+  @IsOptional()
+  content?: string;
 
   @IsNotEmpty()
   @ApiProperty()
@@ -23,6 +23,10 @@ export class CreatePublicationDto {
   extraData?: {
     locations: string;
   };
+
+  @IsBoolean()
+  @IsOptional()
+  fixed?: boolean;
 
   @IsString()
   @ApiProperty()
@@ -55,6 +59,10 @@ export class UpdatePublicationDto {
   @ApiProperty()
   @IsOptional()
   privacy?: string;
+
+  @IsBoolean()
+  @IsOptional()
+  fixed?: boolean;
 
   @IsString()
   @IsOptional()

@@ -52,6 +52,10 @@ export class Comment {
   })
   taggedUsers: TagUsers[];
 
+  @ManyToOne(() => Media, (media) => media.comments, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: '_idMedia' })
+  mediaComment: Media;
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt: Date;
 

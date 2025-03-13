@@ -25,6 +25,9 @@ export class Publication {
   @Column()
   privacy: string;
 
+  @Column({ default: false })
+  fixed: boolean;
+
   @ManyToOne(() => User, (user) => user._id, { eager: true })
   author: User;
 

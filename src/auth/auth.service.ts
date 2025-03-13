@@ -16,6 +16,7 @@ export class AuthService {
       name: user.name + ' ' + user.lastName,
       role: user.role,
       avatar: user.avatar,
+      isTooltipActive: user.isTooltipActive,
     };
     return this.jwtService.sign(payload);
   }
@@ -40,6 +41,7 @@ export class AuthService {
       name: user.name + ' ' + user.lastName,
       role: user.role,
       avatar: user.avatar,
+      isTooltipActive: user.isTooltipActive,
     };
 
     const expirationTime = 12 * 60 * 60;
@@ -82,11 +84,11 @@ export class AuthService {
     const clientId = process.env.GOOGLE_CLIENT_ID;
     const client = new OAuth2Client(clientId);
     try {
-      const verifiy = await client.verifyIdToken({
+      const verify = await client.verifyIdToken({
         idToken: token,
         audience: clientId,
       });
-      const user = verifiy.getPayload();
+      const user = verify.getPayload();
       return user;
     } catch (error) {
       throw new UnauthorizedException('Invalid token');

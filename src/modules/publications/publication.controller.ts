@@ -60,8 +60,9 @@ export class PublicationController {
   }
 
   @Get(':_id')
-  async getPublicationById(@Param('_id') _id: string): Promise<Publication[]> {
-    return this.publicationService.getPublicationById(_id);
+  async getPublicationById(@Param('_id') _id: string, @Req() request?: Request,): Promise<Publication[]> {
+    const currentUserId = request['user'].id;
+    return this.publicationService.getPublicationById(_id, currentUserId);
   }
 
   @Put('edit/:_id')
@@ -73,7 +74,7 @@ export class PublicationController {
   }
 
   @Delete('delete/:id')
-  async deletePublication(@Param('id') id: string): Promise<void> {
+  async deletePublication(@Param('id') id: string): Promise<{ _id: string }> {
     return this.publicationService.deletePublication(id);
   }
 }

@@ -1,4 +1,4 @@
-import { IsString, IsOptional } from 'class-validator';
+import { IsString, IsOptional, IsArray, IsObject } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class UpdateConfigDto {
@@ -41,4 +41,29 @@ export class UpdateConfigDto {
   @IsString()
   @IsOptional()
   loginMethods?: string; // JSON string
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  urlSite?: string;
+
+  @ApiProperty()
+  @IsString()
+  @IsOptional()
+  description?: string;
+
+  @ApiProperty()
+  @IsOptional()
+  invitationCode?: boolean;
+
+  @ApiProperty()
+  @IsObject()
+  @IsOptional()
+  services?: {
+    logs?: {
+      enabled: boolean;
+      urlApi: string;
+      token: string;
+    };
+  };
 }

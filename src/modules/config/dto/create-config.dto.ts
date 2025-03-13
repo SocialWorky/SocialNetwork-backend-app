@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsArray, IsObject } from 'class-validator';
 
 export class CreateConfigDto {
   @IsString()
@@ -32,4 +32,23 @@ export class CreateConfigDto {
   @IsString()
   @IsNotEmpty()
   customCss: string;
+
+  @IsString()
+  @IsNotEmpty()
+  urlSite: string;
+
+  @IsString()
+  @IsNotEmpty()
+  description: string;
+
+  @IsObject()
+  @IsNotEmpty()
+  services: {
+    logs: {
+      enabled: boolean;
+      urlApi: string;
+      token: string;
+    };
+  }[];
+
 }

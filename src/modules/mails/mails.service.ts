@@ -39,7 +39,7 @@ export class MailsService {
     email.subMessage = mailData.subMessage;
     email.buttonMessage = mailData.buttonMessage;
     email.template = mailData.template ? mailData.template : '';
-
+    email.templateLogo = mailData.templateLogo ? mailData.templateLogo : '';
     return await this.emailRepository.save(email);
   }
 
@@ -66,7 +66,7 @@ export class MailsService {
   }
 
   async sendEmailWithRetry(
-    id: string,
+    id: string = '',
     mailData: CreateMailDto,
     retries: number = 3,
     delayMs: number = 2000,
@@ -83,6 +83,9 @@ export class MailsService {
       }
       if (mailData.template === 'notification') {
         await this.sendNotification(mailData);
+      }
+      if (mailData.template === 'email') {
+        await this.sendEmail(mailData);
       }
     } catch (error) {
       if (retries > 0) {
@@ -117,7 +120,7 @@ export class MailsService {
     const message = mailData.message;
     const subMessage = mailData.subMessage;
     const buttonMessage = mailData.buttonMessage;
-
+    const templateLogo = mailData.templateLogo;
     try {
       await this._mailerService.sendMail({
         to: user.email,
@@ -131,6 +134,7 @@ export class MailsService {
           message,
           subMessage,
           buttonMessage,
+          templateLogo,
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
@@ -168,7 +172,7 @@ export class MailsService {
     const message = mailData.message;
     const subMessage = mailData.subMessage;
     const buttonMessage = mailData.buttonMessage;
-
+    const templateLogo = mailData.templateLogo;
     try {
       await this._mailerService.sendMail({
         to: user.email,
@@ -182,6 +186,7 @@ export class MailsService {
           message,
           subMessage,
           buttonMessage,
+          templateLogo,
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
@@ -210,7 +215,7 @@ export class MailsService {
     const message = mailData.message;
     const subMessage = mailData.subMessage;
     const buttonMessage = mailData.buttonMessage;
-
+    const templateLogo = mailData.templateLogo;
     try {
       await this._mailerService.sendMail({
         to: user.email,
@@ -224,6 +229,7 @@ export class MailsService {
           message,
           subMessage,
           buttonMessage,
+          templateLogo,
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
@@ -251,6 +257,7 @@ export class MailsService {
           message: mailData.message,
           subMessage: mailData.subMessage, // HTML content
           buttonMessage: mailData.buttonMessage,
+          templateLogo: mailData.templateLogo,
         },
       });
       this.logger.log(`Email sent to ${user.email}`);
@@ -258,4 +265,27 @@ export class MailsService {
       throw new Error(`Failed to send email: ${error.message}`);
     }
   }
+
+  async sendEmail(mailData: CreateMailDto) {
+    try {
+      await this._mailerService.sendMail({
+        to: mailData.email,
+        subject: mailData.subject,
+        template: './email',
+        context: {
+          url: mailData.url,
+          title: mailData.title,
+          greet: mailData.greet,
+          message: mailData.message,
+          subMessage: mailData.subMessage, // HTML content
+          buttonMessage: mailData.buttonMessage,
+          templateLogo: mailData.templateLogo,
+        },
+      });
+      this.logger.log(`Email sent to ${mailData.email}`);
+    } catch (error) {
+      throw new Error(`Failed to send email: ${error.message}`);
+    }
+  }
+
 }

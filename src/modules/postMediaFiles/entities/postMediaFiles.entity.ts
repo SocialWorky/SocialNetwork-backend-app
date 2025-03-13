@@ -1,6 +1,6 @@
 import { Publication } from 'src/modules/publications/entities/publications.entity';
 import { Comment } from 'src/modules/comment/entities/comment.entity';
-import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn } from 'typeorm';
+import { Entity, Column, ManyToOne, JoinColumn, PrimaryColumn, OneToMany } from 'typeorm';
 
 @Entity()
 export class Media {
@@ -21,6 +21,10 @@ export class Media {
 
   @Column({ default: false })
   isComment: boolean;
+
+  @OneToMany(() => Comment, (comments) => comments.mediaComment, { eager: true })
+  @JoinColumn({ name: 'comments' })
+  comments: Comment[];
 
   @ManyToOne(() => Publication, (publication) => publication.media, {
     onDelete: 'CASCADE',

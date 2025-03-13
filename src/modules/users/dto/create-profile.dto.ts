@@ -76,6 +76,10 @@ export class CreateProfileDto {
 
   @IsString()
   @IsOptional()
+  coverImageMobile?: string;
+
+  @IsString()
+  @IsOptional()
   dateOfBirth?: string;
 
   @IsString()
