@@ -11,6 +11,7 @@ import { Friendship } from '../friends/entities/friend.entity';
 import { ConfigModule } from '../config/config.module';
 import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
 import { WebhookModule } from '../webhook/webhook.module';
+import { RecordsLogsModule } from '../records-logs/records-logs.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { WebhookModule } from '../webhook/webhook.module';
     ConfigModule,
     InvitationCodeModule,
     WebhookModule,
+    RecordsLogsModule,
   ],
   providers: [UsersService, MailsService ],
   controllers: [UsersController],

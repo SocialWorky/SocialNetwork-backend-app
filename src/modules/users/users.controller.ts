@@ -10,6 +10,7 @@ import {
   HttpStatus,
   Query,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -33,6 +34,7 @@ import { Profile } from './entities/profile.entity';
 import { AuthGuard } from '../../auth/guard/auth.guard';
 import { EventService } from '../webhook/event.service';
 import { EventEnum } from '../webhook/enums/event.enum';
+import { AppLogger } from '../records-logs/logger.service';
 
 @ApiTags('Users')
 @Controller('user')
@@ -42,6 +44,7 @@ export class UsersController {
     private authService: AuthService,
     private readonly _mailsService: MailsService,
     private readonly _eventService: EventService,
+    @Inject(AppLogger) private readonly _logger: AppLogger,
   ) {}
 
   @Post('create')
@@ -50,6 +53,15 @@ export class UsersController {
     const user = await this.usersService.create(createUser);
 
     if (!user) {
+
+      this._logger.error(
+        `Failed to create user`,
+        'UsersController create',
+        {
+          user: user,
+        }
+      );
+
       throw new HttpException(
         'Failed to create user',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -60,14 +72,43 @@ export class UsersController {
       await this._mailsService
         .sendEmailWithRetry(user._id, createUser.mailDataValidate)
         .catch(() => {
+
+          this._logger.error(
+            `Failed to send email`,
+            'UsersController create',
+            {
+              user: user,
+              mailData: createUser.mailDataValidate,
+            }
+          );
+
           throw new HttpException(
             'Failed send email',
             HttpStatus.INTERNAL_SERVER_ERROR,
           );
         });
       this._eventService.emit(EventEnum.USER_REGISTERED, user);
+
+      this._logger.log(
+        `User created`,
+        'UsersController create',
+        {
+          user: user,
+        }
+      );
+
+      return user;
+
     } else {
       this._eventService.emit(EventEnum.USER_EMAIL_VERIFIED, user);
+
+      this._logger.log(
+        `User created`,
+        'UsersController create',
+        {
+          user: user,
+        }
+      );
     }
 
     return user;
@@ -88,6 +129,13 @@ export class UsersController {
   async login(@Body() loginData: LoginDto) {
     const user = await this.usersService.findOneByEmail(loginData.email);
     if (!user) {
+      this._logger.error(
+        `Login failed. The user does not exist.`,
+        'UsersController',
+        {
+          email: loginData.email,
+        }
+      );
       throw new HttpException(
         'Unauthorized access. Please provide valid credentials to access this resource',
         HttpStatus.UNAUTHORIZED,
@@ -95,6 +143,13 @@ export class UsersController {
     }
     const userVerified = user.isVerified;
     if (!userVerified) {
+      this._logger.log(
+        `Login failed. User is not verified`,
+        'UsersController',
+        {
+          email: loginData.email,
+        }
+      );
       throw new HttpException('User is not verified', HttpStatus.UNAUTHORIZED);
     }
     const match = await this.usersService.compareHash(
@@ -102,6 +157,13 @@ export class UsersController {
       user.password,
     );
     if (!match) {
+      this._logger.error(
+        `Login failed. The provided credentials are incorrect`,
+        'UsersController',
+        {
+          email: loginData.email,
+        }
+      );
       throw new HttpException(
         'Unauthorized access. Please provide valid credentials to access this resource',
         HttpStatus.UNAUTHORIZED,
@@ -113,7 +175,7 @@ export class UsersController {
 
     await this.usersService.createOrVerifyProfile(user._id);
 
-    const userLoged = {
+    const userLogged = {
       _id : user._id,
       username: user.username,
       name: user.name,
@@ -124,7 +186,7 @@ export class UsersController {
       lastConnection: user.lastConnection,
     }
 
-    this._eventService.emit(EventEnum.USER_LOGIN, userLoged);
+    this._eventService.emit(EventEnum.USER_LOGIN, userLogged);
 
     return {
       token,
@@ -138,6 +200,13 @@ export class UsersController {
       data.token,
     );
     if (!validateToken) {
+      this._logger.error(
+        `Login failed. The provided credentials are incorrect, token is invalid`,
+        'UsersController LoginGoogle',
+        {
+          email: data.email,
+        }
+      );
       throw new HttpException('Unauthorized access', HttpStatus.UNAUTHORIZED);
     }
     const emailUser = await this.usersService.findOneByEmail(data.email);
@@ -227,6 +296,16 @@ export class UsersController {
       .update(_id, updateUser)
       .then(() => ({ message: 'User updated' }));
 
+    this._logger.log(
+      `User updated`,
+      'UsersController',
+      {
+        _id: _id,
+        user: user,
+        updateData: updateUser,
+      }
+    );
+
     this._eventService.emit(EventEnum.USER_EDITED, user);
 
     return user;
@@ -239,9 +318,26 @@ export class UsersController {
   async remove(@Param('_idUserDelete') _idUserDelete: string): Promise<string> {
     const user = await this.usersService.findUserById(_idUserDelete);
     if (!user) {
+      this._logger.error(
+        `User not found`,
+        'UsersController remove',
+        {
+          _id: _idUserDelete,
+        }
+      );
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     this._eventService.emit(EventEnum.USER_DELETED, user);
+
+    this._logger.log(
+      `User deleted`,
+      'UsersController remove',
+      {
+        _id: _idUserDelete,
+        user: user,
+      }
+    );
+
     return this.usersService.remove(_idUserDelete);
   }
 
@@ -256,10 +352,17 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Auth(Role.USER)
-  @Get('renewtoken/:_id')
+  @Get('renewToken/:_id')
   async renewToken(@Param('_id') _id: string): Promise<string> {
     const user = await this.usersService.findUserById(_id);
     if (!user) {
+      this._logger.error(
+        `User not found`,
+        'UsersController renewToken',
+        {
+          _id: _id,
+        }
+      );
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
     return this.authService.renewToken(user);
@@ -298,6 +401,16 @@ export class UsersController {
     @Param('_id') _id: string,
     @Body() updateProfileDto: UpdateProfileDto,
   ): Promise<{ message: string }> {
+
+    this._logger.log(
+      `Profile updated`,
+      'UsersController',
+      {
+        _id: _id,
+        updateData: updateProfileDto,
+      }
+    );
+
     return this.usersService
       .updateProfile(_id, updateProfileDto)
       .then(() => ({ message: 'Profile updated' }));
@@ -306,29 +419,29 @@ export class UsersController {
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Auth(Role.USER)
-  @Get('friends/:_id/:_idrequest')
+  @Get('friends/:_id/:_idRequest')
   async friends(
     @Param('_id') _id: string,
-    @Param('_idrequest') _idrequest: string,
+    @Param('_idRequest') _idRequest: string,
   ): Promise<boolean> {
-    return this.usersService.areFriends(_id, _idrequest);
+    return this.usersService.areFriends(_id, _idRequest);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Auth(Role.USER)
-  @Get('pending-friend/:_id/:_idrequest')
+  @Get('pending-friend/:_id/:_idRequest')
   async pendingFriend(
     @Param('_id') _id: string,
-    @Param('_idrequest') _idrequest: string,
+    @Param('_idRequest') _idRequest: string,
   ): Promise<{ status: boolean; _id: string }> {
-    return this.usersService.hasPendingFriendRequest(_id, _idrequest);
+    return this.usersService.hasPendingFriendRequest(_id, _idRequest);
   }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard)
   @Auth(Role.USER)
-  @Get('myfriends/:_id')
+  @Get('myFriends/:_id')
   async friendsRequest(@Param('_id') _id: string): Promise<
     {
       _id: string;

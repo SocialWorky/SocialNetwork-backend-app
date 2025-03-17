@@ -9,6 +9,7 @@ import {
   Query,
   Req,
   UseGuards,
+  Inject,
 } from '@nestjs/common';
 import { Publication } from './entities/publications.entity';
 import {
@@ -20,6 +21,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { Role } from '../../common/enums/rol.enum';
 import { AuthGuard } from 'src/auth/guard/auth.guard';
+import { AppLogger } from '../records-logs/logger.service';
 
 @ApiTags('Publications')
 @ApiBearerAuth()
@@ -27,13 +29,37 @@ import { AuthGuard } from 'src/auth/guard/auth.guard';
 @Auth(Role.USER)
 @Controller('publications')
 export class PublicationController {
-  constructor(private readonly publicationService: PublicationService) {}
+  constructor(
+    private readonly publicationService: PublicationService,
+    @Inject(AppLogger) private readonly _logger: AppLogger,
+  ) {}
 
   @Post('create')
   async createPublication(
     @Body() createPublicationDto: CreatePublicationDto,
   ): Promise<{ message: string; publications: any }> {
-    return this.publicationService.createPublication(createPublicationDto);
+    const publications = await this.publicationService.createPublication(createPublicationDto);
+
+    if(publications.message === 'Publication created successfully') {
+      this._logger.log(
+        'Publication created successfully',
+        'PublicationController createPublication',
+        {
+          publicationsId: publications.publications._id,
+          author: publications.publications.author,
+        }
+      );
+    } else {
+      this._logger.error(
+        'Publication Error',
+        'PublicationController createPublication',
+        {
+          publications: publications,
+        }
+      );
+    }
+
+    return publications;
   }
 
   @Get('all')
@@ -75,6 +101,26 @@ export class PublicationController {
 
   @Delete('delete/:id')
   async deletePublication(@Param('id') id: string): Promise<{ _id: string }> {
-    return this.publicationService.deletePublication(id);
+    const publications = await this.publicationService.deletePublication(id);
+
+    if(publications._id) {
+      this._logger.log(
+        'Publication deleted successfully',
+        'PublicationController deletePublication',
+        {
+          publicationsId: publications._id,
+        }
+      );
+    } else {
+      this._logger.error(
+        'Publication Error',
+        'PublicationController deletePublication',
+        {
+          publications: publications,
+        }
+      );
+    }
+
+    return publications;
   }
 }

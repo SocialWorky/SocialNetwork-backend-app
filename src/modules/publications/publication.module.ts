@@ -12,6 +12,7 @@ import { AuthModule } from '../../auth/auth.module';
 import { Friendship } from '../friends/entities/friend.entity';
 import { ConfigModule } from '../config/config.module';
 import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
+import { RecordsLogsModule } from '../records-logs/records-logs.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
     MediaModule,
     ConfigModule,
     InvitationCodeModule,
+    RecordsLogsModule,
   ],
   controllers: [PublicationController],
   providers: [PublicationService, UsersService, MediaService],
