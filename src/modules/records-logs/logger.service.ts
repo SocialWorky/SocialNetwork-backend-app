@@ -1,4 +1,3 @@
-// src/logger/logger.service.ts
 import { Injectable } from '@nestjs/common';
 import { RecordsLogsService } from '../records-logs/records-logs.service';
 import { LevelLogEnum } from '../records-logs/enums/records-logs.enum';

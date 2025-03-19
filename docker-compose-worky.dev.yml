@@ -26,6 +26,8 @@ services:
       MAIL_USER: ${MAIL_USER}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_FROM: ${MAIL_FROM}
+      # CORS
+      CORS_ORIGINS: ${CORS_ORIGINS}
     dns:
       - 1.1.1.1
   db:
