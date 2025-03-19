@@ -35,7 +35,6 @@ import * as cors from 'cors';
       entities: ['dist/**/*.entity{.ts,.js}'],
       migrations: ['dist/migrations/*{.ts,.js}'],
       migrationsRun: true,
-      keepConnectionAlive: true,
       autoLoadEntities: true,
       synchronize: true,
       ssl: process.env.DB_SSL === 'true',
@@ -78,8 +77,4 @@ import * as cors from 'cors';
     },
   ],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(cors()).forRoutes('*');
-  }
-}
+export class AppModule {}

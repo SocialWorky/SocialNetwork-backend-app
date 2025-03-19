@@ -12,6 +12,16 @@ async function bootstrap() {
   const logger = new Logger('Main');
 
   const app = await NestFactory.create(AppModule);
+
+  const corsOrigins = process.env.CORS_ORIGINS.split(',');
+
+  app.enableCors({
+    origin: corsOrigins,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
+
   app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(
@@ -31,7 +41,9 @@ async function bootstrap() {
     .addBearerAuth()
     .build();
   const options: SwaggerDocumentOptions = {
-    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+      operationIdFactory: (controllerKey: string, methodKey: string) => {
+        return `${controllerKey}_${methodKey}`;
+      },
   };
 
   const document = SwaggerModule.createDocument(app, config, options);

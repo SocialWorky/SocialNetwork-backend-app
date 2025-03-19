@@ -17,8 +17,14 @@ export class RecordsLogsService {
     return this.logRepository.save(newLog);
   }
 
-  findAll(): Promise<LogEntity[]> {
-    return this.logRepository.find();
+  findAll(page: number = 1, limit: number = 10): Promise<LogEntity[]> {
+    return this.logRepository.find({
+      order: {
+        timestamp: 'DESC',
+      },
+      take: limit,
+      skip: (page - 1) * limit,
+    });
   }
 
   findOne(_id: string): Promise<LogEntity | null> {

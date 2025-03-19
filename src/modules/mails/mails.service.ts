@@ -1,6 +1,9 @@
 import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { MailerService } from '@nestjs-modules/mailer';
+import * as nodemailer from 'nodemailer';
+import * as handlebars from 'handlebars';
+import * as fs from 'fs';
+import * as path from 'path';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { CreateMailDto } from './dto/create-mail.dto';
@@ -8,14 +11,15 @@ import { AuthService } from '../../auth/auth.service';
 import { Email } from './entities/mail.entity';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
+import { join } from 'path';
 
 @Injectable()
 export class MailsService {
-  private readonly logger = new Logger(MailerService.name);
+  private readonly logger = new Logger(MailsService.name);
+  private transporter;
 
   constructor(
     private readonly _authService: AuthService,
-    private _mailerService: MailerService,
     private _usersService: UsersService,
 
     @InjectRepository(Email)
@@ -23,7 +27,32 @@ export class MailsService {
 
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
+  ) {
+    this.transporter = nodemailer.createTransport({
+      host: process.env.MAIL_HOST,
+      secure: false,
+      auth: {
+        user: process.env.MAIL_USER,
+        pass: process.env.MAIL_PASSWORD,
+      },
+    });
+  }
+
+  async sendMailWithTemplate(templateName: string, context: any, to: string, subject: string) {
+    const templatePath = path.join(__dirname, 'templates', `${templateName}.hbs`);
+    const source = fs.readFileSync(templatePath, 'utf8');
+
+    const template = handlebars.compile(source);
+    const html = template(context);
+
+    await this.transporter.sendMail({
+      from: `"${process.env.APP_NAME} - No Reply" <${process.env.MAIL_FROM}>`,
+      to,
+      subject,
+      html,
+    });
+  }
+
 
   async saveEmailNotSent(mailData: CreateMailDto) {
     const email = new Email();
@@ -122,11 +151,9 @@ export class MailsService {
     const buttonMessage = mailData.buttonMessage;
     const templateLogo = mailData.templateLogo;
     try {
-      await this._mailerService.sendMail({
-        to: user.email,
-        subject: mailData.subject,
-        template: './welcome',
-        context: {
+      await this.sendMailWithTemplate(
+        './welcome',
+        {
           name: user.name + ' ' + user.lastName,
           url,
           title,
@@ -136,7 +163,9 @@ export class MailsService {
           buttonMessage,
           templateLogo,
         },
-      });
+        user.email,
+        mailData.subject,
+      );
       this.logger.log(`Email sent to ${user.email}`);
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
@@ -174,11 +203,9 @@ export class MailsService {
     const buttonMessage = mailData.buttonMessage;
     const templateLogo = mailData.templateLogo;
     try {
-      await this._mailerService.sendMail({
-        to: user.email,
-        subject: mailData.subject,
-        template: './forgot-password',
-        context: {
+      await this.sendMailWithTemplate(
+        './forgot-password',
+        {
           name: user.name + ' ' + user.lastName,
           url,
           title,
@@ -188,7 +215,9 @@ export class MailsService {
           buttonMessage,
           templateLogo,
         },
-      });
+        user.email,
+        mailData.subject,
+      );
       this.logger.log(`Email sent to ${user.email}`);
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
@@ -217,11 +246,9 @@ export class MailsService {
     const buttonMessage = mailData.buttonMessage;
     const templateLogo = mailData.templateLogo;
     try {
-      await this._mailerService.sendMail({
-        to: user.email,
-        subject: mailData.subject,
-        template: './forgot-password',
-        context: {
+      await this.sendMailWithTemplate(
+        './forgot-password',
+        {
           name: user.name + ' ' + user.lastName,
           url,
           title,
@@ -231,7 +258,9 @@ export class MailsService {
           buttonMessage,
           templateLogo,
         },
-      });
+        user.email,
+        mailData.subject,
+      );
       this.logger.log(`Email sent to ${user.email}`);
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
@@ -245,11 +274,9 @@ export class MailsService {
     }
 
     try {
-      await this._mailerService.sendMail({
-        to: user.email,
-        subject: mailData.subject,
-        template: './notification',
-        context: {
+      await this.sendMailWithTemplate(
+        './notification',
+        {
           name: user.name + ' ' + user.lastName,
           url: mailData.url,
           title: mailData.title,
@@ -259,7 +286,9 @@ export class MailsService {
           buttonMessage: mailData.buttonMessage,
           templateLogo: mailData.templateLogo,
         },
-      });
+        user.email,
+        mailData.subject,
+      );
       this.logger.log(`Email sent to ${user.email}`);
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);
@@ -268,11 +297,9 @@ export class MailsService {
 
   async sendEmail(mailData: CreateMailDto) {
     try {
-      await this._mailerService.sendMail({
-        to: mailData.email,
-        subject: mailData.subject,
-        template: './email',
-        context: {
+      await this.sendMailWithTemplate(
+        './email',
+        {
           url: mailData.url,
           title: mailData.title,
           greet: mailData.greet,
@@ -281,7 +308,9 @@ export class MailsService {
           buttonMessage: mailData.buttonMessage,
           templateLogo: mailData.templateLogo,
         },
-      });
+        mailData.email,
+        mailData.subject,
+      );
       this.logger.log(`Email sent to ${mailData.email}`);
     } catch (error) {
       throw new Error(`Failed to send email: ${error.message}`);

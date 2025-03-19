@@ -1,8 +1,17 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+
 import { RecordsLogsService } from './records-logs.service';
 import { CreateRecordsLogDto } from './dto/create-records-log.dto';
 import { UpdateRecordsLogDto } from './dto/update-records-log.dto';
+import { Auth } from '../../auth/decorators/auth.decorator';
+import { Role } from '../../common/enums/rol.enum';
+import { AuthGuard } from '../../auth/guard/auth.guard';
 
+@ApiTags('Logs')
+@ApiBearerAuth()
+@UseGuards(AuthGuard)
+@Auth(Role.ADMIN)
 @Controller('records-logs')
 export class RecordsLogsController {
   constructor(private readonly recordsLogsService: RecordsLogsService) {}
