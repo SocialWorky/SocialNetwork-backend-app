@@ -35,6 +35,8 @@ import { AuthGuard } from '../../auth/guard/auth.guard';
 import { EventService } from '../webhook/event.service';
 import { EventEnum } from '../webhook/enums/event.enum';
 import { AppLogger } from '../records-logs/logger.service';
+import { PublicationService } from '../publications/publication.service';
+import { CommentService } from '../comment/comment.service';
 
 @ApiTags('Users')
 @Controller('user')
@@ -42,6 +44,8 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private authService: AuthService,
+    private _publicationService: PublicationService,
+    private _commentService: CommentService,
     private readonly _mailsService: MailsService,
     private readonly _eventService: EventService,
     @Inject(AppLogger) private readonly _logger: AppLogger,
@@ -338,6 +342,8 @@ export class UsersController {
       }
     );
 
+    this._publicationService.deletePublicationsByUser(user);
+    this._commentService.deleteCommentByUser(user._id);
     return this.usersService.remove(_idUserDelete);
   }
 

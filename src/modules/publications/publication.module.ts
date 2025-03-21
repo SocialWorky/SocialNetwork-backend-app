@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from '../users/users.module';
 import { UsersService } from '../users/users.service';
@@ -18,7 +18,7 @@ import { RecordsLogsModule } from '../records-logs/records-logs.module';
   imports: [
     TypeOrmModule.forFeature([Publication, Comment, Friendship]),
     AuthModule,
-    UsersModule,
+    forwardRef(() => UsersModule),
     MediaModule,
     ConfigModule,
     InvitationCodeModule,
@@ -26,6 +26,6 @@ import { RecordsLogsModule } from '../records-logs/records-logs.module';
   ],
   controllers: [PublicationController],
   providers: [PublicationService, UsersService, MediaService],
-  exports: [TypeOrmModule],
+  exports: [TypeOrmModule, PublicationService],
 })
 export class PublicationModule {}

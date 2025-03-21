@@ -312,15 +312,18 @@ export class UsersService {
     return await bcrypt.compare(password, hash);
   }
 
-  async remove(idUserDelet: string): Promise<string> {
+  async remove(idUserDelete: string): Promise<string> {
     const userToDelete = await this.usersRepository.findOne({
-      where: { _id: idUserDelet },
+      where: { _id: idUserDelete },
     });
     if (!userToDelete) {
       throw new HttpException('User not found', HttpStatus.NOT_FOUND);
     }
 
-    await this.usersRepository.remove(userToDelete);
+    await this.usersRepository.update(userToDelete._id, {
+      deletedAt: new Date(),
+      isActive: false,
+    });
 
     return 'User ' + userToDelete.username + ' removed';
   }

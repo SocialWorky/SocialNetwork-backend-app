@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
@@ -12,6 +12,8 @@ import { ConfigModule } from '../config/config.module';
 import { InvitationCodeModule } from '../invitationCode/invitation-code.module';
 import { WebhookModule } from '../webhook/webhook.module';
 import { RecordsLogsModule } from '../records-logs/records-logs.module';
+import { PublicationModule } from '../publications/publication.module';
+import { CommentModule } from '../comment/comment.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import { RecordsLogsModule } from '../records-logs/records-logs.module';
     InvitationCodeModule,
     WebhookModule,
     RecordsLogsModule,
+    forwardRef(() => PublicationModule),
+    forwardRef(() => CommentModule),
   ],
   providers: [UsersService, MailsService ],
   controllers: [UsersController],

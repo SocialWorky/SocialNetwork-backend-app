@@ -61,4 +61,7 @@ export class Comment {
 
   @UpdateDateColumn({ type: 'timestamptz' })
   updatedAt: Date;
+
+  @Column({ type: 'boolean', default: false })
+  deleted: boolean;
 }

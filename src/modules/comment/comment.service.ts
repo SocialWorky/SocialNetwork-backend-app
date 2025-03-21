@@ -67,6 +67,7 @@ export class CommentService {
         'comment.content',
         'comment.createdAt',
         'comment.updatedAt',
+        'comment.deleted',
         'author._id',
         'author.username',
         'author.name',
@@ -83,10 +84,11 @@ export class CommentService {
         'media.urlCompressed',
       ]);
 
-    queryBuilder.addOrderBy('comment.createdAt', 'DESC');
+    queryBuilder
+      .where('comment.deleted = false')
+      .addOrderBy('comment.createdAt', 'DESC');
 
     return queryBuilder.getMany();
-    // return this.commentRepository.find();
   }
 
   async updateComment(
@@ -108,6 +110,11 @@ export class CommentService {
   }
 
   async deleteComment(_id: string): Promise<void> {
-    await this.commentRepository.delete(_id);
+    await this.commentRepository.update(_id, { deleted: true });
   }
+
+  async deleteCommentByUser(_id: string): Promise<void> {
+    await this.commentRepository.update({ author: { _id: _id } }, { deleted: true });
+  }
+
 }

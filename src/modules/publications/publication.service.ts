@@ -128,7 +128,6 @@ export class PublicationService {
     }));
   }
 
-  // TODO: Este método debería ser refactorizado para que sea más eficiente, los filtros se estan realizando en memoria.
   async getAllPublications(
     page: number = 1,
     pageSize: number = 10,
@@ -154,7 +153,7 @@ export class PublicationService {
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.userReceiving', 'userReceiving')
       .leftJoinAndSelect('publication.media', 'media')
-      .leftJoinAndSelect('media.comments', 'mediaComments')
+      .leftJoinAndSelect('media.comments', 'mediaComments', 'mediaComments.deleted = false')
       .leftJoinAndSelect('mediaComments.author', 'mediaCommentsAuthor')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
@@ -166,10 +165,10 @@ export class PublicationService {
       )
       .leftJoinAndSelect('publication.taggedUsers', 'taggedUsers')
       .leftJoinAndSelect('taggedUsers.userTagged', 'taggedUser')
-      .leftJoinAndSelect('publication.comment', 'comment')
+      .leftJoinAndSelect('publication.comment', 'comment', 'comment.deleted = false')
       .leftJoinAndSelect('comment.author', 'commentAuthor')
       .leftJoinAndSelect('comment.media', 'commentMedia')
-      .leftJoinAndSelect('commentMedia.comments', 'commentMediaComments')
+      .leftJoinAndSelect('commentMedia.comments', 'commentMediaComments', 'commentMediaComments.deleted = false')
       .leftJoinAndSelect('commentMediaComments.author', 'commentMediaCommentsAuthor')
       .select([
         'publication._id',
@@ -318,7 +317,7 @@ export class PublicationService {
     //TODO Agregar isMyFriend e isFriendshipPending a cada publicación
     const finalPublications = publications.map((publication) => {
       const pendingRequest = pendingFriendRequests.find(
-        (request) => request.userId === publication.author._id,
+        (request) => request.userId === publication.author._id ? publication.author._id : null,
       );
 
       return {
@@ -353,7 +352,7 @@ export class PublicationService {
       .leftJoinAndSelect('publication.author', 'author')
       .leftJoinAndSelect('publication.userReceiving', 'userReceiving')
       .leftJoinAndSelect('publication.media', 'media')
-      .leftJoinAndSelect('media.comments', 'mediaComments')
+      .leftJoinAndSelect('media.comments', 'mediaComments', 'mediaComments.deleted = false')
       .leftJoinAndSelect('mediaComments.author', 'mediaCommentsAuthor')
       .leftJoinAndSelect('publication.reaction', 'reaction')
       .leftJoinAndSelect('reaction.user', 'reactionUser')
@@ -365,10 +364,10 @@ export class PublicationService {
       )
       .leftJoinAndSelect('publication.taggedUsers', 'taggedUsers')
       .leftJoinAndSelect('taggedUsers.userTagged', 'taggedUser')
-      .leftJoinAndSelect('publication.comment', 'comment')
+      .leftJoinAndSelect('publication.comment', 'comment', 'comment.deleted = false')
       .leftJoinAndSelect('comment.author', 'commentAuthor')
       .leftJoinAndSelect('comment.media', 'commentMedia')
-      .leftJoinAndSelect('commentMedia.comments', 'commentMediaComments')
+      .leftJoinAndSelect('commentMedia.comments', 'commentMediaComments', 'commentMediaComments.deleted = false')
       .leftJoinAndSelect('commentMediaComments.author', 'commentMediaCommentsAuthor')
       .select([
         'publication._id',
@@ -462,7 +461,6 @@ export class PublicationService {
       .orderBy('comment.createdAt', 'DESC')
       .getMany();
 
-      //TODO Agregar isMyFriend e isFriendshipPending a cada publicación
       const finalPublications = publications.map((publication) => {
         const pendingRequest = pendingFriendRequests.find(
           (request) => request.userId === publication.author._id,
@@ -510,5 +508,15 @@ export class PublicationService {
   async deletePublication(id: string): Promise<{ _id: string }> {
     await this.publicationRepository.update(id, { deletedAt: new Date() });
     return { _id: id };
+  }
+
+  async deletePublicationsByUser(user: User): Promise<void> {
+    await this.publicationRepository
+      .createQueryBuilder('publication')
+      .update()
+      .set({ deletedAt: new Date() })
+      .where('publication.author_id = :userId', { userId: user._id })
+      .orWhere('"userReceiving_id" = :userId', { userId: user._id })
+      .execute();
   }
 }
