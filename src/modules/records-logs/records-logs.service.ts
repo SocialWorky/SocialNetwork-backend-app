@@ -1,9 +1,8 @@
-// src/records-logs/records-logs.service.ts
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { LogEntity } from './entities/records-log.entity';
-import { CreateRecordsLogDto } from './dto/create-records-log.dto';
+import { CreateManyRecordsLogDto, CreateRecordsLogDto } from './dto/create-records-log.dto';
 
 @Injectable()
 export class RecordsLogsService {
@@ -17,14 +16,35 @@ export class RecordsLogsService {
     return this.logRepository.save(newLog);
   }
 
-  findAll(page: number = 1, limit: number = 10): Promise<LogEntity[]> {
-    return this.logRepository.find({
-      order: {
-        timestamp: 'DESC',
-      },
+  async createMany(createManyRecordsLogDto: CreateManyRecordsLogDto): Promise<LogEntity[]> {
+    const logsToSave = createManyRecordsLogDto.logs.map((logDto) =>
+      this.logRepository.create({
+        level: logDto.level,
+        context: logDto.context,
+        message: logDto.message,
+        metadata: logDto.metadata || null,
+        timestamp: logDto.timestamp || new Date(),
+      }),
+    );
+
+    try {
+      return await this.logRepository.save(logsToSave);
+    } catch (error) {
+      console.error('Error al guardar logs:', error);
+      throw new Error('Error al procesar los logs');
+    }
+  }
+
+  async findAll(page: number = 1, limit: number = 10): Promise<{ logs: LogEntity[]; total: number }> {
+    const logs = await this.logRepository.find({
+      order: { timestamp: 'DESC' },
       take: limit,
       skip: (page - 1) * limit,
     });
+
+    const total = await this.logRepository.count();
+
+    return { logs, total };
   }
 
   findOne(_id: string): Promise<LogEntity | null> {

@@ -1,8 +1,8 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { RecordsLogsService } from './records-logs.service';
-import { CreateRecordsLogDto } from './dto/create-records-log.dto';
+import { CreateManyRecordsLogDto, CreateRecordsLogDto } from './dto/create-records-log.dto';
 import { UpdateRecordsLogDto } from './dto/update-records-log.dto';
 import { Auth } from '../../auth/decorators/auth.decorator';
 import { Role } from '../../common/enums/rol.enum';
@@ -21,9 +21,14 @@ export class RecordsLogsController {
     return this.recordsLogsService.create(createRecordsLogDto);
   }
 
+  @Post('batch')
+  async createMany(@Body() createManyRecordsLogDto: CreateManyRecordsLogDto) {
+    return this.recordsLogsService.createMany(createManyRecordsLogDto);
+  }
+
   @Get()
-  findAll() {
-    return this.recordsLogsService.findAll();
+  findAll(@Query('page') page: number = 1, @Query('limit') limit: number = 10) {
+    return this.recordsLogsService.findAll(page, limit);
   }
 
   @Get(':_id')
