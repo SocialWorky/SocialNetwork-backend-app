@@ -44,7 +44,7 @@ export class AuthService {
       isTooltipActive: user.isTooltipActive,
     };
 
-    const expirationTime = 12 * 60 * 60;
+    const expirationTime = 24 * 60 * 60;
 
     return this.jwtService.sign(payload, { expiresIn: expirationTime });
   }

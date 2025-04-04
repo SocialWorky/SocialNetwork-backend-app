@@ -188,12 +188,15 @@ export class UsersController {
       role: user.role,
       avatar: user.avatar,
       lastConnection: user.lastConnection,
+      isTooltipActive: user.isTooltipActive,
+      isDarkMode: user.isDarkMode,
     }
 
     this._eventService.emit(EventEnum.USER_LOGIN, userLogged);
 
     return {
       token,
+      user: userLogged,
     };
   }
 
@@ -230,8 +233,25 @@ export class UsersController {
       await this.usersService.createOrVerifyProfile(user._id);
 
       await this.usersService.update(user._id, { token: token });
+
+      const userLogged = {
+            _id : user._id,
+            username: user.username,
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+            lastConnection: user.lastConnection,
+            isTooltipActive: user.isTooltipActive,
+            isDarkMode: user.isDarkMode,
+          }
+
+      this._eventService.emit(EventEnum.USER_LOGIN, userLogged);
+
       return {
         token,
+        user: userLogged,
       };
     }
     if (emailUser) {
@@ -242,10 +262,24 @@ export class UsersController {
 
       await this.usersService.update(emailUser._id, { token: token });
 
-      this._eventService.emit(EventEnum.USER_LOGIN, user);
+      const userLogged = {
+            _id : user._id,
+            username: user.username,
+            name: user.name,
+            lastName: user.lastName,
+            email: user.email,
+            role: user.role,
+            avatar: user.avatar,
+            lastConnection: user.lastConnection,
+            isTooltipActive: user.isTooltipActive,
+            isDarkMode: user.isDarkMode,
+          }
+
+      this._eventService.emit(EventEnum.USER_LOGIN, userLogged);
 
       return {
         token,
+        user: userLogged,
       };
     }
   }
