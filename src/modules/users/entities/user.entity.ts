@@ -54,6 +54,9 @@ export class User {
   @Column({ default: true })
   isTooltipActive: boolean;
 
+  @Column({ default: false })
+  isDarkMode: boolean;
+
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date;
 

@@ -156,6 +156,10 @@ export class UsersService {
       user.isTooltipActive = updateUser.isTooltipActive;
     }
 
+    if (updateUser.isDarkMode !== undefined) {
+      user.isDarkMode = updateUser.isDarkMode;
+    }
+
     if (updateUser.lastConnection) {
       user.lastConnection = updateUser.lastConnection;
     }

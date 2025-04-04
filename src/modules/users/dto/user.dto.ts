@@ -108,6 +108,9 @@ export class UpdateUser {
   isTooltipActive?: boolean;
 
   @IsOptional()
+  isDarkMode?: boolean;
+
+  @IsOptional()
   lastConnection?: Date;
 }
 export class LoginDto {
