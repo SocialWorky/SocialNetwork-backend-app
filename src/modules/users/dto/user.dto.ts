@@ -111,6 +111,9 @@ export class UpdateUser {
   isDarkMode?: boolean;
 
   @IsOptional()
+  deviceId?: string;
+
+  @IsOptional()
   lastConnection?: Date;
 }
 export class LoginDto {

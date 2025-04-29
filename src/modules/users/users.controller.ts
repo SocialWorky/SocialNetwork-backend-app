@@ -11,6 +11,9 @@ import {
   Query,
   UseGuards,
   Inject,
+  BadRequestException,
+  Req,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -502,4 +505,36 @@ export class UsersController {
   async validateProfile(@Param('_id') _id: string): Promise<Profile> {
     return this.usersService.createOrVerifyProfile(_id);
   }
+
+  @Post('register-device')
+  async registerDevice(@Body() body: { deviceId: string }, @Req() req) {
+    console.log('body', body);
+    console.log('req', req);
+    const userId = req.user.id;
+    const { deviceId } = body;
+
+    if (!deviceId) {
+      throw new BadRequestException('El parámetro deviceId es requerido.');
+    }
+
+    try {
+      await this.usersService.registerDevice(userId, deviceId);
+      return { message: 'Dispositivo registrado correctamente.' };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Error al registrar el dispositivo.');
+    }
+  }
+
+  @Get('device-id/:userId')
+  async getDeviceId(@Param('userId') userId: string) {
+    try {
+      const deviceId = await this.usersService.getDeviceId(userId);
+      return { deviceId };
+    } catch (error) {
+      console.error(error);
+      throw new InternalServerErrorException('Error al obtener el ID del dispositivo.');
+    }
+  }
+
 }

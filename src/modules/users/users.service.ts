@@ -619,4 +619,20 @@ export class UsersService {
     return friends;
   }
 
+  async registerDevice(userId: string, deviceId: string): Promise<void> {
+    try {
+      await this.usersRepository.update(userId, { deviceId });
+    } catch (error) {
+      console.error(error);
+      throw new Error('Error al registrar el dispositivo.');
+    }
+  }
+
+  async getDeviceId(userId: string): Promise<string> {
+    const user = await this.usersRepository.findOne({
+      where: { _id: userId },
+    });
+    return user.deviceId;
+  }
+
 }

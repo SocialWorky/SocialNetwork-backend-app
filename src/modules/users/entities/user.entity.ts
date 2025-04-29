@@ -57,6 +57,9 @@ export class User {
   @Column({ default: false })
   isDarkMode: boolean;
 
+  @Column({ nullable: true })
+  deviceId: string;
+
   @DeleteDateColumn({ type: 'timestamptz' })
   deletedAt: Date;
 
