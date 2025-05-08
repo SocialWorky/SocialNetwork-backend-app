@@ -19,7 +19,6 @@ export class WebhookService implements OnModuleInit {
       webhooks.forEach((webhook) => {
         this.registerListener(webhook);
       });
-      console.log(`Se cargaron ${webhooks.length} webhooks activos.`);
     } catch (error) {
       console.error('Error al cargar webhooks:', error);
     }
@@ -47,11 +46,8 @@ export class WebhookService implements OnModuleInit {
     const updatedWebhook = await this.webhookRepo.findOneById(_id);
 
     this.registerListener(updatedWebhook);
-
-    console.log(`Webhook con ID ${_id} actualizado.`);
   }
 
-  // Eliminar un webhook
   async deleteWebhook(_id: string) {
     const remover = this.listenerRemovers.get(_id);
     if (remover) {
@@ -59,10 +55,8 @@ export class WebhookService implements OnModuleInit {
       this.listenerRemovers.delete(_id);
     }
     await this.webhookRepo.delete(_id);
-    console.log(`Webhook con ID ${_id} eliminado.`);
   }
 
-  // Desencadenar un webhook
   private async triggerWebhook(url: string, data: any) {
     try {
       await fetch(url, {
@@ -70,13 +64,11 @@ export class WebhookService implements OnModuleInit {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      console.log(`Webhook enviado a ${url}`);
     } catch (error) {
       console.error(`Error al enviar webhook a ${url}:`, error);
     }
   }
 
-  // Registrar un listener para un webhook
   private registerListener(webhook: any) {
     const remover = this.eventService.on(webhook.event, (data) =>
       this.triggerWebhook(webhook.url, data),

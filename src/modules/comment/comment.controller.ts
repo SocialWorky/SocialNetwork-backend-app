@@ -49,4 +49,9 @@ export class CommentController {
   async deleteComment(@Param('id') id: string): Promise<void> {
     return this.commentService.deleteComment(id);
   }
+
+  @Get(':id')
+  async getCommentById(@Param('id') id: string): Promise<Comment> {
+    return this.commentService.getCommentById(id);
+  }
 }

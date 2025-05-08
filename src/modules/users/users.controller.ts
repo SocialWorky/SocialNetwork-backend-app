@@ -508,8 +508,6 @@ export class UsersController {
 
   @Post('register-device')
   async registerDevice(@Body() body: { deviceId: string }, @Req() req) {
-    console.log('body', body);
-    console.log('req', req);
     const userId = req.user.id;
     const { deviceId } = body;
 

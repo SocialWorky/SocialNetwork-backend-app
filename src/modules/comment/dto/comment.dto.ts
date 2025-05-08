@@ -1,18 +1,22 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsOptional, IsString } from 'class-validator';
 
 export class CreateCommentDto {
   @IsString()
   @IsOptional()
   content?: string;
 
+  @IsBoolean()
+  @IsOptional()
+  containsMedia?: boolean;
+
   @IsString()
-  authorId: string; // ID del autor del comentario
+  authorId: string;
 
   @IsString()
   @IsOptional()
-  idPublication?: string; // ID de la publicación padre del comentario
+  idPublication?: string;
 
   @IsString()
   @IsOptional()
-  idMedia?: string; // ID del archivo multimedia del comentario
+  idMedia?: string;
 }

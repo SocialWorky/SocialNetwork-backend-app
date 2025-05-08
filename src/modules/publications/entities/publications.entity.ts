@@ -28,6 +28,9 @@ export class Publication {
   @Column({ default: false })
   fixed: boolean;
 
+  @Column({ default: false })
+  containsMedia: boolean;
+
   @ManyToOne(() => User, (user) => user._id, { eager: true })
   author: User;
 

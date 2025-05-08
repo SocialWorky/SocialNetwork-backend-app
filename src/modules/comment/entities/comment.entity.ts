@@ -22,6 +22,9 @@ export class Comment {
   @Column()
   content: string;
 
+  @Column({ default: false })
+  containsMedia: boolean;
+
   @ManyToOne(() => User, (user) => user._id, {
     eager: true,
     onDelete: 'CASCADE',

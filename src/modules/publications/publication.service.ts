@@ -45,6 +45,7 @@ export class PublicationService {
     publication.content = createPublicationDto.content || '';
     publication.privacy = createPublicationDto.privacy;
     publication.extraData = createPublicationDto.extraData;
+    publication.containsMedia = createPublicationDto.containsMedia;
     publication.createdAt = new Date();
     publication.updatedAt = new Date();
 
@@ -78,6 +79,7 @@ export class PublicationService {
         createdAt: newPublications.createdAt,
         updatedAt: newPublications.updatedAt,
         fixed: newPublications.fixed,
+        containsMedia: newPublications.containsMedia,
         author: {
           _id: author._id,
           username: author.username,
@@ -175,6 +177,7 @@ export class PublicationService {
         'publication.content',
         'publication.privacy',
         'publication.fixed',
+        'publication.containsMedia',
         'publication.extraData',
         'author._id',
         'author.username',
@@ -220,6 +223,7 @@ export class PublicationService {
         'customReaction.emoji',
         'comment._id',
         'comment.content',
+        'comment.containsMedia',
         'comment.createdAt',
         'commentAuthor._id',
         'commentAuthor.name',
@@ -232,6 +236,7 @@ export class PublicationService {
         'commentMedia.urlCompressed',
         'commentMediaComments._id',
         'commentMediaComments.content',
+        'commentMediaComments.containsMedia',
         'commentMediaComments.createdAt',
         'commentMediaCommentsAuthor._id',
         'commentMediaCommentsAuthor.name',
@@ -307,7 +312,8 @@ export class PublicationService {
     queryBuilder
       .orderBy('publication.fixed', 'DESC')
       .addOrderBy('publication.createdAt', 'DESC')
-      .addOrderBy('comment.createdAt', 'DESC');
+      .addOrderBy('comment.createdAt', 'DESC')
+      .addOrderBy('commentMediaComments.createdAt', 'DESC');
 
     const [publications, total] = await queryBuilder
       .skip(skip)
@@ -374,6 +380,7 @@ export class PublicationService {
         'publication.content',
         'publication.privacy',
         'publication.fixed',
+        'publication.containsMedia',
         'publication.extraData',
         'author._id',
         'author.username',
@@ -419,6 +426,7 @@ export class PublicationService {
         'customReaction.emoji',
         'comment._id',
         'comment.content',
+        'comment.containsMedia',
         'comment.createdAt',
         'commentAuthor._id',
         'commentAuthor.name',
@@ -431,6 +439,7 @@ export class PublicationService {
         'commentMedia.urlCompressed',
         'commentMediaComments._id',
         'commentMediaComments.content',
+        'commentMediaComments.containsMedia',
         'commentMediaComments.createdAt',
         'commentMediaCommentsAuthor._id',
         'commentMediaCommentsAuthor.name',
@@ -489,6 +498,10 @@ export class PublicationService {
 
     if (updatePublicationDto.fixed !== undefined) {
       publication.fixed = updatePublicationDto.fixed;
+    }
+
+    if (updatePublicationDto.containsMedia!== undefined) {
+      publication.containsMedia = updatePublicationDto.containsMedia;
     }
 
     if (updatePublicationDto.content) {

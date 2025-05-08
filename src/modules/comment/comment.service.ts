@@ -26,12 +26,16 @@ export class CommentService {
   ) {}
 
   async createComment(createCommentDto: CreateCommentDto) {
-    const { content, authorId, idPublication, idMedia } = createCommentDto;
+    const { content, containsMedia, authorId, idPublication, idMedia } = createCommentDto;
 
     const comment = new Comment();
     comment._id = this.authService.cryptoIdKey();
 
     comment.content = content;
+
+    if (containsMedia) {
+      comment.containsMedia = containsMedia;
+    }
 
     const authorOptions: FindOneOptions<User> = { where: { _id: authorId } };
     comment.author = await this.userRepository.findOne(authorOptions);
@@ -65,6 +69,7 @@ export class CommentService {
       .select([
         'comment._id',
         'comment.content',
+        'comment.containsMedia',
         'comment.createdAt',
         'comment.updatedAt',
         'comment.deleted',
@@ -115,6 +120,38 @@ export class CommentService {
 
   async deleteCommentByUser(_id: string): Promise<void> {
     await this.commentRepository.update({ author: { _id: _id } }, { deleted: true });
+  }
+
+  async getCommentById(_id: string): Promise<any> {
+    const result = await this.commentRepository
+      .createQueryBuilder('comment')
+      .leftJoin('comment.author', 'author')
+      .leftJoin('comment.publication', 'publication')
+      .leftJoin('comment.media', 'media')
+      .select('comment._id', '_id')
+      .addSelect('comment.content', 'content')
+      .addSelect('comment.containsMedia', 'containsMedia')
+      .addSelect('comment.createdAt', 'createdAt')
+      .addSelect('comment.updatedAt', 'updatedAt')
+      .addSelect('comment.deleted', 'deleted')
+
+      .addSelect('author._id', 'authorId')
+      .addSelect('author.username', 'authorUsername')
+      .addSelect('author.name', 'authorName')
+      .addSelect('author.lastName', 'authorLastName')
+
+      .addSelect('publication._id', 'publicationId')
+
+      .addSelect('media._id', 'mediaId')
+      .addSelect('media.url', 'mediaUrl')
+      .addSelect('media.urlThumbnail', 'mediaUrlThumbnail')
+      .addSelect('media.urlCompressed', 'mediaUrlCompressed')
+
+      .where('comment._id = :_id', { _id })
+      .andWhere('comment.deleted = false')
+      .getRawOne();
+
+    return result;
   }
 
 }

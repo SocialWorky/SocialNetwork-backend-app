@@ -28,6 +28,10 @@ export class CreatePublicationDto {
   @IsOptional()
   fixed?: boolean;
 
+  @IsBoolean()
+  @IsOptional()
+  containsMedia?: boolean;
+
   @IsString()
   @ApiProperty()
   authorId: string;
@@ -63,6 +67,10 @@ export class UpdatePublicationDto {
   @IsBoolean()
   @IsOptional()
   fixed?: boolean;
+
+  @IsBoolean()
+  @IsOptional()
+  containsMedia?: boolean;
 
   @IsString()
   @IsOptional()
